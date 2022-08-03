@@ -5,23 +5,21 @@
 </head>
 <body>
 <script type="text/javascript">
-// Compilation of contract addresses and ABI's we'll need
+// Compilation of contract addresses
 const WINEMAKER_REWARDS = "0xae1de1c258c5587cfea69045992a5467cff4406f";
 const WINEMAKER_PROGRESSION = "0x46840fedbafaf7ad2b9b6395421662ee9279349f";
-const WINEMAKER_REWARDS_ABI = [{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"previousAdmin","type":"address"},{"indexed":false,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"beacon","type":"address"}],"name":"BeaconUpgraded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint8","name":"version","type":"uint8"}],"name":"Initialized","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"implementation","type":"address"}],"name":"Upgraded","type":"event"},{"inputs":[],"name":"CLAIM_VINTAGEWINE_BURN_PERCENTAGE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"CLAIM_VINTAGEWINE_CONTRIBUTION_PERCENTAGE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DEAD_ADDR","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_FATIGUE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"},{"internalType":"uint256","name":"_offset","type":"uint256"},{"internalType":"uint256","name":"_maxSize","type":"uint256"}],"name":"batchedStakesOfOwner","outputs":[{"components":[{"internalType":"uint256","name":"vintnerId","type":"uint256"},{"internalType":"uint256","name":"vintnerPPM","type":"uint256"},{"internalType":"bool","name":"isResting","type":"bool"},{"internalType":"uint256","name":"endTimestamp","type":"uint256"}],"internalType":"struct Winery.StakedVintnerInfo[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"},{"internalType":"uint256","name":"_offset","type":"uint256"},{"internalType":"uint256","name":"_maxSize","type":"uint256"}],"name":"batchedToolsOfOwner","outputs":[{"components":[{"internalType":"uint256","name":"toolId","type":"uint256"},{"internalType":"uint256","name":"toolPPM","type":"uint256"}],"internalType":"struct Winery.StakedToolInfo[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"cellarAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimVintageWine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"fatiguePerMinute","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_ppm","type":"uint256"}],"name":"fatiguePerMinuteCalculation","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"fatigueTuner","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"gameStarted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getFatigueAccrued","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getFatiguePerMinuteWithModifier","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getMasterVintnerNumber","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tokenId","type":"uint256"},{"internalType":"address","name":"_owner","type":"address"}],"name":"getRestingTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getTimeUntilFatigued","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getTotalPPM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getVintageWineAccrued","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"grape","outputs":[{"internalType":"contract IGrape","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"grapeResetCost","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"contract Vintner","name":"_vintner","type":"address"},{"internalType":"contract Upgrade","name":"_upgrade","type":"address"},{"internalType":"contract VintageWine","name":"_vintageWine","type":"address"},{"internalType":"address","name":"_grape","type":"address"},{"internalType":"address","name":"_cellarAddress","type":"address"},{"internalType":"address","name":"_wineryProgression","type":"address"}],"name":"initialize","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"numberOfStaked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"ownedUpgradeStakes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"ownedUpgradeStakesBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"ownedUpgradeStakesIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"ownedVintnerStakes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"ownedVintnerStakesBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"ownedVintnerStakesIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"proxiableUUID","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"_vintnerIds","type":"uint256[]"}],"name":"reStakeRestedVintners","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"resetFatigue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_vintnerType","type":"uint256"},{"internalType":"uint256","name":"_masterVintnerType","type":"uint256"},{"internalType":"uint256","name":"_fatigue","type":"uint256"}],"name":"restingTimeCalculation","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"restingVintners","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_cellarAddress","type":"address"}],"name":"setCellarAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_fatigueTuner","type":"uint256"}],"name":"setFatigueTuner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_grape","type":"address"}],"name":"setGrape","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_grapeResetCost","type":"uint256"}],"name":"setGrapeResetCost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_startTime","type":"uint256"}],"name":"setStartTime","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_unstakePenalty","type":"uint256"}],"name":"setUnstakePenalty","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"contract VintageWine","name":"_vintageWine","type":"address"}],"name":"setVintageWine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_wineryProgression","type":"address"}],"name":"setWineryProgression","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_yieldPPS","type":"uint256"}],"name":"setYieldPPS","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"_vintnerIds","type":"uint256[]"},{"internalType":"uint256[]","name":"_upgradeIds","type":"uint256[]"}],"name":"stakeMany","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"stakedUpgrades","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"stakedVintners","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"startTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"startTimeStamp","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_startTime","type":"uint256"},{"internalType":"uint256","name":"_fatigue","type":"uint256"},{"internalType":"uint256","name":"_fatiguePerMinute","type":"uint256"}],"name":"timeUntilFatiguedCalculation","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"totalPPM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"unstakePenalty","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"_vintnerIds","type":"uint256[]"},{"internalType":"uint256[]","name":"_upgradeIds","type":"uint256[]"}],"name":"unstakeVintnersAndUpgrades","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"upgrade","outputs":[{"internalType":"contract Upgrade","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newImplementation","type":"address"}],"name":"upgradeTo","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newImplementation","type":"address"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"upgradeToAndCall","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"vintageWine","outputs":[{"internalType":"contract VintageWine","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_initialVintageWine","type":"uint256"},{"internalType":"uint256","name":"_deltaTime","type":"uint256"},{"internalType":"uint256","name":"_ppm","type":"uint256"},{"internalType":"uint256","name":"_modifier","type":"uint256"},{"internalType":"uint256","name":"_fatigue","type":"uint256"},{"internalType":"uint256","name":"_fatiguePerMinute","type":"uint256"},{"internalType":"uint256","name":"_yieldPPS","type":"uint256"}],"name":"vintageWineAccruedCalculation","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"vintner","outputs":[{"internalType":"contract Vintner","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wineryFatigue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"wineryProgression","outputs":[{"internalType":"contract IWineryProgression","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wineryVintageWine","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"_vintnerIds","type":"uint256[]"}],"name":"withdrawVintners","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"yieldPPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
-const WINEMAKER_PROGRESSION_ABI = [{"inputs":[{"internalType":"address","name":"_grape","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"skillPoints","type":"uint256"}],"name":"receivedSkillPoints","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"level","type":"uint256"}],"name":"respec","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"skillGroup","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"skillLevel","type":"uint256"}],"name":"skillLearned","type":"event"},{"inputs":[],"name":"BURN_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"CELLAR_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FATIGUE_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MASTERVINTNER_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"MAX_SKILL_LEVEL","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"STORAGE_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UPGRADES_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"VINTNERS_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseCostRespect","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"burnSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"cellarSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"depositGrape","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"fatigueSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_player","type":"address"}],"name":"fixSkillPoints","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getBurnSkillModifier","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getCellarSkillModifier","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getFatigueSkillModifier","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getGrapeDeposited","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getGrapeToNextLevel","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getLevel","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"},{"internalType":"uint256","name":"_masterVintnerNumber","type":"uint256"}],"name":"getMasterVintnerSkillModifier","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getMaxLevelUpgrade","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getMaxNumberVintners","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getSkillPoints","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getSkillsLearned","outputs":[{"internalType":"uint256","name":"burn","type":"uint256"},{"internalType":"uint256","name":"fatigue","type":"uint256"},{"internalType":"uint256","name":"cellar","type":"uint256"},{"internalType":"uint256","name":"mastervintner","type":"uint256"},{"internalType":"uint256","name":"upgrades","type":"uint256"},{"internalType":"uint256","name":"vintners","type":"uint256"},{"internalType":"uint256","name":"vintageWineStorage","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getVintageWineStorage","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"grape","outputs":[{"internalType":"contract IGrape","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"grapeDeposited","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"grapeLevels","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"levelStarted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"levelTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"masterVintnerSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"maxGrapeAmount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"resetSkills","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_baseCostRespect","type":"uint256"}],"name":"setBaseCostRespect","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_grape","type":"address"}],"name":"setGrape","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_newValue","type":"uint256"}],"name":"setGrapeLevels","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_startTime","type":"uint256"}],"name":"setLevelStartTime","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setburnSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setcellarSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setfatigueSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setmasterVintnerSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setupgradesSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setvintageWineStorageSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setvintnersSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"skillPoints","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"skillsLearned","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_skillGroup","type":"uint256"},{"internalType":"uint256","name":"_skillLevel","type":"uint256"}],"name":"spendSkillPoints","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"upgradesSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"vintageWineStorageSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"vintnersSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
-const GRAPE_PRICE_ORACLE = "0xae85861c0cb3e34aacfabb0c2384a5dd939726b3";
-const GRAPE_PRICE_ORACLE_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"inputs":[],"name":"GRAPE","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"Oracle","outputs":[{"internalType":"contract IOracle","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PriceFeed","outputs":[{"internalType":"contract IPriceFeed","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_token","type":"address"},{"internalType":"uint256","name":"_amountIn","type":"uint256"}],"name":"consult","outputs":[{"internalType":"uint144","name":"amountOut","type":"uint144"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"latestMimPrice","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"latestPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"latestRoundMimPrice","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_grape","type":"address"}],"name":"setGRAPE","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"oracle","type":"address"}],"name":"setOracle","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"priceFeed","type":"address"}],"name":"setPriceFeed","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_token","type":"address"},{"internalType":"uint256","name":"_amountIn","type":"uint256"}],"name":"twap","outputs":[{"internalType":"uint144","name":"_amountOut","type":"uint144"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"update","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const VINEYARD = "0x28c65dcB3a5f0d456624AFF91ca03E4e315beE49"
+
 const GRAPE_TOKEN = "0x5541D83EFaD1f281571B343977648B75d95cdAC2";
-const GRAPE_TOKEN_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOperator","type":"address"},{"indexed":true,"internalType":"address","name":"newOperator","type":"address"}],"name":"OperatorTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"INITIAL_AIRDROP_WALLET_DISTRIBUTION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_GENESIS_POOL_DISTRIBUTION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_GRAPE_POOL_DISTRIBUTION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burnFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_genesisPool","type":"address"},{"internalType":"address","name":"_grapePool","type":"address"},{"internalType":"address","name":"_airdropWallet","type":"address"}],"name":"distributeReward","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"contract IERC20","name":"_token","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"},{"internalType":"address","name":"_to","type":"address"}],"name":"governanceRecoverUnsupported","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"grapeOracle","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"isOperator","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"recipient_","type":"address"},{"internalType":"uint256","name":"amount_","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"operator","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardPoolDistributed","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_grapeOracle","type":"address"}],"name":"setGrapeOracle","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOperator_","type":"address"}],"name":"transferOperator","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const MIM_TOKEN = "0x130966628846bfd36ff31a822705796e8cb8c18d";
+const VINT_TOKEN = "0x01Af64EF39AEB5612202AA07B3A3829f20c395fd";
+const SVINT_TOKEN = "0xf016e69F2c08a0b743a7d815d1059318DCa8Fc0e";
 
 const VINT_LP = "0x1a3b20040dd5c890f247a5fb6c078b9943ffaa40";
 const GRAPE_LP = "0xb382247667fe8ca5327ca1fa4835ae77a9907bc8";
-const MIM = "0x130966628846bfd36ff31a822705796e8cb8c18d";
-const MIM_ABI = [{"inputs":[{"internalType":"string","name":"_name","type":"string"},{"internalType":"string","name":"_symbol","type":"string"},{"internalType":"uint8","name":"_decimals","type":"uint8"},{"internalType":"address","name":"_underlying","type":"address"},{"internalType":"address","name":"_vault","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"auth","type":"address"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"LogAddAuth","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"},{"indexed":true,"internalType":"uint256","name":"effectiveHeight","type":"uint256"}],"name":"LogChangeMPCOwner","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldVault","type":"address"},{"indexed":true,"internalType":"address","name":"newVault","type":"address"},{"indexed":true,"internalType":"uint256","name":"effectiveTime","type":"uint256"}],"name":"LogChangeVault","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"txhash","type":"bytes32"},{"indexed":true,"internalType":"address","name":"account","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"LogSwapin","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"account","type":"address"},{"indexed":true,"internalType":"address","name":"bindaddr","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"LogSwapout","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"DOMAIN_SEPARATOR","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PERMIT_TYPEHASH","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"txhash","type":"bytes32"},{"internalType":"address","name":"account","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Swapin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"bindaddr","type":"address"}],"name":"Swapout","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"TRANSFER_TYPEHASH","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"applyMinter","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"applyVault","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"approveAndCall","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newVault","type":"address"}],"name":"changeMPCOwner","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newVault","type":"address"}],"name":"changeVault","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"delay","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"delayDelay","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"delayMinter","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"delayVault","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"to","type":"address"}],"name":"deposit","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"deposit","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"deposit","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"to","type":"address"}],"name":"depositVault","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"target","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"},{"internalType":"address","name":"to","type":"address"}],"name":"depositWithPermit","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"target","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"},{"internalType":"address","name":"to","type":"address"}],"name":"depositWithTransferPermit","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getAllMinters","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_vault","type":"address"}],"name":"initVault","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"isMinter","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"minters","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"mpc","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"nonces","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pendingDelay","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pendingMinter","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pendingVault","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"target","type":"address"},{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"permit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_auth","type":"address"}],"name":"revokeMinter","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_auth","type":"address"}],"name":"setMinter","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_vault","type":"address"}],"name":"setVault","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bool","name":"enabled","type":"bool"}],"name":"setVaultOnly","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"transferAndCall","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"target","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"transferWithPermit","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"underlying","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"vault","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"to","type":"address"}],"name":"withdraw","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdraw","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"to","type":"address"}],"name":"withdrawVault","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"}];
-const VINT = "0x01Af64EF39AEB5612202AA07B3A3829f20c395fd";
-const VINT_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"NUM_PROMOTIONAL_VINTAGEWINE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"NUM_VINTAGEWINE_AVAX_LP","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"NUM_VINTAGEWINE_USDC_LP","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ONE_VINTAGEWINE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"USDCLPVintageWineMinted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"avaxLPVintageWineMinted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_from","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"cellarAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"mintAvaxLPVintageWine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_to","type":"address"}],"name":"mintPromotionalVintageWine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"mintUSDCLPVintageWine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mintVintageWine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"promotionalVintageWineMinted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_cellarAddress","type":"address"}],"name":"setCellarAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_numVintageWineAvaxLp","type":"uint256"}],"name":"setNumVintageWineAvaxLp","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_upgradeAddress","type":"address"}],"name":"setUpgradeAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_wineryAddress","type":"address"}],"name":"setWineryAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_from","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"transferForUpgradesFees","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_from","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"transferToCellar","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"upgradeAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"wineryAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
+// Winemaker game parameter constants
 const CHAIN_ID = 43114;
+const RESET_MULTI = 1;
 const BASE_VPM = .05;
 const YIELD_PPS = 833333333333333;
 
@@ -35,6 +33,7 @@ const Web3Enabled = async () => {
 			console.log("[SUCCESS] " + result);
 		}, function(error) {
 			console.log("[ERROR " + error.code + "] " + error.message);
+			return false;
 		});
 
 		window.web3 = new Web3(window.ethereum);
@@ -65,142 +64,195 @@ const getAllowance = async(owner, spender) => {
 	return await grapeOracle.methods.allowance(owner, spender).call({ from: owner });
 }
 
-var winery;
-var grapeOracle;
-var grape;
-var vint;
-var mim;
-const main = async () => {
-	if(await Web3Enabled()) { // Initialize web3 and connected to metamask
-		await switchNetwork(CHAIN_ID); // Make sure we're on the c-chain
+const getData = async(account) => {
+	refreshId = setInterval(function() {
+	funcId = window.web3.utils.keccak256("getFatigueAccrued(address)").substring(0,10);
+	funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64));
+	window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: WINEMAKER_REWARDS, data: funcData }]}).then(function(fatigue) {
+	
+		var fatigueAccrued = fatigue/1e14;			
+		document.getElementById("fatigue").innerHTML = (fatigueAccrued*100).toFixed(3) + "%";
 		
-		// Contract objects
-		winery = new window.web3.eth.Contract(WINEMAKER_REWARDS_ABI, WINEMAKER_REWARDS);
-		wineprog = new window.web3.eth.Contract(WINEMAKER_PROGRESSION_ABI, WINEMAKER_PROGRESSION);
-		grapeOracle = new window.web3.eth.Contract(GRAPE_PRICE_ORACLE_ABI, GRAPE_PRICE_ORACLE);
-		grape = new window.web3.eth.Contract(GRAPE_TOKEN_ABI, GRAPE_TOKEN);
-		vint = new window.web3.eth.Contract(VINT_ABI, VINT);
-		mim = new window.web3.eth.Contract(MIM_ABI, MIM);
+		funcId = window.web3.utils.keccak256("getTimeUntilFatigued(address)").substring(0,10);
+		funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64));			
+		window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: WINEMAKER_REWARDS, data: funcData }]}).then(function(result) {
 		
-		// Refresh the UI		
-		setInterval(function() {
-			// Get the currently selected account
-			var account
-			window.web3.eth.getAccounts().then(function(result) {
-				var account = result[0];
-				document.getElementById("address").innerHTML = account;
-				
-				// Get the currently accrued fatigue
-				winery.methods.getFatigueAccrued(account).call({ from: account }).then(function(fatigue) {
-				
-					// Convert to percentage
-					var fatigueAccrued = fatigue/1e14;					
-					document.getElementById("fatigue").innerHTML = (fatigueAccrued*100).toFixed(3) + "%";
-					
-					// Get the date and time, in locale time. that fatigue will reach 30%, and 100%
-					winery.methods.getTimeUntilFatigued(account).call( { from: account }).then(function(result) {
-						var dt30 = new Date(0);
-						var dt100 = new Date(0);					
-						dt30.setUTCSeconds((Date.now()/1000) + ((result - (Date.now()/1000)) * (0.3-fatigueAccrued)));
-						dt100.setUTCSeconds(result);
-						document.getElementById("fatiguedate30").innerHTML = dt30.toLocaleDateString() + ", " + dt30.toLocaleTimeString();
-						document.getElementById("fatiguedate100").innerHTML = dt100.toLocaleDateString() + ", " + dt100.toLocaleTimeString();
-					});
-					
-					// Get current and max VPM					
-					winery.methods.getTotalPPM(account).call({ from: account }).then(function(totalPPM) { // totalPPM is our MAX VPM
-						document.getElementById("resetCost").innerHTML = (totalPPM * 1.5).toFixed(2) + " GRAPE";
-						winery.methods.getMasterVintnerNumber(account).call({ from: account }).then(function(masterNum) { // Number of staked masters
-							// Update UI element
-							document.getElementById("masters").innerHTML = masterNum + " vintners";
-							// Get any modifiers to the VPM, with 100 being the no modifiers
-							wineprog.methods.getMasterVintnerSkillModifier(account, masterNum).call({ from: account }).then(function(modifier) {								
-								winery.methods.startTimeStamp(account).call({ from: account }).then(function(startTime) { // Timestamp of when the vintners were last fully rested
-									winery.methods.fatiguePerMinute(account).call({ from: account }).then(function(fatiguePM) { // Fatigue per minute
-										/*
-											vintageWineAccruedCalculation(initialVintage, timePeriodInSecs, totalPPM, getMasterVinterSkillModifier(.., ..), currentFatigue, fatiguePerMinute, YIELD_PPS)
-												this function lets you calculate how much vintage you will earn in a set period of time
-												in this case we're using it to see how much we earn in one minute to get the dynamic VPM
-										 */
-										winery.methods.vintageWineAccruedCalculation(0, 60, totalPPM, modifier, fatigue, fatiguePM, YIELD_PPS).call({ from: account }).then(function(dynamicPPM) {
-											// Update UI element
-											document.getElementById("vpm").innerHTML = (dynamicPPM/1e18).toFixed(2) + "/" + (totalPPM * BASE_VPM).toFixed(2);
-										});});});});});
-					});
-				});
-				
-				// Get the number of normal vintners				
-				winery.methods.numberOfStaked(account, 0).call({ from: account }).then(function(result) {
-					document.getElementById("normals").innerHTML = result + " vintners";
-				});
-				
-				// Get the amount of VINTAGE accrued in the reward contract
-				winery.methods.getVintageWineAccrued(account).call({ from: account }).then(function(claimable) {				
-					var vintEarned = (claimable / 1e18);
-					
-					// Get the balance of mim in the LP
-					mim.methods.balanceOf(VINT_LP).call({ from: account }).then(function(mimSupply) {
-						// Get the balance of VINTAGE in the LP
-						vint.methods.balanceOf(VINT_LP).call({ from: account }).then(function(vintSupply) {
-							// Calculate the price of the VINTAGE
-							var vintPrice = (mimSupply/vintSupply);
-							
-							// Update the UI
-							document.getElementById("vintageprice").innerHTML = "$" + (vintPrice).toFixed(4);
-							document.getElementById("vintage").innerHTML = vintEarned.toFixed(8) + " $VINTAGE";
-							document.getElementById("vintagevalue").innerHTML = "$" + (vintEarned * vintPrice).toFixed(2) + " USD";
-							
-							// Get the price of GRAPE
-							mim.methods.balanceOf(GRAPE_LP).call({ from: account }).then(function(mimSupply2) {
-								grape.methods.balanceOf(GRAPE_LP).call({ from: account }).then(function(grapeSupply) {
-									var grapePrice = (mimSupply2/grapeSupply);
-									var fiftyGrape = 50 * grapePrice;
-								
-									// Update the UI
-									document.getElementById("grapeprice").innerHTML = "$" + grapePrice.toFixed(4);
-									document.getElementById("grapetovint").innerHTML = (fiftyGrape/vintPrice).toFixed(2) + " $VINTAGE";
-									var mag = (20*grapePrice) + (300*vintPrice);
-									var shears = (30*grapePrice) + (600*vintPrice);
-									var hydro = (80*grapePrice) + (1000*vintPrice);
-									document.getElementById("magazine").innerHTML = "$" + mag.toFixed(2) + " ($" + (fiftyGrape - mag).toFixed(2) + ")";
-									document.getElementById("shears").innerHTML = "$" + shears.toFixed(2) + " ($" + (fiftyGrape*3 - shears).toFixed(2) + ")<br>"
-									document.getElementById("hydro").innerHTML = "$" + hydro.toFixed(2) + " ($" + (fiftyGrape*5 - hydro).toFixed(2) + ")";
-								});
+			var dt30 = new Date(0);
+			var dt100 = new Date(0);					
+			dt30.setUTCSeconds((Date.now()/1000) + ((result - (Date.now()/1000)) * (0.3-fatigueAccrued)));
+			dt100.setUTCSeconds(result);
+			document.getElementById("fatiguedate30").innerHTML = dt30.toLocaleDateString() + ", " + dt30.toLocaleTimeString();
+			document.getElementById("fatiguedate100").innerHTML = dt100.toLocaleDateString() + ", " + dt100.toLocaleTimeString();
+		
+		});
+		
+		funcId = window.web3.utils.keccak256("getTotalPPM(address)").substring(0,10);
+		funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64));			
+		window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: WINEMAKER_REWARDS, data: funcData }]}).then(function(totalPPM) {
+			document.getElementById("resetCost").innerHTML = (totalPPM * RESET_MULTI).toFixed(2) + " GRAPE";
+			funcId = window.web3.utils.keccak256("getMasterVintnerNumber(address)").substring(0,10);
+			funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64));			
+			window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: WINEMAKER_REWARDS, data: funcData }]}).then(function(masterNumber) {
+				funcId = window.web3.utils.keccak256("getMasterVintnerSkillModifier(address,uint256)").substring(0,10);
+				funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64)) + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(masterNumber, 64));
+				window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: WINEMAKER_PROGRESSION, data: funcData }]}).then(function(modifier) {
+					document.getElementById("masters").innerHTML = window.web3.utils.toNumber(masterNumber) + " vintners";
+					funcId = window.web3.utils.keccak256("startTimeStamp(address)").substring(0,10);
+					funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64));			
+					window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: WINEMAKER_REWARDS, data: funcData }]}).then(function(startTime) {
+						funcId = window.web3.utils.keccak256("fatiguePerMinute(address)").substring(0,10);
+						funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64));			
+						window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: WINEMAKER_REWARDS, data: funcData }]}).then(function(fatiguePM) {
+							funcId = window.web3.utils.keccak256("vintageWineAccruedCalculation(uint256,uint256,uint256,uint256,uint256,uint256,uint256)").substring(0,10);
+							funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(0, 64));
+							funcData += window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(60, 64));
+							funcData += window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(totalPPM, 64));
+							funcData += window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(modifier, 64));
+							funcData += window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(fatigue, 64));
+							funcData += window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(fatiguePM, 64));
+							funcData += window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(YIELD_PPS, 64));
+							window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: WINEMAKER_REWARDS, data: funcData }]}).then(function(dynamicPPM) {
+								document.getElementById("vpm").innerHTML = (dynamicPPM/1e18).toFixed(2) + "/" + (totalPPM * BASE_VPM).toFixed(2);
 							});
 						});
 					});
-					
 				});
-			});		
-		}, 7500);
+			});
+		});
+	});
+	
+	funcId = window.web3.utils.keccak256("numberOfStaked(address,uint256)").substring(0,10);
+	funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64)) + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(0, 64));
+	window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: WINEMAKER_REWARDS, data: funcData }]}).then(function(result) {
+		document.getElementById("normals").innerHTML = window.web3.utils.toNumber(result) + " vintners";
+	});
+	
+	funcId = window.web3.utils.keccak256("getVintageWineAccrued(address)").substring(0,10);
+	funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64));			
+	window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: WINEMAKER_REWARDS, data: funcData }]}).then(function(claimable) {
+		var vintEarned = (claimable / 1e18);
+		
+		funcId = window.web3.utils.keccak256("balanceOf(address)").substring(0,10);
+		funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(VINT_LP, 64));			
+		window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: MIM_TOKEN, data: funcData }]}).then(function(mimSupply) {
+			funcId = window.web3.utils.keccak256("balanceOf(address)").substring(0,10);
+			funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(VINT_LP, 64));			
+			window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: VINT_TOKEN, data: funcData }]}).then(function(vintSupply) {
+			
+				// Calculate the price of the VINTAGE
+				var vintPrice = (mimSupply/vintSupply);
+					
+				// Update the UI
+				document.getElementById("vintage").innerHTML = vintEarned.toFixed(8) + " $VINTAGE";
+				document.getElementById("vintagevalue").innerHTML = "$" + (vintEarned * vintPrice).toFixed(2) + " USD";
+			
+				funcId = window.web3.utils.keccak256("getVintageWineStorage(address)").substring(0,10);
+				funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64));
+				window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: WINEMAKER_PROGRESSION, data: funcData }]}).then(function(result) {
+					document.getElementById("storage").innerHTML = vintEarned.toFixed(0) + "/" + (window.web3.utils.toBN(result) / 1e18).toFixed(0);
+				});
+			
+				funcId = window.web3.utils.keccak256("balanceOf(address)").substring(0,10);
+				funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(GRAPE_LP, 64));			
+				window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: MIM_TOKEN, data: funcData }]}).then(function(mimSupply2) {
+				
+					funcId = window.web3.utils.keccak256("balanceOf(address)").substring(0,10);
+					funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(GRAPE_LP, 64));			
+					window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: GRAPE_TOKEN, data: funcData }]}).then(function(grapeSupply) {
+						var grapePrice = (mimSupply2/grapeSupply);
+						var fiftyGrape = 50 * grapePrice;
+						var ratio = (vintPrice / grapePrice) * 100;
+						// Update the UI						
+						document.getElementById("vintageprice").innerHTML = "$" + (vintPrice).toFixed(4) + " (" + ((vintPrice / grapePrice)*100).toFixed(2) + "%)";
+											
+						// Update the UI
+						document.getElementById("grapeprice").innerHTML = "$" + grapePrice.toFixed(4);
+						document.getElementById("grapetovint").innerHTML = (fiftyGrape/vintPrice).toFixed(2) + " $VINTAGE";
+						var mag = (20*grapePrice) + (300*vintPrice);
+						var shears = (30*grapePrice) + (600*vintPrice);
+						var hydro = (80*grapePrice) + (1000*vintPrice);
+						document.getElementById("magazine").innerHTML = "$" + mag.toFixed(2) + " ($" + (fiftyGrape - mag).toFixed(2) + ")";
+						document.getElementById("shears").innerHTML = "$" + shears.toFixed(2) + " ($" + (fiftyGrape*3 - shears).toFixed(2) + ")<br>"
+						document.getElementById("hydro").innerHTML = "$" + hydro.toFixed(2) + " ($" + (fiftyGrape*5 - hydro).toFixed(2) + ")";
+					});
+				});
+			});
+		});
+	});
+	
+	/*
+	// Wallet VINTAGE balance
+	funcId = window.web3.utils.keccak256("balanceOf(address)").substring(0,10);
+	funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64));			
+	window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: VINT_TOKEN, data: funcData }]}).then(function(balance) {
+		document.getElementById("vintinwallet").innerHTML = (balance/1e18).toFixed(8) + " $VINTAGE";
+	});
+	
+	// Wallet sVINTAGE balance
+	funcId = window.web3.utils.keccak256("balanceOf(address)").substring(0,10);
+	funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64));			
+	window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: SVINT_TOKEN, data: funcData }]}).then(function(balance) {
+		document.getElementById("svintinwallet").innerHTML = (balance/1e18).toFixed(8) + " $sVINTAGE";
+	});
+	
+	// Vinyard sVINTAGE balance
+	funcId = window.web3.utils.keccak256("userInfo(uint256,address)").substring(0,10);
+	funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(7, 64)) + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64));
+	window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: VINEYARD, data: funcData }]}).then(function(userInfo) {
+		document.getElementById("svintinvinyard").innerHTML = (window.web3.utils.toBN(userInfo.substring(2,66))/1e18).toFixed(8) + " $sVINTAGE";
+	});
+	
+	// Vinyard pending WINE
+	funcId = window.web3.utils.keccak256("pendingShare(uint256,address)").substring(0,10);
+	funcData = funcId + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(7, 64)) + window.web3.utils.stripHexPrefix(window.web3.utils.padLeft(account, 64));
+	window.ethereum.request({ method: 'eth_call', params: [{ from: account, to: VINEYARD, data: funcData }]}).then(function(balance) {
+		document.getElementById("pendingwine").innerHTML = (balance/1e18).toFixed(8) + " $WINE";
+	});*/	
+}, 7500);
+};
+
+const rpcQuery = async() => {
+	window.web3 = new Web3(window.ethereum);
+	if(refreshId !== null) {
+		clearInterval(refreshId);
+	}
+	var account = document.getElementById("addressEntry").value;	
+	if(account !== "" && window.web3.utils.isAddress(account)) {
+		document.getElementById("address").innerHTML = account;
+		getData(account);		
+	}
+};
+
+var refreshId = null;
+const web3Query = async () => {
+	if(refreshId !== null) {
+		clearInterval(refreshId);
+	}
+	if(await Web3Enabled()) { // Initialize web3 and connected to metamask
+		await switchNetwork(CHAIN_ID); // Make sure we're on the c-chain
+		
+		window.web3.eth.getAccounts().then(function(accounts) {
+			document.getElementById("address").innerHTML = accounts[0];
+			getData(accounts[0]);
+		});
 	}
 }
 
-/*
-	Calls the resetFatigue function in the winery contract
- */
 const resetFatigue = async() => {	
 	window.web3.eth.getAccounts().then(function(result) {		
-		var account = result[0];
-		// Check the allowance to make sure the user has approved the transfer of GRAPE
+		var account = result[0];		
 		grape.methods.allowance(account, WINEMAKER_REWARDS).call({from: account }).then(function(allowance) {			
 			if(window.web3.utils.toBN(allowance).lt(window.web3.utils.toBN("115792089237316195423570985008687907853269984665640564039457584007913129639935"))) {			
-				// User needs to approve this transfer first
 				grape.methods.approve(WINEMAKER_REWARDS, "115792089237316195423570985008687907853269984665640564039457584007913129639935").send({ from: account }).then(function() {
-					// Now we can rest the vintners
 					winery.methods.resetFatigue().send({ from: account });
 				});
 			} else {
-				// Already approved!
 				winery.methods.resetFatigue().send({ from: account });
 			}
 		});		
 	});
 }
 
-/*
-	Calls the claimVintageWine function in the winery contract
- */
 const claimVintage = async() => {	
 	window.web3.eth.getAccounts().then(function(result) {		
 		var account = result[0];		
@@ -208,8 +260,7 @@ const claimVintage = async() => {
 	});
 }
 
-// Start!
-main();
+web3Query();
 </script>
 
 <!-- inline stylesheet -->
@@ -222,7 +273,18 @@ body {
 	color: #FEFF35;
 }
 
-.card {
+.cardAddress {
+	position: absolute;
+	background-color: #111111BA;
+	height: 50px;
+	width: 400px;
+	left: 50%;
+	top: 10%;
+    transform: translate(-50%, -50%);  
+	padding: 16px 16px 16px 16px;
+}
+
+.cardWinery {
 	position: absolute;
 	background-color: #111111BA;
 	width: 400px;
@@ -232,13 +294,13 @@ body {
 	padding: 16px 16px 16px 16px;
 }
 
-.card2 {
+.cardDisclaimer {
 	position: absolute;
 	background-color: #111111BA;
 	width: 700px;
 	left: 50%;
-	top: 100%;
-    transform: translate(-50%, 10%);  
+	top: 92%;
+    transform: translate(-50%, -50%);  
 	padding: 16px 16px 16px 16px;
 }
 
@@ -250,19 +312,46 @@ body {
 	font-size: 36px;
 	filter: drop-shadow(5px 5px 2px #111111C0);
 	font-weight: bold;
+	text-align: center;
 }
 
-.mike {
-	margin: 25px 25px 25px 75px;
+.panel-header {
+	font-size: 24px;
+	filter: drop-shadow(5px 5px 2px #111111C0);
+	font-weight: bold;
+	width: 100%;
+	margin-top: 8px;
+	text-align: center
+}
+
+.panel {
+	background-color: #333333BA;
+	margin-top: 16px;
+	margin-left: 8px;
+	margin-right: 8px;
+	width: 384px;
+	border-radius: 16px;
+	float: left;	
 }
 
 img {
 	filter: drop-shadow(3px 3px 5px #FE18D3);
 }
 
-.row-header,.row-content {
+.row-item {
+	display: flex;
+}
+
+.row-header {
 	filter: drop-shadow(5px 5px 2px #111111C0);
-	font-weight: bold;	
+	font-weight: bold;
+	width: 150px;
+}
+
+.row-content {
+	filter: drop-shadow(5px 5px 2px #111111C0);
+	font-weight: bold;
+	grow-flex: 1;
 }
 
 a {
@@ -281,81 +370,142 @@ a:hover {
 	width: 150px;
 	height: 24px;
 	filter: drop-shadow(5px 5px 2px #111111C0);
+	cursor: pointer;
 }
 
 .button:hover {
 	background-color: #006636;
 }
 </style>
-<div class="card">
-<div class="title-header">&#127863; Brewing Station &#127863;</div>
-<div style="margin: 16px">
-	<div>
-		<div class="row-item" style="display: flex">
-			<div class="row-header" style="width: 110px;">GRAPE:</div>
-			<div class="row-content" id="grapeprice" style="grow-flex: 1"></div>
-		</div>
-		<div class="row-item" style="display: flex">
-			<div class="row-header" style="width: 110px;">VINTAGE:</div>
-			<div class="row-content" id="vintageprice" style="grow-flex: 1"></div>
-		</div>
-	</div>
-	<div style="margin-top: 8px">
-		<span class="row-header">Brewer Address: </span>
-		<span class="row-content"  id="address"></span>
-	</div>
-	<div style="margin-top: 8px">
-		<span class="row-header">Vintage PM:</span>
-		<span class="row-content" id="vpm"></span>
-	</div>
-	<div style="margin-top: 8px">
-		<span class="row-header">Max fatigue on </span><span class="row-content" id="fatiguedate100"></span><br>
-		<span class="row-header">30% fatigue on </span><span class="row-content" id="fatiguedate30"></span><br>
-		<span class="row-header">Current Fatigue: </span><span class="row-content"  id="fatigue"></span>
-	</div>
-	<div style="margin-top: 8px">
-		<span class="row-header">Reset Fatigue Cost: </span><span class="row-content" id="resetCost"></span>
-	</div>
-	<div id="vintners" style="margin-top: 8px">
-		<span class="row-header">Master Vinters Staked: </span><span class="row-content" id="masters"></span><br>
-		<span class="row-header">Normal Vinters Staked: </span><span class="row-content" id="normals"></span>
-	</div>
-	<div style="margin-top: 8px">
-		<div class="row-item" style="display: flex">
-			<div class="row-header" style="width: 150px">Vintage Earned: </div>
-			<div class="row-content" id="vintage" style="grow-flex: 1"></div>
-		</div>
-		<div class="row-item" style="display: flex">
-			<div class="row-header" style="width: 150px">Vintage Value:</div>
-			<div class="row-content" id="vintagevalue" style="grow-flex: 1"></div>
-		</div>
-	</div>
-	<div style="margin-top: 8px">
-		<span class="row-header">50 GRAPE = </span><span class="row-content" id="grapetovint"></span><br>
-	</div>
-	<div style="margin-top: 8px">
-		<span class="row-header">Tools Mint Costs:</span><br>
-		<div class="row-item" style="display: flex">
-			<div class="row-header" style="width: 130px; text-align: right;">Magazine:&nbsp;</div>
-			<div class="row-content" id="magazine" style="grow-flex: 1"></div>
-		</div>
-		<div class="row-item" style="display: flex">
-			<div class="row-header" style="width: 130px; text-align: right;">Shears:&nbsp;</div>
-			<div class="row-content" id="shears" style="grow-flex: 1"></div>
-		</div>
-		<div class ="row-item" style="display: flex">
-			<div class="row-header" style="width: 130px; text-align: right;">Hydrometer:&nbsp;</div>
-			<div class="row-content" id="hydro" style="grow-flex: 1"></div>
-		</div>
-	</div>
-	<div style="margin: 16px">
-		<div class="button" id="resetButton" onClick="resetFatigue();">Reset Fatigue</div>
-		<div class="button" onClick="claimVintage();">Claim $VINTAGE</div>
+
+<div class="cardAddress" id="cardAddress">
+	<div style="position: absolute; width: 0%; left: 50%; top: 50%; transform: translate(-50%, -75%); overflow: visible;">		
+		<input id="addressEntry" placeholder="Connect via Metamask, or enter your wallet address" style="width: 325px; transform: translate(-50%, -50%);"></input>
+		<div class="button" style="position: absolute; transform: translate(10%, -50%)" onclick="rpcQuery();">Check Address</div>
+		<div class="button" style="position: absolute; transform: translate(-110%, -50%)" onclick="web3Query();">Connect</div>
 	</div>
 </div>
-<div class="card2">
+
+<div class="cardWinery">
+	<div class="title-header">&#127863; Brewing Station &#127863;</div>
+	<!-- Winery panel -->
+	<div class="panel">
+		<div class="panel-header">Winery</div>
+		<div style="margin: 8px;">
+			<div>
+				<div class="row-item">
+					<div class="row-header" style="width: 110px;">GRAPE:</div>
+					<div class="row-content" id="grapeprice"></div>
+				</div>
+				<div class="row-item">
+					<div class="row-header" style="width: 110px;">VINTAGE:</div>
+					<div class="row-content" id="vintageprice"></div>
+				</div>
+			</div>
+			<div style="margin-top: 8px">
+				<span class="row-header">Brewer Address: </span>
+				<span class="row-content"  id="address"></span>
+			</div>
+			<div style="margin-top: 8px">
+				<span class="row-header">Vintage PM:</span>
+				<span class="row-content" id="vpm"></span>
+			</div>
+			<div style="margin-top: 8px">
+				<span class="row-header">Max fatigue on </span><span class="row-content" id="fatiguedate100"></span><br>
+				<span class="row-header">30% fatigue on </span><span class="row-content" id="fatiguedate30"></span><br>
+				<span class="row-header">Current Fatigue: </span><span class="row-content"  id="fatigue"></span>
+			</div>
+			<div style="margin-top: 8px">
+				<span class="row-header">Reset Fatigue Cost: </span><span class="row-content" id="resetCost"></span>
+			</div>
+			<div id="vintners" style="margin-top: 8px">
+				<span class="row-header">Master Vinters Staked: </span><span class="row-content" id="masters"></span><br>
+				<span class="row-header">Normal Vinters Staked: </span><span class="row-content" id="normals"></span>
+			</div>
+			<div style="margin-top: 8px">
+				<div class="row-item">
+					<div class="row-header" style="width: 150px">Vintage Earned: </div>
+					<div class="row-content" id="vintage"></div>
+				</div>
+				<div class="row-item">
+					<div class="row-header" style="width: 150px">Vintage Value:</div>
+					<div class="row-content" id="vintagevalue"></div>
+				</div>
+				<div class="row-item">
+					<div class="row-header" style="width: 150px">Storage Used:</div>
+					<div class="row-content" id="storage"></div>
+				</div>
+			</div>
+			<div style="margin-top: 8px">
+				<span class="row-header">50 GRAPE = </span><span class="row-content" id="grapetovint"></span><br>
+			</div>
+			<div style="margin-top: 8px">
+				<span class="row-header">Tools Mint Costs:</span><br>
+				<div class="row-item">
+					<div class="row-header" style="width: 130px; text-align: right;">Magazine:&nbsp;</div>
+					<div class="row-content" id="magazine"></div>
+				</div>
+				<div class="row-item">
+					<div class="row-header" style="width: 130px; text-align: right;">Shears:&nbsp;</div>
+					<div class="row-content" id="shears"></div>
+				</div>
+				<div class ="row-item">
+					<div class="row-header" style="width: 130px; text-align: right;">Hydrometer:&nbsp;</div>
+					<div class="row-content" id="hydro"></div>
+				</div>
+			</div>
+			<div style="margin: 16px">
+				<div class="button" id="resetButton" onClick="resetFatigue();">Reset Fatigue</div>
+				<div class="button" id="claimButton" onClick="claimVintage();">Claim $VINTAGE</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Cellar panel -->
+	<!--<div class="panel">
+		<div class="panel-header">Cellar Manager</div>
+		<div style="margin: 8px;">
+			<div>
+				<div class="row-header">Wallet:</div>
+				<div class="row-item">
+					<div class="row-header" style="text-align: right; transform: translate(-16px, 0px)">$VINTAGE: </div>
+					<div id="vintinwallet" class="row-content"></div>
+				</div>
+				<div class="row-item">
+					<div class="row-header" style="text-align: right; transform: translate(-16px, 0px)">$sVINTAGE: </div>
+					<div id="svintinwallet" class="row-content"></div>
+				</div>
+				<div style="margin-top: 8px; display: flex;">
+					<div style="width: 45%;">
+						<div class="button">Deposit $VINTAGE</div>
+						<div class="button">Stake $sVINTAGE</div>
+					</div>
+					<div style="width: 45%; grow-flex: 1;">
+						<div class="button">Deposit $VINTAGE</div>
+						<div class="button">Stake $sVINTAGE</div>
+					</div>
+				</div>
+			</div>			
+			<div style="margin-top: 16px">
+				<div class="row-item">
+					<div class="row-header">Vineyard: </div>
+					<div id="svintinvinyard" class="row-content"></div>
+				</div>
+				<div class="row-item">
+					<div class="row-header">Pending: </div>
+					<div id="pendingwine" class="row-content"></div>
+				</div>
+				<div style="margin-top: 8px">
+					<div class="button">Claim Rewards</div>					
+				</div>
+			</div>
+		</div>
+	</div> -->
+</div>
+<div class="cardDisclaimer">
 DISCLAIMER: This tool provides a basic interface into the winery to keep track of stats, reset fatigue, and claim your $VINTAGE; it is NOT intended to be a replacement for the winemaker game.<br>
-This tool is open-source, you can view the source on the <a href="https://github.com/neoaikon2/WinemakerBrewingStation">GitHub repository</a>
+This tool is open-source, you can view the source on the <a href="https://github.com/neoaikon2/WinemakerBrewingStation">GitHub repository</a><br>
+<div style="font-size: 12px; margin-top: 4px;">Brewmaster v1.3</div>
 </div>
 </body>
 </html>
