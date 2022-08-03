@@ -2,11 +2,11 @@
 This is a small simple web app to monitor your winemaker game, rest your vintners, and claim $VINTAGE.
 
 This app is hosted on the Interplanetary Filesystem (IPFS), you can access the app anywhere, anytime at the following URLs:  
-[https://api.ipfsbrowser.com/ipfs/get.php?hash=QmXFTWyFvx8bVqkm8bqwWjicrK6TDax1ZHi2oGewfh4CYu/index.htm](https://api.ipfsbrowser.com/ipfs/get.php?hash=QmXFTWyFvx8bVqkm8bqwWjicrK6TDax1ZHi2oGewfh4CYu/index.htm)  
-[https://cloudflare-ipfs.com/ipfs/QmXFTWyFvx8bVqkm8bqwWjicrK6TDax1ZHi2oGewfh4CYu/index.htm](https://cloudflare-ipfs.com/ipfs/QmXFTWyFvx8bVqkm8bqwWjicrK6TDax1ZHi2oGewfh4CYu/index.htm)
+[https://api.ipfsbrowser.com/ipfs/get.php?hash=QmVQkxPbDLwHa7C8NAP14qooNdUY616KXettK7ghgcsTtW/index.htm](https://api.ipfsbrowser.com/ipfs/get.php?hash=QmVQkxPbDLwHa7C8NAP14qooNdUY616KXettK7ghgcsTtW/index.htm)  
+[https://cloudflare-ipfs.com/ipfs/QmVQkxPbDLwHa7C8NAP14qooNdUY616KXettK7ghgcsTtW/index.htm](https://cloudflare-ipfs.com/ipfs/QmVQkxPbDLwHa7C8NAP14qooNdUY616KXettK7ghgcsTtW/index.htm)
 
 and if you can access IPFS directly:  
-[ipfs://QmXFTWyFvx8bVqkm8bqwWjicrK6TDax1ZHi2oGewfh4CYu/index.htm](ipfs://QmXFTWyFvx8bVqkm8bqwWjicrK6TDax1ZHi2oGewfh4CYu/index.htm)
+[ipfs://QmVQkxPbDLwHa7C8NAP14qooNdUY616KXettK7ghgcsTtW/index.htm](ipfs://QmVQkxPbDLwHa7C8NAP14qooNdUY616KXettK7ghgcsTtW/index.htm)
 
 I personally use this interface for claims and resting, additonal features might be added; If you see me on the discord (crypto_neo) and want to know if I can add a feature or not just ask, it never hurts to ask!  
   
