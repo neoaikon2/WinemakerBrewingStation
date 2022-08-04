@@ -118,7 +118,7 @@ const getDataViaWeb3 = async (account) => {
 								 */
 								winery.methods.vintageWineAccruedCalculation(0, 60, totalPPM, modifier, fatigue, fatiguePM, YIELD_PPS).call({ from: account }).then(function(dynamicPPM) {
 									// Update UI element
-									document.getElementById("vpm").innerHTML = (dynamicPPM/1e18).toFixed(2) + "/" + (totalPPM * BASE_VPM).toFixed(2);
+									document.getElementById("vpm").innerHTML = (dynamicPPM/1e18).toFixed(2) + "/" + (totalPPM * (BASE_VPM * (modifier/100))).toFixed(2);
 								});});});});});
 			});
 		});
