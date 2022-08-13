@@ -185,11 +185,11 @@ const getDataViaWeb3 = async (account) => {
 		
 		// Get the vintage balance
 		await vint.methods.balanceOf(account).call({from: account}).then(function(balance) {
-			$("#vintinwallet").html((balance/1e18).toFixed(8) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (balance * vintPrice).toFixed(2) + " USD</div>");
+			$("#vintinwallet").html((balance/1e18).toFixed(8) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((balance/1e18) * vintPrice).toFixed(2) + " USD</div>");
 		});
 		// Get the svintage balance
 		await svint.methods.balanceOf(account).call({from: account}).then(function(balance) {
-			$("#svintinwallet").html((balance/1e18).toFixed(8) + " $sVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (balance * svintRatio * vintPrice).toFixed(2) + " USD</div>");
+			$("#svintinwallet").html((balance/1e18).toFixed(8) + " $sVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((balance/1e18) * svintRatio * vintPrice).toFixed(2) + " USD</div>");
 		});
 		// Get the svintage in the vinyard
 		await vineyard.methods.userInfo(7,account).call({from: account}).then(function(userInfo) {
@@ -370,12 +370,12 @@ const getDataViaRpc = async(account) => {
 
 	// Wallet VINTAGE balance
 	await callRPC(account, VINT_TOKEN, "balanceOf(address)", [ account ]).then(function(balance) {
-		$("#vintinwallet").html((balance/1e18).toFixed(8) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (balance * vintPrice).toFixed(2) + " USD</div>");
+		$("#vintinwallet").html((balance/1e18).toFixed(8) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((balance/1e18) * vintPrice).toFixed(2) + " USD</div>");
 	});
 
 	// Wallet sVINTAGE balance
 	await callRPC(account, SVINT_TOKEN, "balanceOf(address)", [ account ]).then(function(balance) {
-		$("#svintinwallet").html((balance/1e18).toFixed(8) + " $sVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (balance * svintRatio * vintPrice).toFixed(2) + " USD</div>");
+		$("#svintinwallet").html((balance/1e18).toFixed(8) + " $sVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((balance/1e18) * svintRatio * vintPrice).toFixed(2) + " USD</div>");
 	});
 
 	// Vinyard sVINTAGE balance
