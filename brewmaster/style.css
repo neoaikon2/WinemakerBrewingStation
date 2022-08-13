@@ -1,0 +1,166 @@
+body {
+	
+	font-family: consolas;
+	background-image: url("http://brewmaster.on.fleek.co/winebg.png");
+	background-attachment: fixed;
+	color: #FEFF35;
+}
+
+hr {
+	border: 1px solid #FEFF35;
+}
+
+.cardAddress {
+	position: absolute;
+	background-color: #111111BA;
+	height: 50px;
+	width: 400px;
+	left: 50%;
+	top: 16px;
+    transform: translate(-50%, -0%);  
+	padding: 16px 16px 16px 16px;
+	filter: drop-shadow(5px 5px 2px #11111160);
+}
+
+.cardWinery {
+	position: absolute;
+	background-color: #111111BA;
+	width: 400px;	
+	left: 50%;
+	top: 100px;
+    transform: translate(-50%, 0%);  
+	padding: 16px 16px 16px 16px;
+	filter: drop-shadow(5px 5px 2px #11111160);
+}
+
+.cardDisclaimer {
+	position: absolute;
+	background-color: #111111BA;
+	width: 700px;
+	left: 50%;
+	top: 100%;
+    transform: translate(-50%, 16px);  
+	padding: 16px 16px 16px 16px;
+	filter: drop-shadow(5px 5px 2px #11111160);
+}
+
+.title-header {	
+	font-size: 36px;
+	filter: drop-shadow(5px 5px 2px #111111C0);
+	font-weight: bold;
+	text-align: center;
+	width: 100%;	
+}
+
+.panel-header {
+	font-size: 20px;
+	filter: drop-shadow(5px 5px 2px #111111C0);
+	font-weight: bold;
+	width: 100%;
+	margin-top: 8px;
+	text-align: center
+}
+
+.panel {
+	background-color: #333333BA;
+	margin-top: 16px;
+	margin-left: 4px;
+	margin-right: 4px;
+	padding: 2px;
+	width: 392px;
+	border-radius: 16px;
+}
+
+img {
+	filter: drop-shadow(3px 3px 5px #111111C0);
+}
+
+.row-item {
+	display: flex;
+}
+
+.row-header {
+	filter: drop-shadow(5px 5px 2px #111111C0);
+	font-size: 12pt;
+	font-weight: bold;
+	width: 175px;
+}
+
+.row-content {
+	filter: drop-shadow(5px 5px 2px #111111C0);
+	font-weight: bold;
+	grow-flex: 1;
+}
+
+.usd-display {
+	font-size: 9pt;
+	filter: drop-shadow(5px 5px 2px #111111C0);	
+}
+
+a {
+	color: #018e39;
+}
+
+a:hover {
+	color: #006636;
+}
+
+.button {
+	background-color: #018e39;
+	text-align: center;
+	font-weight: bold;
+	margin-top: 8px;
+	width: 150px;
+	height: 24px;
+	filter: drop-shadow(5px 5px 2px #111111C0);
+	cursor: pointer;
+}
+
+.button:hover {
+	background-color: #006636;
+}
+
+.evilbutton {
+	background-color: #8e0139;
+	text-align: center;
+	font-weight: bold;
+	margin-top: 8px;
+	width: 150px;
+	height: 24px;
+	filter: drop-shadow(5px 5px 2px #111111C0);
+	cursor: pointer;
+}
+
+.evilbutton:hover {
+	background-color: #660036;
+}
+
+.sidebuttonL {
+	position: absolute;	
+	background-color: #111111BA;
+	text-align: center;
+	font-weight: bold;
+	width: 100px;
+	height: 32px;
+	padding-top: 8px;
+	margin-top: 8px;	
+	filter: drop-shadow(5px 5px 2px #111111C0);	
+	cursor: pointer;
+}
+
+.sidebuttonR {
+	position: absolute;	
+	background-color: #111111BA;
+	text-align: center;
+	font-weight: bold;
+	width: 175px;
+	height: 32px;
+	padding-top: 8px;
+	margin-top: 8px;	
+	filter: drop-shadow(5px 5px 2px #111111C0);	
+	cursor: pointer;
+}
+
+.sidebuttonL:hover, .sidebuttonR:hover {
+	background-color: #333333BA;
+}
