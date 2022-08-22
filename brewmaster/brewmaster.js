@@ -496,12 +496,24 @@ const resetFatigue = async() => {
 	let winery = new window.web3.eth.Contract(WINEMAKER_REWARDS_ABI, WINEMAKER_REWARDS);
 	window.web3.eth.getAccounts().then(function(result) {
 		let account = result[0];
-		grape.methods.allowance(account, WINEMAKER_REWARDS).call({from: account }).then(async(allowance) => {
-			console.log("Allowance: " + (allowance));
-			if(window.web3.utils.toBN(allowance).lt(window.web3.utils.toBN(MAX_UINT256))) {
-				await grape.methods.approve(WINEMAKER_REWARDS, MAX_UINT256).send({from: account});
-			}
-			await winery.methods.resetFatigue().send({from: account});
+		winery.methods.getTotalPPM(account).call({from: account}).then(async(totalPPM) => {
+			reset_cost = totalPPM * RESET_MULTI * 1e18;
+			console.log("Reset Cost: " + reset_cost);
+			await grape.methods.balanceOf(account).call({from: account}).then(async(balance) => {
+				console.log("Balance   : " + balance);
+				await grape.methods.allowance(account, WINEMAKER_REWARDS).call({from: account }).then(async(allowance) => {
+					if(window.web3.utils.toBN(balance).lt(window.web3.utils.toBN(reset_cost))) {
+						console.error("[ERROR] Insufficient GRAPE balance to reset, " + (balance/1e18).toFixed(0) + "/" + (reset_cost/1e18).toFixed(0));
+						return;
+					}
+					
+					console.log("Allowance: " + (allowance));
+					if(window.web3.utils.toBN(allowance).lt(window.web3.utils.toBN(totalPPM * RESET_MULTI))) {
+						await grape.methods.approve(WINEMAKER_REWARDS, MAX_UINT256).send({from: account});
+					}
+					await winery.methods.resetFatigue().send({from: account});
+				});
+			});
 		});
 	});
 }
