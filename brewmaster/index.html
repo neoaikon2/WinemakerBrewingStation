@@ -4,7 +4,7 @@
 <script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
-<script src="http://brewmaster.on.fleek.co/brewmaster.js"></script>
+<script src="brewmaster.js"></script>
 <link rel="stylesheet" href="http://brewmaster.on.fleek.co/style.css" />
 </head>
 <body>
@@ -74,8 +74,9 @@
 					<span class="row-header">Reset Fatigue Cost: </span><span class="row-content" id="resetCost"></span>
 				</div>
 				<div id="vintners" style="margin-top: 8px">
-					<span class="row-header">Master Vintners Staked: </span><span class="row-content" id="masters"></span><br>
-					<span class="row-header">Normal Vintners Staked: </span><span class="row-content" id="normals"></span>
+					<span class="row-header">Masters Staked: </span><span class="row-content" id="wm-masters"></span><br>
+					<span class="row-header">Normals Staked: </span><span class="row-content" id="wm-normals"></span><br>
+					<span class="row-header">&nbsp;&nbsp;Tools Staked: </span><span class="row-content" id="wm-tools"></span>
 				</div>
 				<div style="margin-top: 8px">
 					<div class="row-item">

@@ -111,7 +111,7 @@ const getDataViaWeb3 = async (account) => {
 				$("#resetCost").html((totalPPM * RESET_MULTI).toFixed(2) + " GRAPE");
 				await winery.methods.getMasterVintnerNumber(account).call({from: account}).then(async(masterNum) => { // Number of staked masters
 					// Update UI element
-					$("#masters").html(masterNum + " vintners");
+					$("#wm-masters").html(masterNum + " vintners");
 					// Get any modifiers to the VPM, with 100 being the no modifiers
 					await wineprog.methods.getMasterVintnerSkillModifier(account, masterNum).call({from: account}).then(async(modifier) => {
 						await winery.methods.startTimeStamp(account).call({from: account}).then(async(startTime) => { // Timestamp of when the vintners were last fully rested
@@ -130,9 +130,13 @@ const getDataViaWeb3 = async (account) => {
 
 		// Get the number of normal vintners
 		await winery.methods.numberOfStaked(account, 0).call({from: account}).then(function(result) {
-			$("#normals").html(result + " vintners");
+			$("#wm-normals").html(result + " vintners");
 		});
-
+		
+		// Get the number of tools
+		await winery.methods.ownedUpgradeStakesBalance(account).call({from: account}).then(function(result) {
+			$("#wm-tools").html(result + " tools");
+		});
 		// Get the amount of VINTAGE accrued in the reward contract
 		await winery.methods.getVintageWineAccrued(account).call({from: account}).then(async(claimable) => {
 			let vintEarned = (claimable / 1e18);
@@ -311,7 +315,7 @@ const getDataViaRpc = async(account) => {
 			$("#resetCost").html((totalPPM * RESET_MULTI).toFixed(2) + " GRAPE");
 			await callRPC(account, WINEMAKER_REWARDS, "getMasterVintnerNumber(address)", [ account ]).then(async(masterNumber) => {
 				await callRPC(account, WINEMAKER_PROGRESSION, "getMasterVintnerSkillModifier(address,uint256)", [ account, masterNumber ]).then(async(modifier) => {
-					$("#masters").html(window.web3.utils.toNumber(masterNumber) + " vintners");
+					$("#wm-masters").html(window.web3.utils.toNumber(masterNumber) + " vintners");
 					await callRPC(account, WINEMAKER_REWARDS, "startTimeStamp(address)", [ account ]).then(async(startTime) => {
 						await callRPC(account, WINEMAKER_REWARDS, "fatiguePerMinute(address)", [ account ]).then(async(fatiguePM) => {
 							await callRPC(account, WINEMAKER_REWARDS, "vintageWineAccruedCalculation(uint256,uint256,uint256,uint256,uint256,uint256,uint256)", [ 0, 60, totalPPM, modifier, fatigue, fatiguePM, YIELD_PPS ]).then(function(dynamicPPM) {
@@ -325,7 +329,11 @@ const getDataViaRpc = async(account) => {
 	});
 
 	await callRPC(account, WINEMAKER_REWARDS, "numberOfStaked(address,uint256)", [ account, 0 ]).then(function(result) {
-		$("#normals").html(window.web3.utils.toNumber(result) + " vintners");
+		$("#wm-normals").html(window.web3.utils.toNumber(result) + " vintners");
+	});
+	
+	await callRPC(account, WINEMAKER_REWARDS, "ownedUpgradeStakesBalance(address)", [ account, 0 ]).then(function(result) {
+		$("#wm-tools").html(window.web3.utils.toNumber(result) + " tools");
 	});
 
 	await callRPC(account, WINEMAKER_REWARDS, "getVintageWineAccrued(address)", [ account ]).then(async(claimable) => {
