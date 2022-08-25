@@ -165,9 +165,9 @@ const getDataViaWeb3 = async (account) => {
 							$("#vintageprice").html("$" + (vintPrice).toFixed(4) + " (" + ((vintPrice / grapePrice)*100).toFixed(2) + "%)");
 							$("#grapeprice").html("$" + grapePrice.toFixed(4));
 							$("#grapetovint").html((fiftyGrape/vintPrice).toFixed(2) + " $VINTAGE");
-							$("#magazine").html("$" + mag.toFixed(2) + " ($" + (fiftyGrape - mag).toFixed(2) + ")");
-							$("#shears").html("$" + shears.toFixed(2) + " ($" + (fiftyGrape*3 - shears).toFixed(2) + ")<br>");
-							$("#hydro").html("$" + hydro.toFixed(2) + " ($" + (fiftyGrape*5 - hydro).toFixed(2) + ")");
+							$("#magazine").html("$" + mag.toFixed(2));// + " ($" + (fiftyGrape - mag).toFixed(2) + ")");
+							$("#shears").html("$" + shears.toFixed(2));// + " ($" + (fiftyGrape*3 - shears).toFixed(2) + ")<br>");
+							$("#hydro").html("$" + hydro.toFixed(2));// + " ($" + (fiftyGrape*5 - hydro).toFixed(2) + ")");
 						});
 					});
 				});
@@ -202,7 +202,7 @@ const getDataViaWeb3 = async (account) => {
 		});
 		// Get the pending svintage to be unlocked
 		await svint.methods.unlockAmounts(account).call({from: account}).then(function(amount) {
-			$("#cel-pendingamounts").html((amount / 1e18).toFixed(8) + " $Vintage<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((amount / 1e18) * vintPrice).toFixed(2) + " USD</div>");
+			$("#cel-pendingamounts").html((amount / 1e18).toFixed(8) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((amount / 1e18) * vintPrice).toFixed(2) + " USD</div>");
 		});
 		// Get the timestamp for when the svintage will be unlocked and claimable
 		await svint.methods.unlockTimestamps(account).call({from: account}).then(function(timestamp) {
@@ -211,6 +211,7 @@ const getDataViaWeb3 = async (account) => {
 			dt.setUTCSeconds(timestamp);
 			$("#cel-pendingtimestamps").html(dt.toLocaleDateString() + ", " + dt.toLocaleTimeString());			
 			// Grey out the button if the timestamp hasn't been reached yet
+			// I have not been able to get this to work...if you can see why, please tell me on this discord @crypto_neo
 			/*if(timestamp < now) {				
 				$("#cel-claimpending").css("backgroundColor", "#777777");
 				$("#cel-claimpending").css("color", "#BABABA");
@@ -238,7 +239,7 @@ const getDataViaWeb3 = async (account) => {
 				let totalBalance = window.web3.utils.toBN(userInfo['totalTokenBalance']);
 				let compoundedBalance = trackedBalance - totalBalance;
 				let profitRatio = (currentProfit * 10e18) / trackedBalance;
-				let expectedProfit = (trackedBalance * (3 * 10e18)) / 10e18;
+				let expectedProfit = (trackedBalance * (3.5 * 10e18)) / 10e18;
 				let profitDifference = currentProfit - expectedProfit;
 				let risk = ((1.0 - (Math.abs(profitDifference) / expectedProfit)) * 100).toFixed(2);
 
@@ -350,9 +351,9 @@ const getDataViaRpc = async(account) => {
 						$("#vintageprice").html("$" + (vintPrice).toFixed(4) + " (" + ((vintPrice / grapePrice)*100).toFixed(2) + "%)");
 						$("#grapeprice").html("$" + grapePrice.toFixed(4));
 						$("#grapetovint").html((fiftyGrape/vintPrice).toFixed(2) + " $VINTAGE");
-						$("#magazine").html("$" + mag.toFixed(2) + " ($" + (fiftyGrape - mag).toFixed(2) + ")");
-						$("#shears").html("$" + shears.toFixed(2) + " ($" + (fiftyGrape*3 - shears).toFixed(2) + ")<br>");
-						$("#hydro").html("$" + hydro.toFixed(2) + " ($" + (fiftyGrape*5 - hydro).toFixed(2) + ")");
+						$("#magazine").html("$" + mag.toFixed(2));// + " ($" + (fiftyGrape - mag).toFixed(2) + ")");
+						$("#shears").html("$" + shears.toFixed(2));// + " ($" + (fiftyGrape*3 - shears).toFixed(2) + ")<br>");
+						$("#hydro").html("$" + hydro.toFixed(2));// + " ($" + (fiftyGrape*5 - hydro).toFixed(2) + ")");
 					});
 				});
 			});
@@ -389,7 +390,7 @@ const getDataViaRpc = async(account) => {
 	});
 
 	await callRPC(account, SVINT_TOKEN, "unlockAmounts(address)", [ account ]).then(function(amount) {
-		$("#cel-pendingamounts").html((amount / 1e18).toFixed(8) + " $Vintage<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((amount / 1e18) * vintPrice).toFixed(2) + " USD</div>");
+		$("#cel-pendingamounts").html((amount / 1e18).toFixed(8) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((amount / 1e18) * vintPrice).toFixed(2) + " USD</div>");
 	});
 
 	// Winepress RPC calls
@@ -421,7 +422,7 @@ const getDataViaRpc = async(account) => {
 			let totalBalance = window.web3.utils.toBN(userInfo.substring(194, 194+64));
 			let compoundedBalance = trackedBalance - totalBalance;
 			let profitRatio = (currentProfit * 10e18) / trackedBalance;
-			let expectedProfit = (trackedBalance * (3 * 10e18)) / 10e18;
+			let expectedProfit = (trackedBalance * (3.5 * 10e18)) / 10e18;
 			let profitDifference = currentProfit - expectedProfit;
 			let risk = ((1.0 - (Math.abs(profitDifference) / expectedProfit)) * 100).toFixed(2);
 
