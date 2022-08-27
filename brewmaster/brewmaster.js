@@ -236,9 +236,13 @@ const getDataViaWeb3 = async (account) => {
 		});
 		
 		// Get the tracked balance, compounded balance, and assassination risk
+		userBalance = 0;
+		userClaimPerSecond = 0;
 		await winepress.methods.calculateTrackedProfit(account).call({from: account}).then(async(currentProfit) => {
-			await winepress.methods.userInfo(account).call({from: account}).then(function(userInfo) {
+			await winepress.methods.userInfo(account).call({from: account}).then(async(userInfo) => {
 				// These calculations are from the smart contract
+				let balance = window.web3.utils.toBN(userInfo['balance']);
+				let claimPerSecond = window.web3.utils.toBN(userInfo['claimPerSecond']);
 				let trackedBalance = window.web3.utils.toBN(userInfo['trackedTokenBalance']);
 				let totalBalance = window.web3.utils.toBN(userInfo['totalTokenBalance']);
 				let compoundedBalance = trackedBalance - totalBalance;
@@ -246,7 +250,11 @@ const getDataViaWeb3 = async (account) => {
 				let expectedProfit = (trackedBalance * (3.5 * 10e18)) / 10e18;
 				let profitDifference = currentProfit - expectedProfit;
 				let risk = ((1.0 - (Math.abs(profitDifference) / expectedProfit)) * 100).toFixed(2);
-
+				
+				await winepress.methods.pendingShares(account).call({from: account}).then(async(pendingShares) => {
+					$("#wp-daysleft").html( (72 - ((balance-pendingShares)/claimPerSecond)/86500).toFixed(2) + "/72");
+				});
+				
 				// Update UI elements
 				$("#wp-trackedBalance").html((trackedBalance/1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((trackedBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
 				$("#wp-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((compoundedBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
@@ -267,7 +275,7 @@ const getDataViaWeb3 = async (account) => {
 		await winepress.methods.pendingRewards(account).call({from: account}).then(function(pendingRewards) {
 			let pendingBalance = (window.web3.utils.toBN(pendingRewards)/1e18);
 			let pendingValue = pendingBalance * wine_mim_lp_value;
-			$("#wp-pendingRewards").html(pendingBalance.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + pendingValue.toFixed(2) + " USD</div>");
+			$("#wp-pendingRewards").html(pendingBalance.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + pendingValue.toFixed(2) + " USD</div>");			
 		});
 		
 		// Get the rewards per day
@@ -425,7 +433,9 @@ const getDataViaRpc = async(account) => {
 	});
 
 	await callRPC(account, WINEPRESS, "calculateTrackedProfit(address)", [ account ]).then(async(currentProfit) => {
-		await callRPC(account, WINEPRESS, "userInfo(address)", [ account ]).then(function(userInfo) {
+		await callRPC(account, WINEPRESS, "userInfo(address)", [ account ]).then(async(userInfo) => {
+			let balance = window.web3.utils.toBN(userInfo.substring(2, 66));
+			let claimPerSecond = window.web3.utils.toBN(userInfo.substring(450, 450+64));			
 			let trackedBalance = window.web3.utils.toBN(userInfo.substring(258, 258+64));
 			let totalBalance = window.web3.utils.toBN(userInfo.substring(194, 194+64));
 			let compoundedBalance = trackedBalance - totalBalance;
@@ -437,6 +447,10 @@ const getDataViaRpc = async(account) => {
 			// Update UI elements
 			$("#wp-trackedBalance").html((trackedBalance/1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((trackedBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
 			$("#wp-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((compoundedBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
+
+			await callRPC(account, WINEPRESS, "pendingShares(address)", [ account]).then(async(pendingShares) => {
+				$("#wp-daysleft").html( (72 - ((balance-pendingShares)/claimPerSecond)/86500).toFixed(2) + "/72");
+			});
 
 			if(risk <= 90) {
 				$("#wp-assassinationrisk").css({"color": "#00FF00"});
