@@ -647,7 +647,7 @@ const claimWinepress = async() => {
 };
 
 /*
-	Compound rewards from the winepress
+	Compound rewards from the winepress to stave off assassination
 	Not taxed
 */
 const compoundWinepress = async() => {
@@ -655,6 +655,26 @@ const compoundWinepress = async() => {
 	window.web3.eth.getAccounts().then(function(result) {
 		let account = result[0];
 		winepress.methods.compound().send({from: account});
+	});
+};
+
+/*
+	Claim + Deposit because 'compounding' isn't REAL compounding
+	beware assassins...
+*/
+const claimAndDepositWinepress = async() => {
+	console.log("[INFO] Performing Winepress claim and deposit...");
+	let winepress = new window.web3.eth.Contract(WINEPRESS_ABI, WINEPRESS);
+	window.web3.eth.getAccounts().then(async(accounts) => {
+		let account = accounts[0]
+		await winepress.methods.pendingRewards(account).call({from: account}).then(async(pendingRewards) => {
+			console.log("[INFO] Pending Rewards: " + pendingRewards);
+			console.log("[INFO] Claiming...");
+			winepress.methods.claim().send({from: account}).then(async() => {
+				console.log("[INFO] Depositing...");
+				winepress.methods.deposit(account, pendingRewards).send({from: account});
+			});
+		});
 	});
 };
 
