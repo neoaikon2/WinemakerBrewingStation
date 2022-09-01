@@ -174,9 +174,9 @@ const getDataViaWeb3 = async (account) => {
 							let ratio = (vintPrice / grapePrice) * 100;
 							
 							// Calculate tool costs
-							let mag = (20*grapePrice) + (300*vintPrice);
-							let shears = (50*grapePrice) + (600*vintPrice);
-							let hydro = (80*grapePrice) + (1000*vintPrice);
+							let mag = (10*grapePrice) + (900*vintPrice);
+							let shears = (20*grapePrice) + (1800*vintPrice);
+							let hydro = (40*grapePrice) + (4200*vintPrice);
 							
 							$("#vintageprice").html("$" + (vintPrice).toFixed(4) + " USD (" + ((vintPrice / grapePrice)*100).toFixed(2) + "%)");
 							$("#grapeprice").html("$" + grapePrice.toFixed(4) + " USD");
@@ -268,12 +268,12 @@ const getDataViaWeb3 = async (account) => {
 				let totalBalance = window.web3.utils.toBN(userInfo['totalTokenBalance']);
 				let compoundedBalance = trackedBalance - totalBalance;
 				let profitRatio = (currentProfit * 10e18) / trackedBalance;
-				let expectedProfit = (trackedBalance * (3.5 * 10e18)) / 10e18;
-				let profitDifference = currentProfit - expectedProfit;
+				let expectedProfit = (trackedBalance * 3.5);
+				let profitDifference = expectedProfit - currentProfit;
 				let risk = ((1.0 - (Math.abs(profitDifference) / expectedProfit)) * 100).toFixed(2);
 				
 				await winepress.methods.pendingShares(account).call({from: account}).then(async(pendingShares) => {
-					$("#wp-daysleft").html( (72 - ((balance-pendingShares)/claimPerSecond)/86500).toFixed(2) + "/72");
+					$("#wp-daysleft").html( (((balance-pendingShares)/claimPerSecond)/86400).toFixed(2) + "/72");
 				});
 				
 				// Update UI elements
@@ -407,9 +407,10 @@ const getDataViaRpc = async(account) => {
 						let fiftyGrape = 50 * grapePrice;
 						let ratio = (vintPrice / grapePrice) * 100;
 						// Update the UI
-						let mag = (20*grapePrice) + (300*vintPrice);
-						let shears = (50*grapePrice) + (600*vintPrice);
-						let hydro = (80*grapePrice) + (1000*vintPrice);
+						let mag = (10*grapePrice) + (900*vintPrice);
+						let shears = (20*grapePrice) + (1800*vintPrice);
+						let hydro = (40*grapePrice) + (4200*vintPrice);
+						
 						$("#vintageprice").html("$" + (vintPrice).toFixed(4) + " USD (" + ((vintPrice / grapePrice)*100).toFixed(2) + "%)");
 						$("#grapeprice").html("$" + grapePrice.toFixed(4) + " USD");
 						$("#grapetovint").html((fiftyGrape/vintPrice).toFixed(2) + " $VINTAGE");
@@ -493,7 +494,7 @@ const getDataViaRpc = async(account) => {
 			let compoundedBalance = trackedBalance - totalBalance;
 			let profitRatio = (currentProfit * 10e18) / trackedBalance;
 			let expectedProfit = (trackedBalance * (3.5 * 10e18)) / 10e18;
-			let profitDifference = currentProfit - expectedProfit;
+			let profitDifference = expectedProfit - currentProfit;
 			let risk = ((1.0 - (Math.abs(profitDifference) / expectedProfit)) * 100).toFixed(2);
 
 			// Update UI elements
@@ -501,7 +502,7 @@ const getDataViaRpc = async(account) => {
 			$("#wp-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((compoundedBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
 
 			await callRPC(account, WINEPRESS, "pendingShares(address)", [ account]).then(async(pendingShares) => {
-				$("#wp-daysleft").html( (72 - ((balance-pendingShares)/claimPerSecond)/86500).toFixed(2) + "/72");
+				$("#wp-daysleft").html( (((balance-pendingShares)/claimPerSecond)/86400).toFixed(2) + "/72");
 			});
 
 			if(risk <= 90) {
@@ -528,8 +529,7 @@ const getDataViaRpc = async(account) => {
 	});
 	
 	// Start update PHC ui	
-	await callRPC(account, PEG_HEALTH_CAMPAIGN, "vesting(address)", [ account ]).then(function(vesting) {			
-		console.log(vesting);
+	await callRPC(account, PEG_HEALTH_CAMPAIGN, "vesting(address)", [ account ]).then(function(vesting) {					
 		let totalVested = window.web3.utils.toBN(vesting.substring(2,66))/1e18;
 		let endEpoc = vesting.substring(194,194+64);
 		let dt = new Date(0);
@@ -547,6 +547,108 @@ const getDataViaRpc = async(account) => {
 
 }, 7500);
 };
+
+function secondsToString(_seconds) {
+	let days = Math.floor(_seconds/86400);
+	let hours = Math.floor((_seconds%86400)/3600);
+	let minutes = Math.floor((_seconds%3600)/60);
+	let seconds = Math.floor(_seconds%60);
+	return days.toString().padStart(2, '0') + "d:" + hours.toString().padStart(2, '0') + "h:" + minutes.toString().padStart(2, '0') + "m:" + seconds.toString().padStart(2, '0') + "s";
+}
+
+let fcModdedFPM = 0;
+let fcTotalPPM = 0;
+let fcMasterSkillMod = 100;
+function updateFatigueCalcSlider() {
+	if(fcModdedFPM === 0 || fcTotalPPM === 0) {	
+		return;
+	}
+	
+	// Get accrued fatigue and calculate the current fatigue level and max VPM
+	MAX_FATIGUE = 100000000000000;
+	accruedFatigue = ($("#slider").val()/100)*MAX_FATIGUE;
+	fatigueLevel = (accruedFatigue/MAX_FATIGUE); // percent
+	maxVpm = (fcTotalPPM * BASE_VPM) * (fcMasterSkillMod/100);	
+	
+	// Get the seconds to the selected fatigue and the remainingDelta
+	// seconds until 100% fatigue
+	let zero = new Date(0);
+	accruedFatigueSeconds = accruedFatigue / fcModdedFPM * 60;
+	remainingFatigueSeconds = (MAX_FATIGUE-accruedFatigue) / fcModdedFPM * 60;
+	let accruedDelta = (new Date(accruedFatigueSeconds*1000) - zero) / 1000;
+	let remainingDelta = (new Date(remainingFatigueSeconds*1000) - zero) / 1000;	
+		
+	// Integrate earnings
+	earnedVintage = 0;
+	pendingVintage = 0;
+	let i = 0;	
+	while(i < MAX_FATIGUE) {
+		let cf = 1-(i/MAX_FATIGUE);
+		if(i < accruedFatigue) {
+			earnedVintage += cf * maxVpm;
+		} else {
+			pendingVintage += cf * maxVpm;
+		}	
+		i += fcModdedFPM;
+	}
+	totalToEarn = earnedVintage + pendingVintage;
+	
+	// Update fatigue calculator UI
+	$("#fc-fatiguelevel").html("Selected Fatigue: " + $("#slider").val() + "%");
+	$("#fc-timetofatigue").html("&Delta;T " + (fatigueLevel*100).toFixed(0) + "% - " + secondsToString(accruedDelta));	
+	$("#fc-timetofullfatigue").html("&Delta;T to 100% - " + secondsToString(remainingDelta));	
+	$("#fc-earned").html("Earned: " + earnedVintage.toFixed(0) + " VINTAGE ( " + (earnedVintage/totalToEarn*100).toFixed(2) + "% )");
+	$("#fc-pending").html("Pending&nbsp;: " + pendingVintage.toFixed(0) + " VINTAGE ( " + (pendingVintage/totalToEarn*100).toFixed(2) + "% )");
+};
+
+function toggleFatigueCalculator() {	
+	// Pull contract variables
+	if($("#addressEntry").val() === "") {
+		// Contract objects
+		let winery = new window.web3.eth.Contract(WINEMAKER_REWARDS_ABI, WINEMAKER_REWARDS);
+		let wineprog = new window.web3.eth.Contract(WINEMAKER_PROGRESSION_ABI, WINEMAKER_PROGRESSION);
+		// Initialize calculator via WEB3 interface
+		window.web3.eth.getAccounts().then(async(accounts) => {
+			let account = accounts[0]
+			await winery.methods.getFatiguePerMinuteWithModifier(account).call({from: account}).then(async(fatiguePM) => {
+				fcModdedFPM = window.web3.utils.toNumber(fatiguePM);
+				await winery.methods.getTotalPPM(account).call({from: account}).then(async(totalPPM) => {
+					fcTotalPPM = window.web3.utils.toNumber(totalPPM);
+					await winery.methods.getMasterVintnerNumber(account).call({from: account}).then(async(masters) => {
+						await wineprog.methods.getMasterVintnerSkillModifier(account, masters).call({from: account}).then(async(modifier) => {
+							fcMasterSkillMod = window.web3.utils.toNumber(modifier);
+							updateFatigueCalcSlider();
+						});
+					});
+				});
+			});
+		});
+	} else { 
+		// Initialize calculator via RPC calls
+		let account = $("#addressEntry").val();		
+		callRPC(account, WINEMAKER_REWARDS, "getFatiguePerMinuteWithModifier(address)", [ account ]).then(async(fatiguePM) => {			
+			fcModdedFPM = window.web3.utils.toNumber(fatiguePM);
+			await callRPC(account, WINEMAKER_REWARDS, "getTotalPPM(address)", [ account ]).then(async(totalPPM) => {
+				fcTotalPPM = window.web3.utils.toNumber(totalPPM);
+				await callRPC(account, WINEMAKER_REWARDS, "getMasterVintnerNumber(address)", [ account ]).then(async(masters) => {
+					await callRPC(account, WINEMAKER_PROGRESSION, "getMasterVintnerSkillModifier(address,uint256)", [ account, masters ]).then(async(modifier) => {
+						fcMasterSkillMod = window.web3.utils.toNumber(modifier);
+						updateFatigueCalcSlider();
+					});
+				});
+			});
+		});
+	}
+
+	// Animate the ui
+	if($("#fatigueCalculator").width() < 100) {	
+		$("#fatigueCalculator").animate({ width: 384, height: 194 });
+		$("#fatigueHeader").animate({ marginLeft: '8px' });
+	} else {		
+		$("#fatigueCalculator").animate({ width: 32, height: 32 });
+		$("#fatigueHeader").animate({ marginLeft: '16px' });
+	}	
+}
 
 var refreshId = null;
 /*
@@ -587,8 +689,8 @@ const web3Query = async () => {
 const resetFatigue = async() => {
 	let grape = new window.web3.eth.Contract(GRAPE_TOKEN_ABI, GRAPE_TOKEN);
 	let winery = new window.web3.eth.Contract(WINEMAKER_REWARDS_ABI, WINEMAKER_REWARDS);
-	window.web3.eth.getAccounts().then(function(result) {
-		let account = result[0];
+	window.web3.eth.getAccounts().then(async(accounts) => {
+		let account = accounts[0];
 		winery.methods.getTotalPPM(account).call({from: account}).then(async(totalPPM) => {
 			reset_cost = totalPPM * RESET_MULTI * 1e18;
 			console.log("Reset Cost: " + reset_cost);
@@ -602,9 +704,14 @@ const resetFatigue = async() => {
 					
 					console.log("Allowance: " + (allowance));
 					if(window.web3.utils.toBN(allowance).lt(window.web3.utils.toBN(totalPPM * RESET_MULTI))) {
-						await grape.methods.approve(WINEMAKER_REWARDS, MAX_UINT256).send({from: account});
+						await grape.methods.approve(WINEMAKER_REWARDS, MAX_UINT256).send({from: account}).on("confirmation", function(confirms) {
+							if(confirms === 5) {
+								winery.methods.resetFatigue().send({from: account});
+							}
+						});
+					} else {
+						winery.methods.resetFatigue().send({from: account});
 					}
-					await winery.methods.resetFatigue().send({from: account});
 				});
 			});
 		});
@@ -616,8 +723,8 @@ const resetFatigue = async() => {
 */
 const claimVintage = async() => {
 	let winery = new window.web3.eth.Contract(WINEMAKER_REWARDS_ABI, WINEMAKER_REWARDS);
-	window.web3.eth.getAccounts().then(function(result) {
-		let account = result[0];
+	window.web3.eth.getAccounts().then(async(accounts) => {
+		let account = accounts[0];
 		winery.methods.claimVintageWine().send({from: account});
 	});
 };
@@ -628,39 +735,39 @@ const claimVintage = async() => {
 const depositVintage = async() => {
 	let tokenA = new window.web3.eth.Contract(VINT_TOKEN_ABI, VINT_TOKEN);
 	let tokenB = new window.web3.eth.Contract(SVINT_TOKEN_ABI, SVINT_TOKEN);
-	window.web3.eth.getAccounts().then(async(result) => {
-		let account = result[0];
-		//await tokenA.methods.allowance(account, SVINT_TOKEN).call({from: account }).then(async(allowance) => {
-			//console.log("Allowance: " + (allowance));
-			await tokenA.methods.balanceOf(account).call({from: account}).then(async(balance) => {
-				if((balance / 1e18) > 0) {
-					//if(window.web3.utils.toBN(allowance).lt(window.web3.utils.toBN(MAX_UINT256))) {
-					//	await tokenA.methods.approve(SVINT_TOKEN, MAX_UINT256).send({from: account});
-					//}
-					console.log("Depositing " + (balance / 1e18) + " Vintage");
-					await tokenB.methods.stake(balance).send({from: account});
-				} else {
-					console.error("[ERROR] Vintage balance must be greater than 0");
-				}
-			});
-		//});
+	window.web3.eth.getAccounts().then(async(accounts) => {
+		let account = accounts[0];
+		await tokenA.methods.balanceOf(account).call({from: account}).then(async(balance) => {
+			if((balance / 1e18) > 0) {
+				console.log("Depositing " + (balance / 1e18) + " Vintage");
+				tokenB.methods.stake(balance).send({from: account});		
+			} else {
+				console.error("[ERROR] Vintage balance must be greater than 0");
+			}
+		});
 	});
 };
 
 const stakeSVintage = async() => {
 	let token = new window.web3.eth.Contract(SVINT_TOKEN_ABI, SVINT_TOKEN);
 	let vineyard = new window.web3.eth.Contract(VINEYARD_ABI, VINEYARD);
-	window.web3.eth.getAccounts().then(async(result) => {
-		let account = result[0];
+	window.web3.eth.getAccounts().then(async(accounts) => {
+		let account = accounts[0];
 		await token.methods.allowance(account, VINEYARD).call({from: account}).then(async(allowance) => {
 			console.log("Allowance: " + (allowance));
 			await token.methods.balanceOf(account).call({from: account}).then(async(balance) => {
 				if((balance / 1e18) > 0) {
 					if(window.web3.utils.toBN(allowance).lt(window.web3.utils.toBN(MAX_UINT256))) {
-						await token.methods.approve(VINEYARD, MAX_UINT256).send({from: account});
+						await token.methods.approve(VINEYARD, MAX_UINT256).send({from: account}).on("confirmation", function(confirms) {
+							if(confirms === 5) {
+								console.log("Staking " + (balance / 1e18) + " SVintage");
+								vineyard.methods.deposit(7, balance).send({from: account});								
+							}
+						});
+					} else {
+						console.log("Staking " + (balance / 1e18) + " SVintage");
+						vineyard.methods.deposit(7, balance).send({from: account});
 					}
-					console.log("Staking " + (balance / 1e18) + " SVintage");
-					vineyard.methods.deposit(7, balance).send({from: account});
 				} else {
 					console.error("[ERROR] SVintage balance must be greater than 0");
 				}
@@ -671,8 +778,8 @@ const stakeSVintage = async() => {
 
 const unstakeSVintage = async() => {
 	let vineyard = new window.web3.eth.Contract(VINEYARD_ABI, VINEYARD);
-	window.web3.eth.getAccounts().then(function(result) {
-		let account = result[0];
+	window.web3.eth.getAccounts().then(async(accounts) => {
+		let account = accounts[0];
 		vineyard.methods.userInfo(7, account).call({from: account}).then(function(userInfo) {
 			let balance = userInfo['amount'];
 			console.log("Withdrawing " + (balance / 1e18) + " SVintage");
@@ -683,8 +790,8 @@ const unstakeSVintage = async() => {
 
 const withdrawVintage = async() => {
 	let token = new window.web3.eth.Contract(SVINT_TOKEN_ABI, SVINT_TOKEN);
-	window.web3.eth.getAccounts().then(function(result) {
-		let account = result[0];
+	window.web3.eth.getAccounts().then(async(accounts) => {
+		let account = accounts[0];
 		token.methods.balanceOf(account).call({from: account}).then(function(balance) {
 			console.log("Preparing delayed unstake of " + (balance / 1e18) + " SVintage");
 			token.methods.prepareDelayedUnstake(balance).send({from: account});
@@ -694,16 +801,16 @@ const withdrawVintage = async() => {
 
 const claimVineyardRewards = async() => {
 	let vineyard = new window.web3.eth.Contract(VINEYARD_ABI, VINEYARD);
-	window.web3.eth.getAccounts().then(function(result) {
-		let account = result[0];
+	window.web3.eth.getAccounts().then(async(accounts) => {
+		let account = accounts[0];
 		vineyard.methods.withdraw(7,0).send({from: account});
 	});
 }
 
 const claimPendingFromCellar = async() => {
 	let token = new window.web3.eth.Contract(SVINT_TOKEN_ABI, SVINT_TOKEN);
-	window.web3.eth.getAccounts().then(function(result) {
-		let account = result[0];
+	window.web3.eth.getAccounts().then(async(accounts) => {
+		let account = accounts[0];
 		token.methods.unlockTimestamps(account).call({from: account}).then(async(timestamp) => {
 			let now = Date.now() / 1000;
 			if(now >= timestamp) {				
@@ -724,8 +831,8 @@ const claimPendingFromCellar = async() => {
 */
 const claimWinepress = async() => {
 	let winepress = new window.web3.eth.Contract(WINEPRESS_ABI, WINEPRESS);
-	window.web3.eth.getAccounts().then(function(result) {
-		let account = result[0];
+	window.web3.eth.getAccounts().then(async(accounts) => {
+		let account = accounts[0];
 		winepress.methods.claim().send({from: account});
 	});
 };
@@ -736,8 +843,8 @@ const claimWinepress = async() => {
 */
 const compoundWinepress = async() => {
 	let winepress = new window.web3.eth.Contract(WINEPRESS_ABI, WINEPRESS);
-	window.web3.eth.getAccounts().then(function(result) {
-		let account = result[0];
+	window.web3.eth.getAccounts().then(async(accounts) => {
+		let account = accounts[0];
 		winepress.methods.compound().send({from: account});
 	});
 };
@@ -754,9 +861,11 @@ const claimAndDepositWinepress = async() => {
 		await winepress.methods.pendingRewards(account).call({from: account}).then(async(pendingRewards) => {
 			console.log("[INFO] Pending Rewards: " + pendingRewards);
 			console.log("[INFO] Claiming...");
-			winepress.methods.claim().send({from: account}).then(async() => {
-				console.log("[INFO] Depositing...");
-				winepress.methods.deposit(account, pendingRewards).send({from: account});
+			winepress.methods.claim().send({from: account}).on("confirmation", function(confirms) {
+				if(confirms === 5) {
+					console.log("[INFO] Depositing...");
+					winepress.methods.deposit(account, pendingRewards).send({from: account});
+				}
 			});
 		});
 	});

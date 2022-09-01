@@ -164,3 +164,18 @@ a:hover {
 .sidebuttonL:hover, .sidebuttonR:hover {
 	background-color: #333333BA;
 }
+
+.fatigueCalculator {
+	position: absolute;
+	font-family: consolas;
+	font-weight: bold;
+	font-size: 12pt;
+	padding: 16px;
+	background-color: #111111BA;
+	left: 16px;
+	top: 16px;
+	width: 32px;
+	height: 32px;
+	border-radius: 32px;
+	overflow: clip;
+}
