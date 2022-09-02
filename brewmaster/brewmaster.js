@@ -550,7 +550,7 @@ const getDataViaRpc = async(account) => {
 	// Start update PHC ui	
 	await callRPC(account, PEG_HEALTH_CAMPAIGN, "vesting(address)", [ account ]).then(function(vesting) {					
 		let totalVested = (window.web3.utils.toBN(vesting.substring(2,66))-window.web3.utils.toBN(vesting.substring(194,194+64)))/1e18;
-		let endEpoc = window.web3.utils.toBN(vesting.substring(130,130+64));		
+		let endEpoc = window.web3.utils.hexToNumber("0x"+vesting.substring(130,130+64));	
 		let dt = new Date(0);
 		dt.setUTCSeconds(endEpoc);
 		$("#peg-fullyclaimablewhen").html(dt.toLocaleDateString() + ", " + dt.toLocaleTimeString());
