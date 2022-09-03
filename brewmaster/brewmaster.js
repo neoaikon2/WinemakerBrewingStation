@@ -73,10 +73,444 @@ const getAllowance = async(owner, spender) => {
 	return await grapeOracle.methods.allowance(owner, spender).call({ from: owner });
 }
 
-var vintPrice;
-var grapePrice;
-var winePrice;
-var svintRatio;
+// Global variables
+var vpm = 0, maxVPM = 0;
+var fatigueAccrued = 0;
+var dt50 = null, dt100 = null;
+var resetCost = 0;
+var masterCount = 0, normalCount = 0, toolCount = 0;
+var vintEarned = 0;
+var vintPrice = 0, grapePrice = 0, winePrice = 0;
+var storage = 0, storageDt = null;
+var ratio = 0;
+var mag = 0; shears = 0, hydro = 0;
+
+/*
+	Updates the dataset used for the winery panel and update the ui
+*/
+const updateWinery = async(account) => {
+	if(usingWeb3) {
+		await winery.methods.getFatigueAccrued(account).call({from: account}).then(async(fatigue) => {
+			// Convert to percentage
+			fatigueAccrued = fatigue/1e14;
+
+			// Get the date and time, in locale time. that fatigue will reach 30%, and 100%
+			await winery.methods.getTimeUntilFatigued(account).call( {from: account}).then(function(result) {
+				dt50 = new Date(0);
+				dt100 = new Date(0);
+				dt50.setUTCSeconds((Date.now()/1000) + ((result - (Date.now()/1000)) * (0.5-fatigueAccrued)));
+				dt100.setUTCSeconds(result);
+			});
+
+			// Get current and max VPM
+			await winery.methods.getTotalPPM(account).call({from: account}).then(async(totalPPM) => { // totalPPM is our MAX VPM
+				resetCost = totalPPM * RESET_MULTI;
+				await winery.methods.getMasterVintnerNumber(account).call({from: account}).then(async(masterNum) => { // Number of staked masters
+					masterCount = masterNum;
+					// Get any modifiers to the VPM, with 100 being the no modifiers
+					await wineprog.methods.getMasterVintnerSkillModifier(account, masterNum).call({from: account}).then(async(modifier) => {
+						await winery.methods.startTimeStamp(account).call({from: account}).then(async(startTime) => { // Timestamp of when the vintners were last fully rested
+							await winery.methods.fatiguePerMinute(account).call({from: account}).then(async(fatiguePM) => { // Fatigue per minute
+								/*
+									vintageWineAccruedCalculation(initialVintage, timePeriodInSecs, totalPPM, getMasterVinterSkillModifier(.., ..), currentFatigue, fatiguePerMinute, YIELD_PPS)
+										this function lets you calculate how much vintage you will earn in a set period of time
+										in this case we're using it to see how much we earn in one minute to get the dynamic VPM
+								 */
+								await winery.methods.vintageWineAccruedCalculation(0, 60, totalPPM, modifier, fatigue, fatiguePM, YIELD_PPS).call({from: account}).then(function(dynamicPPM) {
+									vpm = dynamicPPM/1e18;
+									maxVPM = totalPPM * (BASE_VPM * (modifier/100));
+								});
+							});
+						});
+					});
+				});
+			});
+		});
+
+		// Get the number of normal vintners
+		await winery.methods.numberOfStaked(account, 0).call({from: account}).then(function(result) {
+			normalCount = result;
+		});
+
+		// Get the number of tools
+		await winery.methods.ownedUpgradeStakesBalance(account).call({from: account}).then(function(result) {
+			toolCount  = result;
+		});
+
+		// Get the amount of VINTAGE accrued in the reward contract
+		await winery.methods.getVintageWineAccrued(account).call({from: account}).then(async(claimable) => {
+			vintEarned = (claimable / 1e18);
+			// Get the balance of mim in the LP
+			await mim.methods.balanceOf(VINT_LP).call({from: account}).then(async(mimSupply) => {
+				// Get the balance of VINTAGE in the LP
+				await vint.methods.balanceOf(VINT_LP).call({from: account}).then(async(vintSupply) => {
+					// Calculate the price of the VINTAGE
+					vintPrice = (mimSupply/vintSupply);
+
+					// Get the maximum storage and show how much is used
+					await wineprog.methods.getVintageWineStorage(account).call( {from: account} ).then(function(result) {
+						storage = window.web3.utils.toBN(result) / 1e18;
+						storageDt = new Date();
+						storageDt.setSeconds(storageDt.getSeconds() + ((storage-vintEarned)/vpm*60));
+					});
+
+					// Get the price of GRAPE
+					await mim.methods.balanceOf(GRAPE_LP).call({from: account}).then(async(mimSupply2) => {
+						await grape.methods.balanceOf(GRAPE_LP).call({from: account}).then(function(grapeSupply) {
+							// Calculate the grape price, as well as the price of 50 grape, and the ratio of vint to grape
+							grapePrice = (mimSupply2/grapeSupply);
+							ratio = (vintPrice / grapePrice) * 100;
+
+							// Calculate tool costs
+							mag = (10*grapePrice) + (900*vintPrice);
+							shears = (20*grapePrice) + (1800*vintPrice);
+							hydro = (40*grapePrice) + (4200*vintPrice);
+						});
+					});
+				});
+			});
+		});
+	}
+	
+	if(!usingWeb3) {
+		await callRPC(account, WINEMAKER_REWARDS, "getFatigueAccrued(address)", [ account ]).then(async(fatigue) => {
+			fatigueAccrued = fatigue/1e14;
+			await callRPC(account, WINEMAKER_REWARDS, "getTimeUntilFatigued(address)", [ account ]).then(function(result) {
+				dt50 = new Date(0);
+				dt100 = new Date(0);
+
+				dt50.setUTCSeconds((Date.now()/1000) + ((result - (Date.now()/1000)) * (0.5-fatigueAccrued)));
+				dt100.setUTCSeconds(result);
+			});
+
+			await callRPC(account, WINEMAKER_REWARDS, "getTotalPPM(address)", [ account ]).then(async(totalPPM) => {
+				resetCost = totalPPM * RESET_MULTI;
+				await callRPC(account, WINEMAKER_REWARDS, "getMasterVintnerNumber(address)", [ account ]).then(async(masterNumber) => {
+					await callRPC(account, WINEMAKER_PROGRESSION, "getMasterVintnerSkillModifier(address,uint256)", [ account, masterNumber ]).then(async(modifier) => {
+						masterCount = window.web3.utils.hexToNumber(masterNumber);
+						await callRPC(account, WINEMAKER_REWARDS, "startTimeStamp(address)", [ account ]).then(async(startTime) => {
+							await callRPC(account, WINEMAKER_REWARDS, "fatiguePerMinute(address)", [ account ]).then(async(fatiguePM) => {
+								await callRPC(account, WINEMAKER_REWARDS, "vintageWineAccruedCalculation(uint256,uint256,uint256,uint256,uint256,uint256,uint256)", [ 0, 60, totalPPM, modifier, fatigue, fatiguePM, YIELD_PPS ]).then(function(dynamicPPM) {
+									vpm = dynamicPPM/1e18;
+									maxVPM = totalPPM * (BASE_VPM * (modifier/100));
+								});
+							});
+						});
+					});
+				});
+			});
+		});
+
+		await callRPC(account, WINEMAKER_REWARDS, "numberOfStaked(address,uint256)", [ account, 0 ]).then(function(result) {
+			normalCount = window.web3.utils.hexToNumber(result);
+		});
+
+		await callRPC(account, WINEMAKER_REWARDS, "ownedUpgradeStakesBalance(address)", [ account, 0 ]).then(function(result) {
+			toolCount = window.web3.utils.hexToNumber(result);
+		});
+
+		await callRPC(account, WINEMAKER_REWARDS, "getVintageWineAccrued(address)", [ account ]).then(async(claimable) => {
+			vintEarned = (claimable / 1e18);
+			await callRPC(account, MIM_TOKEN, "balanceOf(address)", [ VINT_LP ]).then(async(mimSupply) => {
+				await callRPC(account, VINT_TOKEN, "balanceOf(address)", [ VINT_LP ]).then(async(vintSupply) => {
+					// Calculate the price of the VINTAGE
+					vintPrice = (mimSupply/vintSupply);
+
+					await callRPC(account, WINEMAKER_PROGRESSION, "getVintageWineStorage(address)", [ account ]).then(function(result) {
+						storage = window.web3.utils.toBN(result) / 1e18;
+						storageDt = new Date();
+						storageDt.setSeconds(storageDt.getSeconds() + ((storage-vintEarned)/vpm*60));						
+					});
+
+					await callRPC(account, MIM_TOKEN, "balanceOf(address)", [ GRAPE_LP ]).then(async(mimSupply2) => {
+						await callRPC(account, GRAPE_TOKEN, "balanceOf(address)", [ GRAPE_LP ]).then(function(grapeSupply) {
+							grapePrice = (mimSupply2/grapeSupply);
+							ratio = (vintPrice / grapePrice) * 100;
+							 mag = (10*grapePrice) + (900*vintPrice);
+							shears = (20*grapePrice) + (1800*vintPrice);
+							hydro = (40*grapePrice) + (4200*vintPrice);
+						});
+					});
+				});
+			});
+		});
+	}
+	
+	// Update winery UI elements
+	$("#fatigue").html((fatigueAccrued*100).toFixed(3) + "%");
+	$("#fatiguedate50").html(dt50.toLocaleDateString() + ", " + dt50.toLocaleTimeString());
+	$("#fatiguedate100").html(dt100.toLocaleDateString() + ", " + dt100.toLocaleTimeString());
+	$("#resetCost").html(resetCost.toFixed(2) + " GRAPE");
+	$("#wm-masters").html(masterCount + " vintners");
+	$("#vpm").html(vpm.toFixed(2) + "/" + maxVPM.toFixed(2));
+	$("#wm-normals").html(normalCount + " vintners");
+	$("#wm-tools").html(toolCount + " tools");
+	$("#vintage").html(vintEarned.toFixed(2) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (vintEarned * vintPrice).toFixed(2) + " USD</div>");
+	$("#storage").html(vintEarned.toFixed(0) + "/" + storage.toFixed(0));
+	$("#wm-storagefull").html(storageDt.toLocaleDateString() + " " + storageDt.toLocaleTimeString());
+	$("#vintageprice").html("$" + (vintPrice).toFixed(4) + " USD (" + ((vintPrice / grapePrice)*100).toFixed(2) + "%)");
+	$("#grapeprice").html("$" + grapePrice.toFixed(4) + " USD");
+	let fiftyGrape = 50 * grapePrice;
+	$("#grapetovint").html((fiftyGrape/vintPrice).toFixed(2) + " $VINTAGE");
+	$("#magazine").html("$" + mag.toFixed(2) + " USD");// + " ($" + (fiftyGrape - mag).toFixed(2) + ")");
+	$("#shears").html("$" + shears.toFixed(2) + " USD");// + " ($" + (fiftyGrape*3 - shears).toFixed(2) + ")<br>");
+	$("#hydro").html("$" + hydro.toFixed(2) + " USD");// + " ($" + (fiftyGrape*5 - hydro).toFixed(2) + ")");
+}
+
+var svintRatio = 1;
+var vintBalance = 0, svintBalance = 0, svintPoolBalance = 0;
+var pendingWine = 0, pendingSvint;
+var cellarDt;
+
+/*
+	Update the dataset used for the cellar panel and update the ui
+*/
+const updateCellar = async(account) => {
+	if(usingWeb3) {
+		await mim.methods.balanceOf(WINE_MIM_LP).call({from: account}).then(async(mimLPbal) => {
+			await wine.methods.balanceOf(WINE_MIM_LP).call({from: account}).then(function(wineLPbal) {
+				winePrice = mimLPbal / wineLPbal;
+			});
+		});
+
+		// Get the ratio of svint to vint in the cellar
+		await svint.methods.totalSupply().call({from: account}).then(async(svintSupply) => {
+			svint.methods.vintageWineBalance().call({from: account}).then(function(vintageInCellar) {
+				svintRatio = window.web3.utils.toBN(vintageInCellar) / window.web3.utils.toBN(svintSupply);
+			});
+		});
+
+		// Get the vintage balance
+		await vint.methods.balanceOf(account).call({from: account}).then(function(balance) {
+			vintBalance = balance/1e18;
+		});
+		
+		// Get the svintage balance
+		await svint.methods.balanceOf(account).call({from: account}).then(function(balance) {
+			svintBalance = balance/1e18;
+		});
+		
+		// Get the svintage in the vinyard
+		await vineyard.methods.userInfo(7,account).call({from: account}).then(function(userInfo) {
+			svintPoolBalance = (window.web3.utils.toBN(userInfo['amount'])/1e18);
+		});
+		
+		// Get the pending wine rewards from the pool
+		await vineyard.methods.pendingShare(7,account).call({from: account}).then(function(balance) {
+			pendingWine = balance/1e18;						
+		});
+		
+		// Get the pending svintage to be unlocked
+		await svint.methods.unlockAmounts(account).call({from: account}).then(function(balance) {
+			pendingSvint = balance/1e18;
+		});
+		
+		// Get the timestamp for when the svintage will be unlocked and claimable
+		await svint.methods.unlockTimestamps(account).call({from: account}).then(function(timestamp) {
+			cellarDt = new Date(0);		
+			cellarDt.setUTCSeconds(timestamp);
+			
+			// Grey out the button if the timestamp hasn't been reached yet
+			// I have not been able to get this to work...if you can see why, please tell me on this discord @crypto_neo
+			//let now = Date.now()/1000;
+			/*if(timestamp < now) {
+				$("#cel-claimpending").css("backgroundColor", "#777777");
+				$("#cel-claimpending").css("color", "#BABABA");
+			} else {
+				$("#cel-claimpending").css("backgroundColor", "");
+				$("#cel-claimpending").css("color", "");
+			}*/
+		});
+	}
+
+	if(!usingWeb3) {		
+		await callRPC(account, MIM_TOKEN, 'balanceOf(address)', [ WINE_MIM_LP ]).then(async(mimLPbal) => {
+			await callRPC(account, WINE_TOKEN, 'balanceOf(address)', [ WINE_MIM_LP ]).then(async(wineLPbal) => {
+				winePrice = mimLPbal / wineLPbal;
+			});
+		});
+
+		await callRPC(account, SVINT_TOKEN, "totalSupply()", []).then(async(svintSupply) => {
+			await callRPC(account, SVINT_TOKEN, "vintageWineBalance()", { }).then(function(vintageInCellar) {
+				svintRatio = window.web3.utils.toBN(vintageInCellar) / window.web3.utils.toBN(svintSupply);				
+			});
+		});
+
+		// Wallet VINTAGE balance
+		await callRPC(account, VINT_TOKEN, "balanceOf(address)", [ account ]).then(function(balance) {
+			vintBalance = balance/1e18;			
+		});
+
+		// Wallet sVINTAGE balance
+		await callRPC(account, SVINT_TOKEN, "balanceOf(address)", [ account ]).then(function(balance) {
+			svintBalance = balance/1e18;
+		});
+
+		// Vinyard sVINTAGE balance
+		await callRPC(account, VINEYARD, "userInfo(uint256,address)", [ 7, account ]).then(function(userInfo) {
+			svintPoolBalance = window.web3.utils.toBN(userInfo.substring(2,66))/1e18;			
+		});
+
+		await callRPC(account, VINEYARD, "pendingShare(uint256,address)", ['7', account]).then(function(balance) {
+			pendingWine = balance/1e18;			
+		});
+
+		await callRPC(account, SVINT_TOKEN, "unlockAmounts(address)", [ account ]).then(function(balance) {
+			pendingSvint = balance/1e18;
+		});
+		
+		await callRPC(account, SVINT_TOKEN, "unlockTimestamps(address)", [ account ]).then(function(timestamp) {
+			cellarDt = new Date(0);			
+			cellarDt.setUTCSeconds(timestamp);
+			
+			//let now = Date.now() / 1000;
+			/*if(timestamp < now) {
+				$("#cel-claimpending").css("backgroundColor", "#777777");
+				$("#cel-claimpending").css("color", "#BABABA")
+			} else {
+				$("#cel-claimpending").css("backgroundColor", "");
+				$("#cel-claimpending").css("color", "")
+			}*/
+		});
+		
+	}
+	
+	$("#cellarratio").html(svintRatio.toFixed(2) + "x");
+	$("#vintinwallet").html(vintBalance.toFixed(2) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((vintBalance/1e18) * vintPrice).toFixed(2) + " USD</div>");		
+	$("#svintinwallet").html((svintBalance/1e18).toFixed(2) + " $sVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((svintBalance/1e18) * svintRatio * vintPrice).toFixed(2) + " USD</div>");
+	$("#svintinvinyard").html(svintPoolBalance.toFixed(2) + " $sVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (svintPoolBalance * svintRatio * vintPrice).toFixed(2) + " USD</div>");
+	$("#pendingwine").html(pendingWine.toFixed(2) + " $WINE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (pendingWine * winePrice).toFixed(2) + " USD</div>");
+	$("#cel-pendingamounts").html(pendingSvint.toFixed(2) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (pendingSvint * vintPrice).toFixed(2) + " USD</div>");
+	$("#cel-pendingtimestamps").html(cellarDt.toLocaleDateString() + ", " + cellarDt.toLocaleTimeString());
+}
+
+var wine_mim_lp_value = 0;
+var roiRisk = 0, roiProgress = 0;
+var trueAPR = 1.25, visibleAPR = 1.25;
+var trackedTokenBalance = 0, compoundedBalance = 0;
+var pendingPressWine = 0;
+var dailyPressWine = 0;
+
+/*
+	Update the dataset used for the winepress panel and update the ui
+*/
+const updateWinepress = async(account) => {
+	if(usingWeb3) {
+		// Start update winepress ui
+		// Get the value of 1 WINE-MIM-LP		
+		await wine_mim_lp.methods.totalSupply().call({from: account}).then(async(totalSupply) => {
+			await mim.methods.balanceOf(WINE_MIM_LP).call({from: account}).then(async(mimLPbal) => {
+				wine_mim_lp_value = ((mimLPbal / totalSupply)*2);
+			});
+		});
+
+		// Get the tracked balance, compounded balance, and assassination risk
+		await winepress.methods.calculateTrackedProfit(account).call({from: account}).then(async(currentProfit) => {
+			await winepress.methods.userInfo(account).call({from: account}).then(async(userInfo) => {
+				// These calculations are from the smart contract
+				let balance = window.web3.utils.toBN(userInfo['balance']);
+				let claimPerSecond = window.web3.utils.toBN(userInfo['claimPerSecond']);				
+				let trackedShareBalance = window.web3.utils.toBN(userInfo['trackedShareBalance']);
+				let totalTokenBalance = window.web3.utils.toBN(userInfo['totalTokenBalance']);
+				let totalShareBalance = window.web3.utils.toBN(userInfo['totalShareBalance']);
+				
+				trackedTokenBalance = window.web3.utils.toBN(userInfo['trackedTokenBalance']);
+				compoundedBalance = trackedTokenBalance - totalTokenBalance;
+
+				// Calculate assassination risk, literally same code from contract :)
+				let profitRatio = (currentProfit * 10e18) / trackedTokenBalance;
+				let expectedProfit = (trackedTokenBalance * 3.5);
+				let profitDifference = expectedProfit - currentProfit;
+				roiRisk = ((1.0 - (Math.abs(profitDifference) / expectedProfit)) * 100).toFixed(2);
+				
+				await winepress.methods.calculatePrice().call({from: account}).then(function(lpts) {
+					lpToShare = lpts / 1e18;
+					trueAPR = (((claimPerSecond * lpToShare) * 86400) / totalTokenBalance) * 100;
+					visibleAPR = (((claimPerSecond * lpToShare) * 86400) / trackedTokenBalance) * 100;
+
+				});
+				await winepress.methods.pendingShares(account).call({from: account}).then(async(pendingShares) => {
+					roiProgress = (1-((balance-pendingShares)/totalShareBalance))*100;
+				});
+			});
+		});
+
+		// Get the pending rewards
+		await winepress.methods.pendingRewards(account).call({from: account}).then(function(pendingRewards) {
+			pendingPressWine = (window.web3.utils.toBN(pendingRewards)/1e18);
+		});
+
+		// Get the rewards per day
+		await winepress.methods.rewardsPerDay(account).call({from: account}).then(function(dailyRewards) {
+			dailyPressWine = window.web3.utils.toBN(dailyRewards)/1e18;
+		});
+	}
+	
+	if(!usingWeb3) {		
+		await callRPC(account, WINE_MIM_LP, "totalSupply()", [ ]).then(async(totalSupply) => {
+			await callRPC(account, MIM_TOKEN, "balanceOf(address)", [ WINE_MIM_LP ]).then(function(mimLPbal) {
+				wine_mim_lp_value = ((mimLPbal / totalSupply)*2);				
+			});
+		});
+
+		await callRPC(account, WINEPRESS, "calculateTrackedProfit(address)", [ account ]).then(async(currentProfit) => {
+			await callRPC(account, WINEPRESS, "userInfo(address)", [ account ]).then(async(userInfo) => {
+				let balance = window.web3.utils.toBN(userInfo.substring(2, 66));
+				let totalTokenBalance = window.web3.utils.toBN(userInfo.substring(130, 130+64));
+				let totalShareBalance = window.web3.utils.toBN(userInfo.substring(194, 194+64));				
+				let claimPerSecond = window.web3.utils.toBN(userInfo.substring(386, 450));
+				
+				trackedTokenBalance = window.web3.utils.toBN(userInfo.substring(258, 258+64));
+				compoundedBalance = trackedTokenBalance - totalTokenBalance;
+
+				let profitRatio = (currentProfit * 10e18) / trackedTokenBalance;
+				let expectedProfit = (trackedTokenBalance * (3.5 * 10e18)) / 10e18;
+				let profitDifference = expectedProfit - currentProfit;
+				
+				risk = ((1.0 - (Math.abs(profitDifference) / expectedProfit)) * 100).toFixed(2);				
+				await callRPC(account, WINEPRESS, "calculatePrice()", [ ]).then(function(lpts) {
+					lpToShare = lpts / 1e18;
+					trueAPR = (((claimPerSecond * lpToShare) * 86400) / totalTokenBalance) * 100;
+					visibleAPR = (((claimPerSecond * lpToShare) * 86400) / trackedTokenBalance) * 100;					
+				});
+
+				await callRPC(account, WINEPRESS, "pendingShares(address)", [ account]).then(async(pendingShares) => {
+					roiProgress = (1-((balance-pendingShares)/totalShareBalance))*100;
+				});
+			});
+		});
+				
+		await callRPC(account, WINEPRESS, "pendingRewards(address)", [ account ]).then(function(pendingRewards) {
+			pendingPressWine =  pendingBalance = (window.web3.utils.toBN(pendingRewards)/1e18);			
+		});
+
+		await callRPC(account, WINEPRESS, "rewardsPerDay(address)", [ account ]).then(function(dailyRewards) {
+			dailyPressWine = window.web3.utils.toBN(dailyRewards)/1e18;			
+		});
+	}
+	
+	$("#wp-lpvalue").html("$" + wine_mim_lp_value.toFixed(2) + " USD");
+	$("#wp-apr").html(visibleAPR.toFixed(2) + "% / " + trueAPR.toFixed(2) + "%");
+	$("#wp-roi").html((visibleAPR*72).toFixed(2) + "% / " + (trueAPR*72).toFixed(2) + "%");		
+	$("#wp-trackedBalance").html((trackedTokenBalance/1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((trackedTokenBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
+	$("#wp-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((compoundedBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
+	$("#wp-assassinationrisk").html(roiRisk + "% / 100%");
+	if(roiRisk <= 90) {
+		$("#wp-assassinationrisk").css({"color": "#00FF00"});
+	} else if(roiRisk < 100) {
+		$("#wp-assassinationrisk").css({"color": "#FFBA00"});
+	} else {
+		$("#wp-assassinationrisk").css({"color": "#FF0000"});
+	}
+	$("#wp-roiprogress").html( roiProgress.toFixed(2) + "% / 100%");
+	$("#wp-pendingRewards").html(pendingPressWine.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + (pendingPressWine * wine_mim_lp_value).toFixed(2) + " USD</div>");
+	$("#wp-dailyRewards").html(dailyPressWine.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + (dailyPressWine * wine_mim_lp_value).toFixed(2) + " USD</div>");
+}
+
+//var vintPrice;
+//var grapePrice;
+//var winePrice;
+//var svintRatio;
 let winery = null;
 let wineprog = null;
 let winepress = null;
@@ -88,237 +522,26 @@ let mim = null;
 let wine = null;
 let wine_mim_lp = null;
 let phc = null;
+
 const getDataViaWeb3 = async (account) => {
-// Refresh the winery UI
-	// Get the currently accrued fatigue
-	let vpm = 0
-	await winery.methods.getFatigueAccrued(account).call({from: account}).then(async(fatigue) => {
-		// Convert to percentage
-		let fatigueAccrued = fatigue/1e14;
-		$("#fatigue").html((fatigueAccrued*100).toFixed(3) + "%");
+	// Refresh the winery UI	
+	switch(selectedPanel) {
+		case 0:
+			await updateWinery(account);
+			break;
+		case 1:
+			await updateCellar(account);
+			break;
+		case 2:
+			await updateWinepress(account);
+			break;
+		default:
+			await updateWinery(account);
+			break;
+	}
 
-		// Get the date and time, in locale time. that fatigue will reach 30%, and 100%
-		await winery.methods.getTimeUntilFatigued(account).call( {from: account}).then(function(result) {
-			let dt50 = new Date(0);
-			let dt100 = new Date(0);
-
-			dt50.setUTCSeconds((Date.now()/1000) + ((result - (Date.now()/1000)) * (0.5-fatigueAccrued)));
-			dt100.setUTCSeconds(result);
-
-			$("#fatiguedate50").html(dt50.toLocaleDateString() + ", " + dt50.toLocaleTimeString());
-			$("#fatiguedate100").html(dt100.toLocaleDateString() + ", " + dt100.toLocaleTimeString());
-		});
-
-		// Get current and max VPM			
-		await winery.methods.getTotalPPM(account).call({from: account}).then(async(totalPPM) => { // totalPPM is our MAX VPM
-			$("#resetCost").html((totalPPM * RESET_MULTI).toFixed(2) + " GRAPE");
-			await winery.methods.getMasterVintnerNumber(account).call({from: account}).then(async(masterNum) => { // Number of staked masters
-				// Update UI element
-				$("#wm-masters").html(masterNum + " vintners");
-				// Get any modifiers to the VPM, with 100 being the no modifiers
-				await wineprog.methods.getMasterVintnerSkillModifier(account, masterNum).call({from: account}).then(async(modifier) => {
-					await winery.methods.startTimeStamp(account).call({from: account}).then(async(startTime) => { // Timestamp of when the vintners were last fully rested
-						await winery.methods.fatiguePerMinute(account).call({from: account}).then(async(fatiguePM) => { // Fatigue per minute
-							/*
-								vintageWineAccruedCalculation(initialVintage, timePeriodInSecs, totalPPM, getMasterVinterSkillModifier(.., ..), currentFatigue, fatiguePerMinute, YIELD_PPS)
-									this function lets you calculate how much vintage you will earn in a set period of time
-									in this case we're using it to see how much we earn in one minute to get the dynamic VPM
-							 */
-							await winery.methods.vintageWineAccruedCalculation(0, 60, totalPPM, modifier, fatigue, fatiguePM, YIELD_PPS).call({from: account}).then(function(dynamicPPM) {
-								// Update UI element
-								vpm = dynamicPPM/1e18;
-								$("#vpm").html(vpm.toFixed(2) + "/" + (totalPPM * (BASE_VPM * (modifier/100))).toFixed(2));
-							});});});});});
-		});
-	});
-
-	// Get the number of normal vintners
-	await winery.methods.numberOfStaked(account, 0).call({from: account}).then(function(result) {
-		$("#wm-normals").html(result + " vintners");
-	});
-	
-	// Get the number of tools
-	await winery.methods.ownedUpgradeStakesBalance(account).call({from: account}).then(function(result) {
-		$("#wm-tools").html(result + " tools");
-	});
-	// Get the amount of VINTAGE accrued in the reward contract
-	await winery.methods.getVintageWineAccrued(account).call({from: account}).then(async(claimable) => {
-		let vintEarned = (claimable / 1e18);
-		// Get the balance of mim in the LP
-		await mim.methods.balanceOf(VINT_LP).call({from: account}).then(async(mimSupply) => {
-			// Get the balance of VINTAGE in the LP
-			await vint.methods.balanceOf(VINT_LP).call({from: account}).then(async(vintSupply) => {
-				// Calculate the price of the VINTAGE
-				vintPrice = (mimSupply/vintSupply);
-				$("#vintage").html(vintEarned.toFixed(2) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (vintEarned * vintPrice).toFixed(2) + " USD</div>");
-				
-				// Get the maximum storage and show how much is used
-				await wineprog.methods.getVintageWineStorage(account).call( {from: account} ).then(function(result) {
-					storage = window.web3.utils.toBN(result) / 1e18;						
-					let dt = new Date();	
-					dt.setSeconds(dt.getSeconds() + ((storage-vintEarned)/vpm*60));						
-					$("#storage").html(vintEarned.toFixed(0) + "/" + storage.toFixed(0));
-					$("#wm-storagefull").html(dt.toLocaleDateString() + " " + dt.toLocaleTimeString());
-				});
-
-				// Get the price of GRAPE
-				await mim.methods.balanceOf(GRAPE_LP).call({from: account}).then(async(mimSupply2) => {
-					await grape.methods.balanceOf(GRAPE_LP).call({from: account}).then(function(grapeSupply) {
-						// Calculate the grape price, as well as the price of 50 grape, and the ratio of vint to grape
-						grapePrice = (mimSupply2/grapeSupply);
-						let fiftyGrape = 50 * grapePrice;
-						let ratio = (vintPrice / grapePrice) * 100;
-						
-						// Calculate tool costs
-						let mag = (10*grapePrice) + (900*vintPrice);
-						let shears = (20*grapePrice) + (1800*vintPrice);
-						let hydro = (40*grapePrice) + (4200*vintPrice);
-						
-						$("#vintageprice").html("$" + (vintPrice).toFixed(4) + " USD (" + ((vintPrice / grapePrice)*100).toFixed(2) + "%)");
-						$("#grapeprice").html("$" + grapePrice.toFixed(4) + " USD");
-						$("#grapetovint").html((fiftyGrape/vintPrice).toFixed(2) + " $VINTAGE");
-						$("#magazine").html("$" + mag.toFixed(2) + " USD");// + " ($" + (fiftyGrape - mag).toFixed(2) + ")");
-						$("#shears").html("$" + shears.toFixed(2) + " USD");// + " ($" + (fiftyGrape*3 - shears).toFixed(2) + ")<br>");
-						$("#hydro").html("$" + hydro.toFixed(2) + " USD");// + " ($" + (fiftyGrape*5 - hydro).toFixed(2) + ")");
-					});
-				});
-			});
-		});
-	});
-// End update winery ui
-
-// Start update cellar ui		
-	let winePrice = 0;
-	await mim.methods.balanceOf(WINE_MIM_LP).call({from: account}).then(async(mimLPbal) => {
-		await wine.methods.balanceOf(WINE_MIM_LP).call({from: account}).then(function(wineLPbal) {				
-			winePrice = mimLPbal / wineLPbal;
-		});
-	});
-
-	// Get the ratio of svint to vint in the cellar
-	await svint.methods.totalSupply().call({from: account}).then(async(svintSupply) => {
-		svint.methods.vintageWineBalance().call({from: account}).then(function(vintageInCellar) {
-			svintRatio = window.web3.utils.toBN(vintageInCellar) / window.web3.utils.toBN(svintSupply);
-			$("#cellarratio").html(svintRatio.toFixed(2) + "x");
-		});
-	});
-	
-	// Get the vintage balance
-	await vint.methods.balanceOf(account).call({from: account}).then(function(balance) {
-		$("#vintinwallet").html((balance/1e18).toFixed(2) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((balance/1e18) * vintPrice).toFixed(2) + " USD</div>");
-	});
-	// Get the svintage balance
-	await svint.methods.balanceOf(account).call({from: account}).then(function(balance) {
-		$("#svintinwallet").html((balance/1e18).toFixed(2) + " $sVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((balance/1e18) * svintRatio * vintPrice).toFixed(2) + " USD</div>");
-	});
-	// Get the svintage in the vinyard
-	await vineyard.methods.userInfo(7,account).call({from: account}).then(function(userInfo) {
-		let amount = (window.web3.utils.toBN(userInfo['amount'])/1e18);
-		$("#svintinvinyard").html(amount.toFixed(2) + " $sVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (amount * svintRatio * vintPrice).toFixed(2) + " USD</div>");
-	});
-	// Get the pending wine rewards from the pool
-	await vineyard.methods.pendingShare(7,account).call({from: account}).then(function(balance) {			
-		$("#pendingwine").html((balance/1e18).toFixed(2) + " $WINE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((balance / 1e18) * winePrice).toFixed(2) + " USD</div>");
-	});
-	// Get the pending svintage to be unlocked
-	await svint.methods.unlockAmounts(account).call({from: account}).then(function(amount) {
-		$("#cel-pendingamounts").html((amount / 1e18).toFixed(2) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((amount / 1e18) * vintPrice).toFixed(2) + " USD</div>");
-	});
-	// Get the timestamp for when the svintage will be unlocked and claimable
-	await svint.methods.unlockTimestamps(account).call({from: account}).then(function(timestamp) {
-		let dt = new Date(0);
-		let now = Date.now()/1000;
-		dt.setUTCSeconds(timestamp);
-		$("#cel-pendingtimestamps").html(dt.toLocaleDateString() + ", " + dt.toLocaleTimeString());			
-		// Grey out the button if the timestamp hasn't been reached yet
-		// I have not been able to get this to work...if you can see why, please tell me on this discord @crypto_neo
-		/*if(timestamp < now) {				
-			$("#cel-claimpending").css("backgroundColor", "#777777");
-			$("#cel-claimpending").css("color", "#BABABA");
-		} else {				
-			$("#cel-claimpending").css("backgroundColor", "");
-			$("#cel-claimpending").css("color", "");
-		}*/
-	});
-// End update cellar ui
-	
-// Start update winepress ui
-	// Get the value of 1 WINE-MIM-LP
-	let wine_mim_lp_value = 0;		
-	await wine_mim_lp.methods.totalSupply().call({from: account}).then(async(totalSupply) => {
-		await mim.methods.balanceOf(WINE_MIM_LP).call({from: account}).then(async(mimLPbal) => {
-			wine_mim_lp_value = ((mimLPbal / totalSupply)*2);			
-			$("#wp-lpvalue").html("$" + wine_mim_lp_value.toFixed(2) + " USD");				
-		});
-	});
-	
-	// Get the tracked balance, compounded balance, and assassination risk
-	userBalance = 0;
-	userClaimPerSecond = 0;
-	await winepress.methods.calculateTrackedProfit(account).call({from: account}).then(async(currentProfit) => {
-		await winepress.methods.userInfo(account).call({from: account}).then(async(userInfo) => {
-			// These calculations are from the smart contract
-			let balance = window.web3.utils.toBN(userInfo['balance']);
-			let claimPerSecond = window.web3.utils.toBN(userInfo['claimPerSecond']);
-			let trackedTokenBalance = window.web3.utils.toBN(userInfo['trackedTokenBalance']);
-			let trackedShareBalance = window.web3.utils.toBN(userInfo['trackedShareBalance']);
-			let totalTokenBalance = window.web3.utils.toBN(userInfo['totalTokenBalance']);
-			let totalShareBalance = window.web3.utils.toBN(userInfo['totalShareBalance']);
-			let compoundedBalance = trackedTokenBalance - totalTokenBalance;
-			
-			// Calculate assassination risk, literally same code from contract :)
-			let profitRatio = (currentProfit * 10e18) / trackedTokenBalance;
-			let expectedProfit = (trackedTokenBalance * 3.5);
-			let profitDifference = expectedProfit - currentProfit;
-			let risk = ((1.0 - (Math.abs(profitDifference) / expectedProfit)) * 100).toFixed(2);
-			
-			let trueAPR = 1.25;
-			let visibleAPR = 1.25;
-			await winepress.methods.calculatePrice().call({from: account}).then(function(lpts) {
-				lpToShare = lpts / 1e18;
-				trueAPR = (((claimPerSecond * lpToShare) * 86400) / totalTokenBalance) * 100;
-				visibleAPR = (((claimPerSecond * lpToShare) * 86400) / trackedTokenBalance) * 100;
-				$("#wp-apr").html(visibleAPR.toFixed(2) + "% / " + trueAPR.toFixed(2) + "%");
-				$("#wp-roi").html((visibleAPR*72).toFixed(2) + "% / " + (trueAPR*72).toFixed(2) + "%");
-			});
-			
-			// Update UI elements
-			$("#wp-trackedBalance").html((trackedTokenBalance/1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((trackedTokenBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
-			$("#wp-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((compoundedBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
-			
-			$("#wp-assassinationrisk").html(risk + "% / 100%");
-			// < 90% green, < 100% orange, 100% or more is red
-			if(risk <= 90) {
-				$("#wp-assassinationrisk").css({"color": "#00FF00"});
-			} else if(risk < 100) {
-				$("#wp-assassinationrisk").css({"color": "#FFBA00"});
-			} else {
-				$("#wp-assassinationrisk").css({"color": "#FF0000"});
-			}
-			
-			await winepress.methods.pendingShares(account).call({from: account}).then(async(pendingShares) => {
-				$("#wp-roiprogress").html( ((1-((balance-pendingShares)/totalShareBalance))*100).toFixed(2) + "% / 100%");
-			});
-		});
-	});
-	
-	// Get the pending rewards
-	await winepress.methods.pendingRewards(account).call({from: account}).then(function(pendingRewards) {
-		let pendingBalance = (window.web3.utils.toBN(pendingRewards)/1e18);
-		let pendingValue = pendingBalance * wine_mim_lp_value;
-		$("#wp-pendingRewards").html(pendingBalance.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + pendingValue.toFixed(2) + " USD</div>");			
-	});
-	
-	// Get the rewards per day
-	await winepress.methods.rewardsPerDay(account).call({from: account}).then(function(dailyRewards) {
-		let dailyProjected = window.web3.utils.toBN(dailyRewards)/1e18;
-		let dailyValue = dailyProjected * wine_mim_lp_value;			
-		$("#wp-dailyRewards").html(dailyProjected.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + dailyValue.toFixed(2) + " USD</div>");
-	});
-// End update winepress ui
-
-// Start update PHC ui		
-	await phc.methods.vesting(account).call({from: account}).then(function(vesting) {			
+// Start update PHC ui
+	await phc.methods.vesting(account).call({from: account}).then(function(vesting) {
 		let totalVested = (window.web3.utils.toBN(vesting['amount'])-window.web3.utils.toBN(vesting['claimed']))/1e18;
 		let endEpoc = vesting['end'];
 		let dt = new Date(0);
@@ -326,10 +549,10 @@ const getDataViaWeb3 = async (account) => {
 		$("#peg-fullyclaimablewhen").html(dt.toLocaleDateString() + ", " + dt.toLocaleTimeString());
 		$("#peg-totalvested").html(totalVested.toFixed(2) + " WINE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (totalVested * winePrice).toFixed(2) + " USD</div>");
 	});
-	
+
 	await phc.methods.claimableWine(account).call({from: account}).then(function(claimable) {
 		let totalVested = window.web3.utils.toBN(claimable)/1e18;
-		
+
 		$("#peg-claimable").html(totalVested.toFixed(8) + " WINE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((claimable / 1e18) * winePrice).toFixed(4) + " USD</div>");
 	});
 // End update PHC ui
@@ -348,218 +571,36 @@ const callRPC = async(fromAddr, toAddr, rpc_method, rpc_data) => {
 
 // This code is equivilent to code in getDataViaWeb3, please refer to that function for comments until I can
 // copy them and make everything 1:1
-const getDataViaRpc = async(account) => {	
-	// Winery RPC calls
-	let vpm = 0;
-	await callRPC(account, WINEMAKER_REWARDS, "getFatigueAccrued(address)", [ account ]).then(async(fatigue) => {
-		let fatigueAccrued = fatigue/1e14;
-		$("#fatigue").html((fatigueAccrued*100).toFixed(3) + "%");
-		await callRPC(account, WINEMAKER_REWARDS, "getTimeUntilFatigued(address)", [ account ]).then(function(result) {
-			let dt50 = new Date(0);
-			let dt100 = new Date(0);
-
-			dt50.setUTCSeconds((Date.now()/1000) + ((result - (Date.now()/1000)) * (0.5-fatigueAccrued)));
-			dt100.setUTCSeconds(result);
-
-			$("#fatiguedate50").html(dt50.toLocaleDateString() + ", " + dt50.toLocaleTimeString());
-			$("#fatiguedate100").html(dt100.toLocaleDateString() + ", " + dt100.toLocaleTimeString());
-		});
-
-		await callRPC(account, WINEMAKER_REWARDS, "getTotalPPM(address)", [ account ]).then(async(totalPPM) => {
-			$("#resetCost").html((totalPPM * RESET_MULTI).toFixed(2) + " GRAPE");
-			await callRPC(account, WINEMAKER_REWARDS, "getMasterVintnerNumber(address)", [ account ]).then(async(masterNumber) => {
-				await callRPC(account, WINEMAKER_PROGRESSION, "getMasterVintnerSkillModifier(address,uint256)", [ account, masterNumber ]).then(async(modifier) => {
-					$("#wm-masters").html(window.web3.utils.toNumber(masterNumber) + " vintners");
-					await callRPC(account, WINEMAKER_REWARDS, "startTimeStamp(address)", [ account ]).then(async(startTime) => {
-						await callRPC(account, WINEMAKER_REWARDS, "fatiguePerMinute(address)", [ account ]).then(async(fatiguePM) => {
-							await callRPC(account, WINEMAKER_REWARDS, "vintageWineAccruedCalculation(uint256,uint256,uint256,uint256,uint256,uint256,uint256)", [ 0, 60, totalPPM, modifier, fatigue, fatiguePM, YIELD_PPS ]).then(function(dynamicPPM) {
-								vpm = dynamicPPM/1e18;
-								$("#vpm").html(vpm.toFixed(2) + "/" + (totalPPM * BASE_VPM * (modifier/100)).toFixed(2));
-							});
-						});
-					});
-				});
-			});
-		});
-	});
-
-	await callRPC(account, WINEMAKER_REWARDS, "numberOfStaked(address,uint256)", [ account, 0 ]).then(function(result) {
-		$("#wm-normals").html(window.web3.utils.toNumber(result) + " vintners");
-	});
+const getDataViaRpc = async(account) => {
 	
-	await callRPC(account, WINEMAKER_REWARDS, "ownedUpgradeStakesBalance(address)", [ account, 0 ]).then(function(result) {
-		$("#wm-tools").html(window.web3.utils.toNumber(result) + " tools");
-	});
+	switch(selectedPanel) {
+		case 0:
+			await updateWinery(account);
+			break;
+		case 1:
+			await updateCellar(account);
+			break;
+		case 2:
+			await updateWinepress(account);
+			break;
+		default:
+			await updateWinery(account);
+			break;
+	}
 
-	await callRPC(account, WINEMAKER_REWARDS, "getVintageWineAccrued(address)", [ account ]).then(async(claimable) => {
-		let vintEarned = (claimable / 1e18);
-		await callRPC(account, MIM_TOKEN, "balanceOf(address)", [ VINT_LP ]).then(async(mimSupply) => {
-			await callRPC(account, VINT_TOKEN, "balanceOf(address)", [ VINT_LP ]).then(async(vintSupply) => {
-				// Calculate the price of the VINTAGE
-				vintPrice = (mimSupply/vintSupply);
-				
-				// Update the UI
-				$("#vintage").html(vintEarned.toFixed(2) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (vintEarned * vintPrice).toFixed(2) + " USD</div>");
-				await callRPC(account, WINEMAKER_PROGRESSION, "getVintageWineStorage(address)", [ account ]).then(function(result) {
-					storage = window.web3.utils.toBN(result) / 1e18;						
-					let dt = new Date();	
-					dt.setSeconds(dt.getSeconds() + ((storage-vintEarned)/vpm*60));						
-					$("#storage").html(vintEarned.toFixed(0) + "/" + storage.toFixed(0));
-					$("#wm-storagefull").html(dt.toLocaleDateString() + " " + dt.toLocaleTimeString());
-				});
-				
-				await callRPC(account, MIM_TOKEN, "balanceOf(address)", [ GRAPE_LP ]).then(async(mimSupply2) => {
-					await callRPC(account, GRAPE_TOKEN, "balanceOf(address)", [ GRAPE_LP ]).then(function(grapeSupply) {
-						grapePrice = (mimSupply2/grapeSupply);
-						let fiftyGrape = 50 * grapePrice;
-						let ratio = (vintPrice / grapePrice) * 100;
-						// Update the UI
-						let mag = (10*grapePrice) + (900*vintPrice);
-						let shears = (20*grapePrice) + (1800*vintPrice);
-						let hydro = (40*grapePrice) + (4200*vintPrice);
-						
-						$("#vintageprice").html("$" + (vintPrice).toFixed(4) + " USD (" + ((vintPrice / grapePrice)*100).toFixed(2) + "%)");
-						$("#grapeprice").html("$" + grapePrice.toFixed(4) + " USD");
-						$("#grapetovint").html((fiftyGrape/vintPrice).toFixed(2) + " $VINTAGE");
-						$("#magazine").html("$" + mag.toFixed(2) + " USD");// + " ($" + (fiftyGrape - mag).toFixed(2) + ")");
-						$("#shears").html("$" + shears.toFixed(2) + " USD");// + " ($" + (fiftyGrape*3 - shears).toFixed(2) + ")<br>");
-						$("#hydro").html("$" + hydro.toFixed(2) + " USD");// + " ($" + (fiftyGrape*5 - hydro).toFixed(2) + ")");
-					});
-				});
-			});
-		});
-	});
-
-	// Cellar RPC calls
-	let winePrice = 0;
-	await callRPC(account, MIM_TOKEN, 'balanceOf(address)', [ WINE_MIM_LP ]).then(async(mimLPbal) => {
-		await callRPC(account, WINE_TOKEN, 'balanceOf(address)', [ WINE_MIM_LP ]).then(async(wineLPbal) => {	
-			winePrice = mimLPbal / wineLPbal;
-		});
-	});
-
-	await callRPC(account, SVINT_TOKEN, "totalSupply()", []).then(async(svintSupply) => {
-		await callRPC(account, SVINT_TOKEN, "vintageWineBalance()", { }).then(function(vintageInCellar) {
-			svintRatio = window.web3.utils.toBN(vintageInCellar) / window.web3.utils.toBN(svintSupply);
-			$("#cellarratio").html(svintRatio.toFixed(2) + "x");
-		});
-	});
-
-	// Wallet VINTAGE balance
-	await callRPC(account, VINT_TOKEN, "balanceOf(address)", [ account ]).then(function(balance) {
-		$("#vintinwallet").html((balance/1e18).toFixed(2) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((balance/1e18) * vintPrice).toFixed(2) + " USD</div>");
-	});
-
-	// Wallet sVINTAGE balance
-	await callRPC(account, SVINT_TOKEN, "balanceOf(address)", [ account ]).then(function(balance) {
-		$("#svintinwallet").html((balance/1e18).toFixed(2) + " $sVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((balance/1e18) * svintRatio * vintPrice).toFixed(2) + " USD</div>");
-	});
-
-	// Vinyard sVINTAGE balance
-	await callRPC(account, VINEYARD, "userInfo(uint256,address)", [ 7, account ]).then(function(userInfo) {
-		amount = window.web3.utils.toBN(userInfo.substring(2,66))/1e18;
-		$("#svintinvinyard").html(amount.toFixed(2) + " $sVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (amount * svintRatio * vintPrice).toFixed(2) + " USD</div>");
-	});
-
-	await callRPC(account, VINEYARD, "pendingShare(uint256,address)", ['7', account]).then(function(balance) {
-		$("#pendingwine").html((balance/1e18).toFixed(2) + " $WINE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((balance / 1e18) * winePrice).toFixed(2) + " USD</div>");
-	});
-
-	await callRPC(account, SVINT_TOKEN, "unlockAmounts(address)", [ account ]).then(function(amount) {
-		$("#cel-pendingamounts").html((amount / 1e18).toFixed(2) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((amount / 1e18) * vintPrice).toFixed(2) + " USD</div>");
-	});
-
-	// Winepress RPC calls
-	await callRPC(account, SVINT_TOKEN, "unlockTimestamps(address)", [ account ]).then(function(timestamp) {
-		let dt = new Date(0);
-		let now = Date.now() / 1000;
-		dt.setUTCSeconds(timestamp);
-		$("#cel-pendingtimestamps").html(dt.toLocaleDateString() + ", " + dt.toLocaleTimeString());
-		/*if(timestamp < now) {
-			$("#cel-claimpending").css("backgroundColor", "#777777");
-			$("#cel-claimpending").css("color", "#BABABA")
-		} else {
-			$("#cel-claimpending").css("backgroundColor", "");
-			$("#cel-claimpending").css("color", "")
-		}*/
-	});
-
-	let wine_mim_lp_value = 0;
-	await callRPC(account, WINE_MIM_LP, "totalSupply()", [ ]).then(async(totalSupply) => {
-		await callRPC(account, MIM_TOKEN, "balanceOf(address)", [ WINE_MIM_LP ]).then(function(mimLPbal) {
-			wine_mim_lp_value = ((mimLPbal / totalSupply)*2);
-			$("#wp-lpvalue").html("$" + wine_mim_lp_value.toFixed(2) + " USD");
-		});
-	});
-
-	await callRPC(account, WINEPRESS, "calculateTrackedProfit(address)", [ account ]).then(async(currentProfit) => {
-		await callRPC(account, WINEPRESS, "userInfo(address)", [ account ]).then(async(userInfo) => {			
-			let balance = window.web3.utils.toBN(userInfo.substring(2, 66));
-			let totalTokenBalance = window.web3.utils.toBN(userInfo.substring(130, 130+64));
-			let totalShareBalance = window.web3.utils.toBN(userInfo.substring(194, 194+64));
-			let trackedTokenBalance = window.web3.utils.toBN(userInfo.substring(258, 258+64));
-			let claimPerSecond = window.web3.utils.toBN(userInfo.substring(386, 450));			
-			let compoundedBalance = trackedTokenBalance - totalTokenBalance;
-			
-			let profitRatio = (currentProfit * 10e18) / trackedTokenBalance;
-			let expectedProfit = (trackedTokenBalance * (3.5 * 10e18)) / 10e18;
-			let profitDifference = expectedProfit - currentProfit;
-			let risk = ((1.0 - (Math.abs(profitDifference) / expectedProfit)) * 100).toFixed(2);
-
-			let trueAPR = 1.25;
-			let visibleAPR = 1.25;
-			await callRPC(account, WINEPRESS, "calculatePrice()", [ ]).then(function(lpts) {
-				lpToShare = lpts / 1e18;
-				trueAPR = (((claimPerSecond * lpToShare) * 86400) / totalTokenBalance) * 100;
-				visibleAPR = (((claimPerSecond * lpToShare) * 86400) / trackedTokenBalance) * 100;
-				$("#wp-apr").html(visibleAPR.toFixed(2) + "% / " + trueAPR.toFixed(2) + "%");
-				$("#wp-roi").html((visibleAPR*72).toFixed(2) + "% / " + (trueAPR*72).toFixed(2) + "%");
-			});
-
-			// Update UI elements
-			$("#wp-trackedBalance").html((trackedTokenBalance/1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((trackedTokenBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
-			$("#wp-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((compoundedBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
-
-			await callRPC(account, WINEPRESS, "pendingShares(address)", [ account]).then(async(pendingShares) => {
-				$("#wp-roiprogress").html( ((1-((balance-pendingShares)/totalShareBalance))*100).toFixed(2) + "% / 100%");
-			});
-
-			if(risk <= 90) {
-				$("#wp-assassinationrisk").css({"color": "#00FF00"});
-			} else if(risk < 100) {
-				$("#wp-assassinationrisk").css({"color": "#FFBA00"});
-			} else {
-				$("#wp-assassinationrisk").css({"color": "#FF0000"});
-			}
-			$("#wp-assassinationrisk").text(risk + "%");
-		});
-	});
-
-	await callRPC(account, WINEPRESS, "rewardsPerDay(address)", [ account ]).then(function(dailyRewards) {
-		let dailyProjected = window.web3.utils.toBN(dailyRewards)/1e18;
-		let dailyValue = dailyProjected * wine_mim_lp_value;
-		$("#wp-dailyRewards").html(dailyProjected.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + dailyValue.toFixed(2) + " USD</div>");
-	});
-
-	await callRPC(account, WINEPRESS, "pendingRewards(address)", [ account ]).then(function(pendingRewards) {
-		let pendingBalance = (window.web3.utils.toBN(pendingRewards)/1e18);
-		let pendingValue = pendingBalance * wine_mim_lp_value;
-		$("#wp-pendingRewards").html(pendingBalance.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>$" + pendingValue.toFixed(2) + " USD</div>");
-	});
-	
-	// Start update PHC ui	
-	await callRPC(account, PEG_HEALTH_CAMPAIGN, "vesting(address)", [ account ]).then(function(vesting) {					
+	// Start update PHC ui
+	await callRPC(account, PEG_HEALTH_CAMPAIGN, "vesting(address)", [ account ]).then(function(vesting) {
 		let totalVested = (window.web3.utils.toBN(vesting.substring(2,66))-window.web3.utils.toBN(vesting.substring(194,194+64)))/1e18;
-		let endEpoc = window.web3.utils.hexToNumber("0x"+vesting.substring(130,130+64));	
+		let endEpoc = window.web3.utils.hexToNumber("0x"+vesting.substring(130,130+64));
 		let dt = new Date(0);
 		dt.setUTCSeconds(endEpoc);
 		$("#peg-fullyclaimablewhen").html(dt.toLocaleDateString() + ", " + dt.toLocaleTimeString());
 		$("#peg-totalvested").html(totalVested.toFixed(2) + " WINE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (totalVested * winePrice).toFixed(2) + " USD</div>");
 	});
-	
+
 	await callRPC(account, PEG_HEALTH_CAMPAIGN, "claimableWine(address)", [ account ]).then(function(claimable) {
 		let totalVested = window.web3.utils.toBN(claimable)/1e18;
-		
+
 		$("#peg-claimable").html(totalVested.toFixed(8) + " WINE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((claimable / 1e18) * winePrice).toFixed(4) + " USD</div>");
 	});
 // End update PHC ui
@@ -577,50 +618,50 @@ let fcModdedFPM = 0;
 let fcTotalPPM = 0;
 let fcMasterSkillMod = 100;
 function updateFatigueCalcSlider() {
-	if(fcModdedFPM === 0 || fcTotalPPM === 0) {	
+	if(fcModdedFPM === 0 || fcTotalPPM === 0) {
 		return;
 	}
-	
+
 	// Get accrued fatigue and calculate the current fatigue level and max VPM
 	MAX_FATIGUE = 100000000000000;
 	accruedFatigue = ($("#slider").val()/100)*MAX_FATIGUE;
 	fatigueLevel = (accruedFatigue/MAX_FATIGUE); // percent
-	maxVpm = (fcTotalPPM * BASE_VPM) * (fcMasterSkillMod/100);	
-	
+	maxVpm = (fcTotalPPM * BASE_VPM) * (fcMasterSkillMod/100);
+
 	// Get the seconds to the selected fatigue and the remainingDelta
 	// seconds until 100% fatigue
 	let zero = new Date(0);
 	accruedFatigueSeconds = accruedFatigue / fcModdedFPM * 60;
 	remainingFatigueSeconds = (MAX_FATIGUE-accruedFatigue) / fcModdedFPM * 60;
 	let accruedDelta = (new Date(accruedFatigueSeconds*1000) - zero) / 1000;
-	let remainingDelta = (new Date(remainingFatigueSeconds*1000) - zero) / 1000;	
-		
+	let remainingDelta = (new Date(remainingFatigueSeconds*1000) - zero) / 1000;
+
 	// Integrate earnings
 	earnedVintage = 0;
 	pendingVintage = 0;
-	let i = 0;	
+	let i = 0;
 	while(i < MAX_FATIGUE) {
 		let cf = 1-(i/MAX_FATIGUE);
 		if(i < accruedFatigue) {
 			earnedVintage += cf * maxVpm;
 		} else {
 			pendingVintage += cf * maxVpm;
-		}	
+		}
 		i += fcModdedFPM;
 	}
 	totalToEarn = earnedVintage + pendingVintage;
-	
+
 	// Update fatigue calculator UI
 	$("#fc-fatiguelevel").html("Selected Fatigue: " + $("#slider").val() + "%");
-	$("#fc-timetofatigue").html("&Delta;T " + (fatigueLevel*100).toFixed(0) + "% - " + secondsToString(accruedDelta));	
-	$("#fc-timetofullfatigue").html("&Delta;T to 100% - " + secondsToString(remainingDelta));	
+	$("#fc-timetofatigue").html("&Delta;T " + (fatigueLevel*100).toFixed(0) + "% - " + secondsToString(accruedDelta));
+	$("#fc-timetofullfatigue").html("&Delta;T to 100% - " + secondsToString(remainingDelta));
 	$("#fc-earned").html("Earned: " + earnedVintage.toFixed(0) + " VINTAGE ( " + (earnedVintage/totalToEarn*100).toFixed(2) + "% )");
 	$("#fc-pending").html("Pending&nbsp;: " + pendingVintage.toFixed(0) + " VINTAGE ( " + (pendingVintage/totalToEarn*100).toFixed(2) + "% )");
 };
 
-function toggleFatigueCalculator() {	
+function toggleFatigueCalculator() {
 	// Pull contract variables
-	if($("#addressEntry").val() === "") {
+	if(usingWeb3) {
 		// Contract objects
 		let winery = new window.web3.eth.Contract(WINEMAKER_REWARDS_ABI, WINEMAKER_REWARDS);
 		let wineprog = new window.web3.eth.Contract(WINEMAKER_PROGRESSION_ABI, WINEMAKER_PROGRESSION);
@@ -640,10 +681,10 @@ function toggleFatigueCalculator() {
 				});
 			});
 		});
-	} else { 
+	} else {
 		// Initialize calculator via RPC calls
-		let account = $("#addressEntry").val();		
-		callRPC(account, WINEMAKER_REWARDS, "getFatiguePerMinuteWithModifier(address)", [ account ]).then(async(fatiguePM) => {			
+		let account = $("#addressEntry").val();
+		callRPC(account, WINEMAKER_REWARDS, "getFatiguePerMinuteWithModifier(address)", [ account ]).then(async(fatiguePM) => {
 			fcModdedFPM = window.web3.utils.toNumber(fatiguePM);
 			await callRPC(account, WINEMAKER_REWARDS, "getTotalPPM(address)", [ account ]).then(async(totalPPM) => {
 				fcTotalPPM = window.web3.utils.toNumber(totalPPM);
@@ -658,31 +699,39 @@ function toggleFatigueCalculator() {
 	}
 
 	// Animate the ui
-	if($("#fatigueCalculator").width() < 100) {	
+	if($("#fatigueCalculator").width() < 100) {
 		$("#fatigueCalculator").animate({ width: 384, height: 194 });
 		$("#fatigueHeader").animate({ marginLeft: '8px' });
-	} else {		
+	} else {
 		$("#fatigueCalculator").animate({ width: 32, height: 32 });
 		$("#fatigueHeader").animate({ marginLeft: '16px' });
-	}	
+	}
 }
 
 var refreshId = null;
+var usingWeb3 = false;
+var timer = 30;
 /*
 	Updates the information on the dashboard using RPC calls
 */
 const rpcQuery = async() => {
-	window.web3 = new Web3(window.ethereum);
+		window.web3 = new Web3(window.ethereum);
 	if(refreshId !== null) {
 		clearInterval(refreshId);
 	}
 	let account = $("#addressEntry").val();
 	if(account !== "" && window.web3.utils.isAddress(account)) {
+		usingWeb3 = false;
 		$("#address").html(account);
 		getDataViaRpc(account);
 		refreshId = setInterval(async() => {
-			getDataViaRpc(account);
-		}, 30000);
+			if(timer === 0) {
+				timer = 30;
+				getDataViaRpc(account);
+			} else
+				timer -= 1;
+			$("#timer").html(timer);
+		}, 1000);
 	}
 };
 
@@ -697,8 +746,9 @@ const web3Query = async () => {
 		await switchNetwork(CHAIN_ID); // Make sure we're on the c-chain
 
 		window.web3.eth.getAccounts().then(function(accounts) {
+			usingWeb3 = true;
 			$("#address").html(accounts[0]);
-			// Contract objects	
+			// Contract objects
 			winery = new window.web3.eth.Contract(WINEMAKER_REWARDS_ABI, WINEMAKER_REWARDS);
 			wineprog = new window.web3.eth.Contract(WINEMAKER_PROGRESSION_ABI, WINEMAKER_PROGRESSION);
 			winepress = new window.web3.eth.Contract(WINEPRESS_ABI, WINEPRESS);
@@ -712,9 +762,29 @@ const web3Query = async () => {
 			phc = new window.web3.eth.Contract(PEG_HEALTH_CAMPAIGN_ABI, PEG_HEALTH_CAMPAIGN);
 			getDataViaWeb3(accounts[0]);
 			refreshId = setInterval(async() => {
-				getDataViaWeb3(accounts[0]);
-			}, 30000);
+				if(timer === 0) {
+					timer = 30;
+					getDataViaWeb3(accounts[0]);
+				} else
+					timer -= 1;
+				$("#timer").html(timer);
+			}, 1000);
 		});
+	}
+}
+
+function triggerUpdate() {
+	timer = 30;
+	$("#timer").html(timer);
+	if(usingWeb3) {
+		window.web3.eth.getAccounts().then(function(accounts) {
+			getDataViaWeb3(accounts[0]);
+		});
+	} else {
+		let account = $("#addressEntry").val();
+		if(account !== "" && window.web3.utils.isAddress(account)) {
+			getDataViaRpc(account);
+		}
 	}
 }
 
@@ -736,7 +806,7 @@ const resetFatigue = async() => {
 						console.error("[ERROR] Insufficient GRAPE balance to reset, " + (balance/1e18).toFixed(0) + "/" + (reset_cost/1e18).toFixed(0));
 						return;
 					}
-					
+
 					console.log("Allowance: " + (allowance));
 					if(window.web3.utils.toBN(allowance).lt(window.web3.utils.toBN(totalPPM * RESET_MULTI))) {
 						await grape.methods.approve(WINEMAKER_REWARDS, MAX_UINT256).send({from: account}).on("confirmation", function(confirms) {
@@ -775,7 +845,7 @@ const depositVintage = async() => {
 		await tokenA.methods.balanceOf(account).call({from: account}).then(async(balance) => {
 			if((balance / 1e18) > 0) {
 				console.log("Depositing " + (balance / 1e18) + " Vintage");
-				tokenB.methods.stake(balance).send({from: account});		
+				tokenB.methods.stake(balance).send({from: account});
 			} else {
 				console.error("[ERROR] Vintage balance must be greater than 0");
 			}
@@ -796,7 +866,7 @@ const stakeSVintage = async() => {
 						await token.methods.approve(VINEYARD, MAX_UINT256).send({from: account}).on("confirmation", function(confirms) {
 							if(confirms === 5) {
 								console.log("Staking " + (balance / 1e18) + " SVintage");
-								vineyard.methods.deposit(7, balance).send({from: account});								
+								vineyard.methods.deposit(7, balance).send({from: account});
 							}
 						});
 					} else {
@@ -848,8 +918,8 @@ const claimPendingFromCellar = async() => {
 		let account = accounts[0];
 		token.methods.unlockTimestamps(account).call({from: account}).then(async(timestamp) => {
 			let now = Date.now() / 1000;
-			if(now >= timestamp) {				
-				token.methods.unlockAmounts(account).call({from: account}).then(function(balance) {					
+			if(now >= timestamp) {
+				token.methods.unlockAmounts(account).call({from: account}).then(function(balance) {
 					console.log("Preparing to claim " + (balance / 1e18) + " Vintage");
 					token.methods.claimDelayedUnstake(balance).send({from: account});
 				});
@@ -897,8 +967,11 @@ const claimPegCampaignRewards = async() => {
 		});
 };
 
+var selectedPanel = 0;
 // Panel handlers
 function showWineryPanel() {
+	selectedPanel = 0;
+	triggerUpdate();
 	$("#CellarPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#CellarPanel").css('display', 'none') } );
 	$("#PressPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PressPanel").css('display', 'none') } );
 	$("#PegPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PegPanel").css('display', 'none') } );
@@ -907,6 +980,8 @@ function showWineryPanel() {
 }
 
 function showCellarPanel() {
+	selectedPanel = 1;
+	triggerUpdate();
 	$("#WineryPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#WineryPanel").css('display', 'none') } );
 	$("#PressPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PressPanel").css('display', 'none') } );
 	$("#PegPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PegPanel").css('display', 'none') } );
@@ -915,6 +990,8 @@ function showCellarPanel() {
 }
 
 function showPressPanel() {
+	selectedPanel = 2;
+	triggerUpdate();
 	$("#CellarPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#CellarPanel").css('display', 'none') } );
 	$("#WineryPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#WineryPanel").css('display', 'none') } );
 	$("#PegPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PegPanel").css('display', 'none') } );
