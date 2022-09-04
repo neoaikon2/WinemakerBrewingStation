@@ -4,9 +4,10 @@
 <script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
-<!--<script src="https://brewmaster.on.fleek.co/brewmaster.js"></script>-->
-<script src="brewmaster.js"></script>
+<script src="https://brewmaster.on.fleek.co/brewmaster.js"></script>
+<!--<script src="brewmaster.js"></script>-->
 <link rel="stylesheet" href="https://brewmaster.on.fleek.co/style.css" />
+<!--<link rel="stylesheet" href="style.css" />-->
 </head>
 <body>
 
@@ -53,7 +54,7 @@
 <!-- Winery panel -->
 		<div id="WineryPanel" class="panel">
 			<div class="panel-header">Winery Manager<br><hr></div>
-			<div style="margin: 16px;">
+			<div style="margin: 8px;">
 				<div>
 					<div class="row-item">
 						<div class="row-header" style="width: 110px;">GRAPE:</div>
@@ -62,26 +63,56 @@
 					<div class="row-item">
 						<div class="row-header" style="width: 110px;">VINTAGE:</div>
 						<div class="row-content" id="vintageprice"></div>
-					</div>
+					</div>					
+					<!--<div style="margin-top: 8px">
+						<span class="row-header">50 GRAPE = </span><span class="row-content" id="grapetovint"></span><br>
+					</div>-->
 				</div>				
 				<div style="margin-top: 8px">
+					<!-- begin tooltip section -->
+					<div>							
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-vpm')" onmouseover="hoverTip('tooltip-vpm')">&#8505;</div>
+						<div class="infoTip" id="tooltip-vpm">How much $VINTAGE you are earning per minute</div>
+					</div>
+					<!-- end tooltip section -->
 					<span class="row-header">Vintage PM:</span>
 					<span class="row-content" id="vpm"></span>
 				</div>
-				<div style="margin-top: 8px">
+			
+				<div class="groupbox" style="margin-top: 8px">
 					<span class="row-header">Max fatigue on </span><span class="row-content" id="fatiguedate100"></span><br>					
 					<span class="row-header">50% fatigue on </span><span class="row-content" id="fatiguedate50"></span><br>
+					<!-- begin tooltip section -->
+					<div>							
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-fatigue')" onmouseover="hoverTip('tooltip-fatigue')">&#8505;</div>
+						<div class="infoTip" id="tooltip-fatigue">The dates and times you'll reach 50% and 100% fatigue<br>and your current fatigue level</div>
+					</div>
+					<!-- end tooltip section -->
 					<span class="row-header">Current Fatigue: </span><span class="row-content"  id="fatigue"></span>
 				</div>
 				<div style="margin-top: 8px">
+					<!-- begin tooltip section -->
+					<div>							
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-resetcost')" onmouseover="hoverTip('tooltip-resetcost')">&#8505;</div>
+						<div class="infoTip" id="tooltip-resetcost">The GRAPE cost to instantly reset your fatigue to 0%</div>
+					</div>
+					<!-- end tooltip section -->
 					<span class="row-header">Reset Fatigue Cost: </span><span class="row-content" id="resetCost"></span>
 				</div>
-				<div id="vintners" style="margin-top: 8px">
-					<span class="row-header">Masters Staked: </span><span class="row-content" id="wm-masters"></span><br>
+				
+				<div class="groupbox" id="vintners" style="margin-top: 8px">					
 					<span class="row-header">Normals Staked: </span><span class="row-content" id="wm-normals"></span><br>
+					<span class="row-header">Masters Staked: </span><span class="row-content" id="wm-masters"></span><br>
+					<!-- begin tooltip section -->
+					<div>							
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-stakednum')" onmouseover="hoverTip('tooltip-stakednum')">&#8505;</div>
+						<div class="infoTip" id="tooltip-stakednum">The number of normal vintners, master vintners<br>and tools you have staked</div>
+					</div>
+					<!-- end tooltip section -->
 					<span class="row-header">&nbsp;&nbsp;Tools Staked: </span><span class="row-content" id="wm-tools"></span>
 				</div>
-				<div style="margin-top: 8px">
+				
+				<div class="groupbox" style="margin-top: 8px">
 					<div class="row-item">
 						<div class="row-header" style="width: 150px; text-align: right;">Vintage Earned:&nbsp;</div>
 						<div class="row-content" id="vintage"></div>
@@ -90,15 +121,25 @@
 						<div class="row-header" style="width: 150px; text-align: right;">Storage Used:&nbsp;</div>
 						<div class="row-content" id="storage"></div>
 					</div>
-					<div>
-						<span class="row-header">Storage full on </span>
-						<span class="row-content" id="wm-storagefull"></span>
+					<!-- begin tooltip section -->
+					<div>							
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-earnings')" onmouseover="hoverTip('tooltip-earnings')">&#8505;</div>
+						<div class="infoTip" id="tooltip-earnings">The amount of claimable vintage you have accrued (before tax)<br>and how much of your storage is currently consumed</div>
+					</div>
+					<!-- end tooltip section -->
+					<div class="row-item">
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0);">Storage full on </div>
+						<div class="row-content" id="wm-storagefull"></div>
 					</div>
 				</div>
-				<div style="margin-top: 8px">
-					<span class="row-header">50 GRAPE = </span><span class="row-content" id="grapetovint"></span><br>
-				</div>
-				<div style="margin-top: 8px">
+
+				<div class="groupbox" style="margin-top: 8px">
+					<!-- begin tooltip section -->
+					<div>							
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-toolmintcost')" onmouseover="hoverTip('tooltip-toolmintcost')">&#8505;</div>
+						<div class="infoTip" id="tooltip-toolmintcost">The current cost in USD to mint each tool</div>
+					</div>
+					<!-- end tooltip section -->
 					<span class="row-header">Tool Mint Costs:</span><br>
 					<div class="row-item">
 						<div class="row-header" style="width: 130px; text-align: right;">Magazine:&nbsp;</div>
@@ -113,7 +154,7 @@
 						<div class="row-content" id="hydro"></div>
 					</div>
 				</div>
-				<div style="margin: 16px; display: flex;">
+				<div style="margin: 8px; display: flex;">
 					<div class="button" id="resetButton" onClick="resetFatigue();">Reset Fatigue</div>
 					<div class="button" id="claimButton" style="position: absolute; right: 48px;" onClick="claimVintage();">Claim $VINTAGE</div>
 				</div>
@@ -130,8 +171,8 @@
 						<div id="cellarratio" class="row-content"></div>
 					</div>
 				</div>
-				<div>
-					<div class="row-header" style="margin-top: 8px;">Your Wallet -</div>
+				<div class="groupbox">
+					<div class="row-header">Your Wallet -</div>
 					<div class="row-item">
 						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">$VINTAGE: </div>
 						<div id="vintinwallet" class="row-content"></div>
@@ -140,45 +181,79 @@
 						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">$sVINTAGE: </div>
 						<div id="svintinwallet" class="row-content"></div>
 					</div>
-					<div style="margin-top: 8px; display: flex;">
+					<div style="display: flex;">
 						<div style="width: 45%;">
-							<div class="button" onclick="depositVintage()">1. Deposit</div>							
+							<!-- begin tooltip section -->
+							<div>							
+								<div class="btnEmoji" onmouseleave="hoverTip('tooltip-cellardeposit')" onmouseover="hoverTip('tooltip-cellardeposit')">&#8505;</div>
+								<div class="btnTip" id="tooltip-cellardeposit">Deposit ALL of your $VINTAGE into the Cellar<br>$VINTAGE to $SVINTAGE</div>
+							</div>
+							<!-- end tooltip section -->
+							<div class="button" onclick="depositVintage()">1. Deposit</div>
+							<!-- begin tooltip section -->
+							<div>							
+								<div class="btnEmoji" onmouseleave="hoverTip('tooltip-unstakesvintage')" onmouseover="hoverTip('tooltip-unstakesvintage')">&#8505;</div>
+								<div class="btnTip" id="tooltip-unstakesvintage">Unstake ALL of your $SVINTAGE from the Vineyard</div>
+							</div>
+							<!-- end tooltip section -->
 							<div class="evilbutton" onclick="unstakeSVintage()">3. Unstake</div>
-						</div>
+						</div>						
 						<div style="width: 45%; grow-flex: 1;">
+							<!-- begin tooltip section -->
+							<div>
+								<div class="btnEmoji" onmouseleave="hoverTip('tooltip-stakevintage')" onmouseover="hoverTip('tooltip-stakevintage')">&#8505;</div>
+								<div class="btnTip" id="tooltip-stakevintage">Stake ALL of your $SVINTAGE in the Vineyard</div>
+							</div>
+							<!-- end tooltip section -->
 							<div class="button" onclick="stakeSVintage()">2. Stake&nbsp;&nbsp;&nbsp;</div>
+							<!-- begin tooltip section -->
+							<div>
+								<div class="btnEmoji" onmouseleave="hoverTip('tooltip-withdrawvintage')" onmouseover="hoverTip('tooltip-withdrawvintage')">&#8505;</div>
+								<div class="btnTip" id="tooltip-withdrawvintage">Withdraw ALL of your $VINTAGE from the Cellar<br>$SVINTAGE to $VINTAGE</div>
+							</div>
+							<!-- end tooltip section -->
+							<!-- begin tooltip section -->
+							<div>
+								<div class="infoEmoji" onmouseleave="hoverTip('tooltip-warning')" onmouseover="hoverTip('tooltip-warning')">&#8505;</div>
+								<div class="infoTip" id="tooltip-warning" style="background-color: #BA5C00; font-size: 16px; text-align: center;">WARNING: These buttons will affect your entire balance in each section.</div>
+							</div>
+							<!-- end tooltip section -->
 							<div class="evilbutton" onclick="withdrawVintage()">4. Withdraw</div>
 						</div>						
-					</div>
-					<div style="font-size: 10pt; font-family: consolas; font-weight: bold; color: #FF0000; margin-top: 8px;">WARNING: These buttons will affect your entire balance in each section.</div>
-				</div>			
-				<div style="margin-top: 16px">
-					<div class="row-header">Vineyard Staking -</div>
-					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Vineyard: </div>
-						<div id="svintinvinyard" class="row-content"></div>
-					</div>
-					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Pending: </div>
-						<div id="pendingwine" class="row-content"></div>
-					</div>
-					<div style="margin-top: 8px">
-						<div class="button" onclick="claimVineyardRewards()">Claim Rewards</div>					
-					</div>
-				</div>				
-				<div style="margin-top: 16px">
-					<div class="row-header">Pending Claims -</div>
-					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Amount: </div>
-						<div id="cel-pendingamounts" class="row-content"></div>
-					</div>
-					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Claimable on </div>
-						<div id="cel-pendingtimestamps" class="row-content"></div>
+					</div>					
+					<!--<div style="font-size: 10pt; font-family: consolas; font-weight: bold; color: #FF0000; margin-top: 8px;"></div>-->
+				</div>
+				<div class="groupbox">					
+					<div>
+						<div class="row-header">Vineyard Staking -</div>
+						<div class="row-item">
+							<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Vineyard: </div>
+							<div id="svintinvinyard" class="row-content"></div>
+						</div>
+						<div class="row-item">
+							<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Pending: </div>
+							<div id="pendingwine" class="row-content"></div>
+						</div>						
+						<div style="margin-top: 8px">
+							<div class="button" onclick="claimVineyardRewards()">Claim Rewards</div>												
+						</div>						
 					</div>
 				</div>
-				<div style="margin-top: 8px">
-					<div class="button" id="cel-claimpending" onclick="claimPendingFromCellar()">Claim Pending</div>					
+				<div class="groupbox">
+					<div>
+						<div class="row-header">Pending Claims -</div>
+						<div class="row-item">
+							<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Amount: </div>
+							<div id="cel-pendingamounts" class="row-content"></div>
+						</div>
+						<div class="row-item">
+							<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Claimable on </div>
+							<div id="cel-pendingtimestamps" style="width: 230px;" class="row-content"></div>
+						</div>
+					</div>
+					<div style="margin-top: 8px">
+						<div class="button" id="cel-claimpending" onclick="claimPendingFromCellar()">Claim Pending</div>					
+					</div>
 				</div>
 			</div>
 		</div>
@@ -191,39 +266,86 @@
 					<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">1 WINE-MIM-LP = </div>
 					<div id="wp-lpvalue" class="row-content"></div>
 				</div>
-				<div class="row-item" style="margin-top: 8px;">
-					<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Visible/True APR: </div>
-					<div id="wp-apr" class="row-content"></div>
+				<div class="groupbox">
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-visibleaprroi')" onmouseover="hoverTip('tooltip-visibleaprroi')">&#8505;</div>
+							<div class="infoTip" id="tooltip-visibleaprroi">Visible APR and ROI<br>The APR and ROI visible to other players<br>(like assassins)</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Visible APR/ROI: </div>
+						<div id="wp-visibleaprroi" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-trueaprroi')" onmouseover="hoverTip('tooltip-trueaprroi')">&#8505;</div>
+							<div class="infoTip" id="tooltip-trueaprroi">True APR and ROI<br>Your actual APR and ROI in the Winepress</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">True APR/ROI: </div>
+						<div id="wp-trueaprroi" class="row-content"></div>
+					</div>
 				</div>
-				<div class="row-item">
-					<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Visible/True ROI: </div>
-					<div id="wp-roi" class="row-content"></div>
+				<div class="groupbox">
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-risk')" onmouseover="hoverTip('tooltip-risk')">&#8505;</div>
+							<div class="infoTip" id="tooltip-risk">Your current risk of being assassinated<br>Will reach 100% at 350% Visible ROI</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Assassination Risk: </div>
+						<div id="wp-assassinationrisk" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-roiprogress')" onmouseover="hoverTip('tooltip-roiprogress')">&#8505;</div>
+							<div class="infoTip" id="tooltip-roiprogress">Your progress in receiving the 90%+Bonus APR<br>you are entitled to claim out of the Winepress</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">ROI Progress: </div>
+						<div id="wp-roiprogress" class="row-content"></div>
+					</div>	
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-poolshares')" onmouseover="hoverTip('tooltip-poolshares')">&#8505;</div>
+							<div class="infoTip" id="tooltip-poolshares">The amount of Winepress shares you are<br>entitled to claim out of the Winepress</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Claimable Shares: </div>
+						<div id="wp-roishares" class="row-content"></div>
+					</div>
 				</div>
-				<div class="row-item" style="margin-top: 8px">
-					<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Assassination Risk: </div>
-					<div id="wp-assassinationrisk" class="row-content"></div>
-				</div>				
-				<div class="row-item">
-					<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">ROI Progress: </div>
-					<div id="wp-roiprogress" class="row-content"></div>
+				<div class="groupbox">
+					<div class="row-item">
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Deposited: </div>
+						<div id="wp-depositedBalance" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Compounded: </div>
+						<div id="wp-compoundedBalance" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Total: </div>
+						<div id="wp-trackedBalance" class="row-content"></div>
+					</div>
 				</div>
-				<div class="row-item" style="margin-top: 8px;">
-					<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Deposits: </div>
-					<div id="wp-trackedBalance" class="row-content"></div>
+				<div class="groupbox">
+					<div class="row-item">
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Pending Rewards: </div>
+						<div id="wp-pendingRewards" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Daily Rewards: </div>
+						<div id="wp-dailyRewards" class="row-content"></div>
+					</div>
 				</div>
-				<div class="row-item">
-					<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Compounded: </div>
-					<div id="wp-compoundedBalance" class="row-content"></div>
-				</div>
-				<div class="row-item" style="margin-top: 8px;">
-					<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Pending Rewards: </div>
-					<div id="wp-pendingRewards" class="row-content"></div>
-				</div>
-				<div class="row-item">
-					<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Daily Rewards: </div>
-					<div id="wp-dailyRewards" class="row-content"></div>
-				</div>								
-				<div class="button" onclick="claimWinepress()">Claim</div>
+				
+				<div class="evilbutton" onclick="claimWinepress()">Claim</div>
 				<!--<div class="button" onclick="REMOVED()">Claim + Deposit</div>-->
 				<div class="button" onclick="compoundWinepress()">Compound</div>				
 			</div>			
@@ -254,9 +376,9 @@
 <!-- Disclaimer card -->
 <!-- If you're reading this CSS really sucks but when you get it to work, it's almost (ALMOST) beautiful... -->
 		<div class="cardDisclaimer">
-			DISCLAIMER: This tool provides a basic interface into the winery to keep track of stats, it is NOT intended to be a replacement for any GrapeFinance dApp.<br>
-			This tool is open-source, you can view the source on the <a href="https://github.com/neoaikon2/WinemakerBrewingStation">GitHub repository</a><br>
-			<div style="font-size: 12px; margin-top: 4px;">Brewmaster v2.55&#127815;</div>
+			DISCLAIMER: This tool provides a basic interface into the winery to keep track of stats, it is NOT intended to be a replacement for any GrapeFinance dApp.<br>			
+			<div style="font-size: 12px; margin-top: 4px; float: left;">Brewmaster v2.6&#127815;</div>
+			<div style="font-size: 12px; margin-top: 4px; float: right;">This tool is open-source, you can view the source on the <a href="https://github.com/neoaikon2/WinemakerBrewingStation">GitHub repository</a></div>
 		</div>
 		<div id="timer" onclick="triggerUpdate();" style="font-size: 10pt; font-family: consolas; font-weight: bold; position: absolute; right: 0; top: 0; padding: 4px; cursor: hand;">30</div>
 	</div>	

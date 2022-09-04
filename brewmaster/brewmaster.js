@@ -376,8 +376,8 @@ const updateCellar = async(account) => {
 	}
 	
 	$("#cellarratio").html(svintRatio.toFixed(2) + "x");
-	$("#vintinwallet").html(vintBalance.toFixed(2) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((vintBalance/1e18) * vintPrice).toFixed(2) + " USD</div>");		
-	$("#svintinwallet").html((svintBalance/1e18).toFixed(2) + " $sVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((svintBalance/1e18) * svintRatio * vintPrice).toFixed(2) + " USD</div>");
+	$("#vintinwallet").html(vintBalance.toFixed(2) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (vintBalance * vintPrice).toFixed(2) + " USD</div>");		
+	$("#svintinwallet").html(svintBalance.toFixed(2) + " $sVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (svintBalance * svintRatio * vintPrice).toFixed(2) + " USD</div>");
 	$("#svintinvinyard").html(svintPoolBalance.toFixed(2) + " $sVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (svintPoolBalance * svintRatio * vintPrice).toFixed(2) + " USD</div>");
 	$("#pendingwine").html(pendingWine.toFixed(2) + " $WINE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (pendingWine * winePrice).toFixed(2) + " USD</div>");
 	$("#cel-pendingamounts").html(pendingSvint.toFixed(2) + " $VINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (pendingSvint * vintPrice).toFixed(2) + " USD</div>");
@@ -385,9 +385,10 @@ const updateCellar = async(account) => {
 }
 
 var wine_mim_lp_value = 0;
-var roiRisk = 0, roiProgress = 0;
+var roiRisk = 0, roiProgress = 0, roiShares = 0;
 var trueAPR = 1.25, visibleAPR = 1.25;
-var trackedTokenBalance = 0, compoundedBalance = 0;
+var trackedTokenBalance = 0, totalTokenBalance;
+var depositedBalance = 0, compoundedBalance = 0;
 var pendingPressWine = 0;
 var dailyPressWine = 0;
 
@@ -410,10 +411,10 @@ const updateWinepress = async(account) => {
 				// These calculations are from the smart contract
 				let balance = window.web3.utils.toBN(userInfo['balance']);
 				let claimPerSecond = window.web3.utils.toBN(userInfo['claimPerSecond']);				
-				let trackedShareBalance = window.web3.utils.toBN(userInfo['trackedShareBalance']);
-				let totalTokenBalance = window.web3.utils.toBN(userInfo['totalTokenBalance']);
 				let totalShareBalance = window.web3.utils.toBN(userInfo['totalShareBalance']);
 				
+				roiShares = balance;
+				totalTokenBalance = window.web3.utils.toBN(userInfo['totalTokenBalance']);
 				trackedTokenBalance = window.web3.utils.toBN(userInfo['trackedTokenBalance']);
 				compoundedBalance = trackedTokenBalance - totalTokenBalance;
 
@@ -456,12 +457,13 @@ const updateWinepress = async(account) => {
 		await callRPC(account, WINEPRESS, "calculateTrackedProfit(address)", [ account ]).then(async(currentProfit) => {
 			await callRPC(account, WINEPRESS, "userInfo(address)", [ account ]).then(async(userInfo) => {
 				let balance = window.web3.utils.toBN(userInfo.substring(2, 66));
-				let totalTokenBalance = window.web3.utils.toBN(userInfo.substring(130, 130+64));
-				let totalShareBalance = window.web3.utils.toBN(userInfo.substring(194, 194+64));				
 				let claimPerSecond = window.web3.utils.toBN(userInfo.substring(386, 450));
+				let totalShareBalance = window.web3.utils.toBN(userInfo.substring(194, 194+64));								
 				
+				roiShares = balance;
+				totalTokenBalance = window.web3.utils.toBN(userInfo.substring(130, 130+64));
 				trackedTokenBalance = window.web3.utils.toBN(userInfo.substring(258, 258+64));
-				compoundedBalance = trackedTokenBalance - totalTokenBalance;
+				compoundedBalance = trackedTokenBalance - totalTokenBalance;				
 
 				let profitRatio = (currentProfit * 10e18) / trackedTokenBalance;
 				let expectedProfit = (trackedTokenBalance * (3.5 * 10e18)) / 10e18;
@@ -490,9 +492,10 @@ const updateWinepress = async(account) => {
 	}
 	
 	$("#wp-lpvalue").html("$" + wine_mim_lp_value.toFixed(2) + " USD");
-	$("#wp-apr").html(visibleAPR.toFixed(2) + "% / " + trueAPR.toFixed(2) + "%");
-	$("#wp-roi").html((visibleAPR*72).toFixed(2) + "% / " + (trueAPR*72).toFixed(2) + "%");		
+	$("#wp-visibleaprroi").html(visibleAPR.toFixed(2) + "% / " + (visibleAPR*72).toFixed(2) + "%");
+	$("#wp-trueaprroi").html(trueAPR.toFixed(2) + "% / " + (trueAPR*72).toFixed(2) + "%");
 	$("#wp-trackedBalance").html((trackedTokenBalance/1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((trackedTokenBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
+	$("#wp-depositedBalance").html((totalTokenBalance / 1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((totalTokenBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
 	$("#wp-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((compoundedBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
 	$("#wp-assassinationrisk").html(roiRisk + "% / 100%");
 	if(roiRisk <= 90) {
@@ -501,16 +504,13 @@ const updateWinepress = async(account) => {
 		$("#wp-assassinationrisk").css({"color": "#FFBA00"});
 	} else {
 		$("#wp-assassinationrisk").css({"color": "#FF0000"});
-	}
+	}	
+	$("#wp-roishares").html( (roiShares/1e18).toFixed(2) + " Shares<br><div class='usd-display'>&nbsp;&nbsp;~" + (lpToShare * (roiShares/1e18)).toFixed(2) + " WINE-MIM-LP<br>&nbsp;&nbsp;&nbsp;&nbsp;~" + ((lpToShare * (roiShares/1e18)) * wine_mim_lp_value).toFixed(2) + " USD</div>");
 	$("#wp-roiprogress").html( roiProgress.toFixed(2) + "% / 100%");
 	$("#wp-pendingRewards").html(pendingPressWine.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + (pendingPressWine * wine_mim_lp_value).toFixed(2) + " USD</div>");
 	$("#wp-dailyRewards").html(dailyPressWine.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + (dailyPressWine * wine_mim_lp_value).toFixed(2) + " USD</div>");
 }
 
-//var vintPrice;
-//var grapePrice;
-//var winePrice;
-//var svintRatio;
 let winery = null;
 let wineprog = null;
 let winepress = null;
@@ -614,9 +614,9 @@ function secondsToString(_seconds) {
 	return days.toString().padStart(2, '0') + "d:" + hours.toString().padStart(2, '0') + "h:" + minutes.toString().padStart(2, '0') + "m:" + seconds.toString().padStart(2, '0') + "s";
 }
 
-let fcModdedFPM = 0;
-let fcTotalPPM = 0;
-let fcMasterSkillMod = 100;
+var fcModdedFPM = 0;
+var fcTotalPPM = 0;
+var fcMasterSkillMod = 100;
 function updateFatigueCalcSlider() {
 	if(fcModdedFPM === 0 || fcTotalPPM === 0) {
 		return;
@@ -1005,6 +1005,15 @@ function showPegPanel() {
 	$("#PressPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PressPanel").css('display', 'none') } );
 	$("#PegPanel").css('display', 'block');
 	$("#PegPanel").animate({ opacity: 1, zindex: 1 });
+}
+
+
+function hoverTip(id) {
+	if($("#"+id).css("display") === "none") {
+		$("#"+id).css({"display": "block", "z-index": 3});
+	} else {
+		$("#"+id).css({"display": "none", "z-index": -1});
+	}									
 }
 
 web3Query();

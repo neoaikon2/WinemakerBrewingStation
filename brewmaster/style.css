@@ -10,6 +10,13 @@ hr {
 	border: 1px solid #FEFF35;
 }
 
+.groupbox {
+	border: 1px solid #FEFF35;
+	background-color: #80008010;
+	margin-top: 8px;
+	padding: 8px;
+}
+
 .cardAddress {
 	position: absolute;
 	background-color: #111111BA;
@@ -25,9 +32,9 @@ hr {
 .cardWinery {
 	position: absolute;
 	background-color: #111111BA;
-	width: 400px;	
+	width: 416px;	
 	left: 50%;
-	top: 100px;
+	top: 92px;
     transform: translate(-50%, 0%);  
 	padding: 16px 16px 16px 16px;
 	filter: drop-shadow(5px 5px 2px #11111160);
@@ -39,7 +46,7 @@ hr {
 	width: 700px;
 	left: 50%;
 	top: 100%;
-    transform: translate(-50%, 16px);  
+    transform: translate(-50%, 8px);  
 	padding: 16px 16px 16px 16px;
 	filter: drop-shadow(5px 5px 2px #11111160);
 }
@@ -66,7 +73,7 @@ hr {
 	margin-top: 16px;
 	margin-left: 4px;
 	margin-right: 4px;
-	padding: 2px;
+	padding: 8px;
 	width: 392px;
 	border-radius: 16px;
 }
@@ -178,4 +185,51 @@ a:hover {
 	height: 32px;
 	border-radius: 32px;
 	overflow: clip;
+}
+
+.infoEmoji {
+	position: absolute;
+	font-family: Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,Android Emoji,EmojiSymbols,EmojiOne Mozilla,Twemoji Mozilla,Segoe UI Symbol;
+	font-weight: 300;
+	left: 0px;
+	margin-right: 4px;
+	cursor: hand;
+	
+}
+
+.infoTip {
+	display: none;
+	transform: translate(0px, 20px);
+	left: 20px;
+	position: absolute;
+	background-color: purple;
+	width: auto;
+	padding: 8px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: bold;
+	z-index: -1;
+}
+
+.btnEmoji {
+	position: absolute;
+	float: left;
+	font-family: Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,Android Emoji,EmojiSymbols,EmojiOne Mozilla,Twemoji Mozilla,Segoe UI Symbol;
+	font-weight: 300;	
+	transform: translate(0px, 8px);
+	cursor: hand;
+	z-index: 1;
+}
+
+.btnTip {	
+	display: none;
+	transform: translate(0px, 28px);
+	position: absolute;
+	background-color: purple;
+	width: auto;
+	padding: 8px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: bold;
+	z-index: -1;
 }
