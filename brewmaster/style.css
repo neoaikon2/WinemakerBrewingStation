@@ -23,7 +23,7 @@ hr {
 	height: 50px;
 	width: 416px;
 	left: 50%;
-	top: 16px;	
+	top: 16px;
     transform: translate(-50%, -0%);  
 	padding: 16px 16px 16px 16px;
 	filter: drop-shadow(5px 5px 2px #11111160);
@@ -184,7 +184,7 @@ a:hover {
 	width: 32px;
 	height: 32px;
 	border-radius: 32px;
-	overflow: clip;
+	overflow: hidden;
 }
 
 .infoEmoji {
