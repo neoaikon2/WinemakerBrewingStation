@@ -21,9 +21,9 @@ hr {
 	position: absolute;
 	background-color: #111111BA;
 	height: 50px;
-	width: 400px;
+	width: 416px;
 	left: 50%;
-	top: 16px;
+	top: 16px;	
     transform: translate(-50%, -0%);  
 	padding: 16px 16px 16px 16px;
 	filter: drop-shadow(5px 5px 2px #11111160);
