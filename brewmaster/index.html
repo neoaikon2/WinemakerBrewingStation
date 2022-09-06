@@ -32,9 +32,11 @@
 <!-- Menu Panel -->
 		<div style="position: absolute; overflow: visible; width: 0px; height: 0px; left: -100px; background-color: green;">
 			<div class="sidebuttonL" style="top: 0px; border-radius: 8px 0 0 0;" onclick="showWineryPanel()">Winery</div>
-			<div class="sidebuttonL" style="top: 32px;" onclick="showCellarPanel()">Cellar</div>
-			<div class="sidebuttonL" style="top: 64px; border-radius: 0 0 0 8px;" onclick="showPressPanel()">Winepress</div>
-			<div class="sidebuttonL" style="top: 96px; border-radius: 0 0 0 8px;" onclick="showPegPanel()">Peg Health</div>
+			<div class="sidebuttonL" style="top: 32px;" onclick="">Nodes</div>
+			<div class="sidebuttonL" style="top: 64px;" onclick="showCellarPanel()">Cellar</div>
+			<div class="sidebuttonL" style="top: 96px;" onclick="showPressPanel()">Winepress</div>
+			<div class="sidebuttonL" style="top: 128px;" onclick="showPegPanel()">Peg Health</div>
+			<div class="sidebuttonL" style="top: 160px; border-radius: 0 0 0 8px;" onclick="showPegPanel()">Vinium</div>
 		</div>
 		
 <!-- Grapery Menu Panel -->
@@ -377,7 +379,7 @@
 <!-- If you're reading this CSS really sucks but when you get it to work, it's almost (ALMOST) beautiful... -->
 		<div class="cardDisclaimer">
 			DISCLAIMER: This tool provides a basic interface into the winery to keep track of stats, it is NOT intended to be a replacement for any GrapeFinance dApp.<br>			
-			<div style="font-size: 12px; margin-top: 4px; float: left;">Brewmaster v2.6&#127815;</div>
+			<div style="font-size: 12px; margin-top: 4px; float: left;">Brewmaster v2.61&#127815;</div>
 			<div style="font-size: 12px; margin-top: 4px; float: right;">This tool is open-source, you can view the source on the <a href="https://github.com/neoaikon2/WinemakerBrewingStation">GitHub repository</a></div>
 		</div>
 		<div id="timer" onclick="triggerUpdate();" style="font-size: 10pt; font-family: consolas; font-weight: bold; position: absolute; right: 0; top: 0; padding: 4px; cursor: hand;">30</div>

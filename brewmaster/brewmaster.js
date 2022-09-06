@@ -469,7 +469,7 @@ const updateWinepress = async(account) => {
 				let expectedProfit = (trackedTokenBalance * (3.5 * 10e18)) / 10e18;
 				let profitDifference = expectedProfit - currentProfit;
 				
-				risk = ((1.0 - (Math.abs(profitDifference) / expectedProfit)) * 100).toFixed(2);				
+				roiRisk = ((1.0 - (Math.abs(profitDifference) / expectedProfit)) * 100).toFixed(2);				
 				await callRPC(account, WINEPRESS, "calculatePrice()", [ ]).then(function(lpts) {
 					lpToShare = lpts / 1e18;
 					trueAPR = (((claimPerSecond * lpToShare) * 86400) / totalTokenBalance) * 100;
