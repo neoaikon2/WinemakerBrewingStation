@@ -1,6 +1,7 @@
 body {
 	
 	font-family: consolas;
+	font-weight: bold;
 	background-image: url("http://brewmaster.on.fleek.co/winebg.png");
 	background-attachment: fixed;
 	color: #FEFF35;
@@ -75,7 +76,12 @@ hr {
 	margin-right: 4px;
 	padding: 8px;
 	width: 392px;
-	border-radius: 16px;
+	border-radius: 16px;	
+}
+
+.panel-hidden {
+	display: none;
+	opacity: 0;
 }
 
 img {

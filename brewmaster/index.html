@@ -30,13 +30,15 @@
 	
 <!-- Winery monitor card -->
 	<div class="cardWinery">
+	
 <!-- Menu Panel -->
 		<div style="position: absolute; overflow: visible; width: 0px; height: 0px; left: -100px; background-color: green;">
 			<div class="sidebuttonL" style="top: 0px; border-radius: 8px 0 0 0;" onclick="showWineryPanel()">Winery</div>
 			<!--<div class="sidebuttonL" style="top: 32px;" onclick="">Nodes</div>-->
 			<div class="sidebuttonL" style="top: 32px;" onclick="showCellarPanel()">Cellar</div>
 			<div class="sidebuttonL" style="top: 64px;" onclick="showPressPanel()">Winepress</div>			
-			<div class="sidebuttonL" style="top: 96px; border-radius: 0 0 0 8px;" onclick="showPegPanel()">Peg Health</div>
+			<!-- <div class="sidebuttonL" style="top: 96px; border-radius: 0 0 0 8px;" onclick="showPegPanel()">Peg Health</div> -->
+			<div class="sidebuttonL" style="top: 96px; border-radius: 0 0 0 8px;" onclick="showNodePanel()">Nodes V2</div>
 		</div>
 		
 <!-- Grapery Menu Panel -->
@@ -164,7 +166,7 @@
 		</div>
 		
 <!-- Cellar panel -->
-		<div id="CellarPanel" class="panel" style="display: none; opacity: 0;">
+		<div id="CellarPanel" class="panel panel-hidden" style="display: none; opacity: 0;">
 			<div class="panel-header">Cellar Inventory<br><hr></div>
 			<div style="margin: 16px;">
 				<div style="margin-top: 16px">
@@ -261,7 +263,7 @@
 		</div>
 		
 <!-- Winepress Panel -->
-		<div id="PressPanel" class="panel" style="display: none; opacity: 0;">
+		<div id="PressPanel" class="panel panel-hidden" style="display: none; opacity: 0;">
 			<div class="panel-header">Winepress Maintenance<br><hr></div>
 			<div style="margin: 16px;">
 				<div class="row-item">
@@ -352,8 +354,66 @@
 				<div class="button" onclick="compoundWinepress()">Compound</div>				
 			</div>			
 		</div>
-<!-- Peg Health Panel -->
-		<div id="PegPanel" class="panel" style="display: none; opacity: 0;">
+		
+		<div id="NodePanel" class="panel panel-hidden">
+			<div class="panel-header">Nodes V2<br><hr></div>
+			<div style="margin: 16px">
+				<div class="groupbox">
+					Grape Node Information -
+					<div class="row-item">
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">APR | Daily :</div>
+						<div id="node-grape-apr" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Daily Drip: </div>
+						<div id="node-grape-drip" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-grapenodecompound')" onmouseover="hoverTip('tooltip-grapenodecompound')">&#8505;</div>
+							<div class="infoTip" id="tooltip-grapenodecompound">Your current progress (in GRAPE) toward being able to compound another node<br>Compounding increases your APR!<br>You should claim 1 nodes worth of grape ONLY after compounding 3 new nodes</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Compound Progress: </div>
+						<div id="node-grape-pending" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Your Nodes: </div>
+						<div id="node-grape-nodecount" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Compounded: </div>
+						<div id="node-grape-compounds" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Allocation: </div>
+						<div id="node-grape-allocation" class="row-content"></div>
+					</div>					
+					<hr>
+					<!-- begin tooltip section -->
+					<div>
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-nodeautocompound')" onmouseover="hoverTip('tooltip-nodeautocompound')">&#8505;</div>
+						<div class="infoTip" id="tooltip-nodeautocompound">Automagically compound when you've accrued 50 GRAPE<br>NOTE: Doesn't work with hardware wallets</div>
+					</div>
+					<!-- end tooltip section -->
+					<div><input id="node-grape-autocompound" type="checkbox"> Autocompound</div>
+					<div style="display: flex">						
+						<!-- begin tooltip section -->
+						<div>
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-nodebuttons')" onmouseover="hoverTip('tooltip-nodebuttons')">&#8505;</div>
+							<div class="infoTip" id="tooltip-nodebuttons">Claiming makes &#127815;GUAPO&#127815; sad...<br>Compounding makes him happy!<br>Do YOU want to be the one responsible for making &#127815;GUAPO&#127815; sad?</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="evilbutton" onclick="claimGrapeNode()">Claim</div>
+						<div class="button" onclick="compoundGrapeNode()" style="position: absolute; float: right; right: 56px;">Compound</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+<!-- Peg Health Panel
+		<div id="PegPanel" class="panel panel-hidden" style="display: none; opacity: 0;">
 			<div class="panel-header">Health Monitor<br><hr></div>
 			<div style="margin: 16px;">
 				<div class="row-item" style="margin-top: 8px;">					
@@ -374,12 +434,13 @@
 				<div class="button" onclick="claimPegCampaignRewards()">Claim</div>				
 			</div>			
 		</div>
+ End Peg Health Panel -->
 		
 <!-- Disclaimer card -->
 <!-- If you're reading this CSS really sucks but when you get it to work, it's almost (ALMOST) beautiful... -->
 		<div class="cardDisclaimer">
 			DISCLAIMER: This tool provides a basic interface into the winery to keep track of stats, it is NOT intended to be a replacement for any GrapeFinance dApp.<br>			
-			<div style="font-size: 12px; margin-top: 4px; float: left;">Brewmaster v2.61&#127815;</div>
+			<div style="font-size: 12px; margin-top: 4px; float: left;">Brewmaster v2.7&#127815;</div>
 			<div style="font-size: 12px; margin-top: 4px; float: right;">This tool is open-source, you can view the source on the <a href="https://github.com/neoaikon2/WinemakerBrewingStation">GitHub repository</a></div>
 		</div>
 		<div id="timer" onclick="triggerUpdate();" style="font-size: 10pt; font-family: consolas; font-weight: bold; position: absolute; right: 0; top: 0; padding: 4px; cursor: hand;">30</div>
