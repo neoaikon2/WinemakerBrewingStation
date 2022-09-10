@@ -547,6 +547,20 @@ const updateNodes = async(account) => {
 	}
 	
 	if(!usingWeb3) {
+		await callRPC(account, GRAPE_NODES, "getDistributionRewards(address)", [ account ]).then(async(pending) => {
+			node_grape_pending = pending;
+		});
+		
+		await callRPC(account, GRAPE_NODES, "users(address)", [ account ]).then(async(userInfo) => {
+			let total_deposits = window.web3.utils.toBN("0x"+userInfo.substring(2, 66));			
+			node_grape_num = window.web3.utils.toBN("0x"+userInfo.substring(322, 386));
+			node_grape_compounds = window.web3.utils.toBN("0x"+userInfo.substring(258, 322));
+			node_grape_allocation = window.web3.utils.toBN("0x"+userInfo.substring(194, 258))/1e18;
+			await callRPC(account, GRAPE_NODES, "getDayDripEstimate(address)", [ account ]).then(async(dripEstimate) => {			
+					node_grape_drip = dripEstimate;
+					node_grape_apr = (node_grape_drip / total_deposits)*100					
+			});
+		});
 	}
 	
 	$("#node-grape-apr").html((node_grape_apr*365).toFixed(0) + "% | " + node_grape_apr.toFixed(2) + "%");	
