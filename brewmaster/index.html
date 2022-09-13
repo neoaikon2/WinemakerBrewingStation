@@ -6,17 +6,22 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 <script src="https://brewmaster.on.fleek.co/brewmaster.js"></script>
-<!--<script src="brewmaster.js"></script>-->
 <link rel="stylesheet" href="https://brewmaster.on.fleek.co/style.css" />
-<!--<link rel="stylesheet" href="style.css" />-->
+<!--<script src="brewmaster.js"></script>
+<link rel="stylesheet" href="style.css" />-->
+
 </head>
 <body>
 
 
-<!-- Address entry and Metamask reconnect card -->
+<!-- 
+	Address entry and Metamask reconnect card
+	all other divs descend from this one to keep things organized
+ -->
 <div class="cardAddress" id="cardAddress">
+<!-- Address entry elements -->
 	<div style="position: absolute; width: 0%; left: 50%; top: 50%; transform: translate(-50%, -75%); overflow: visible;">
-		<!-- Address text input and buttons -->
+<!-- Address text input and buttons -->
 		<input id="addressEntry" placeholder="Connect or enter a wallet address..." style="width: 325px; transform: translate(-50%, -50%);"></input>
 		<div class="button" style="position: absolute; transform: translate(10%, -50%)" onclick="rpcQuery();">Check Address</div>
 		<div class="button" style="position: absolute; transform: translate(-110%, -50%)" onclick="web3Query();">
@@ -28,7 +33,7 @@
 		</div>
 	</div>
 	
-<!-- Winery monitor card -->
+<!-- Brewmaster Main panel -->
 	<div class="cardWinery">
 	
 <!-- Menu Panel -->
@@ -51,80 +56,108 @@
 <!-- Brewing Station Header -->
 		<div class="title-header">&#127863; Brewing Station &#127863;</div>
 		<div style="margin-top: 8px">
-			<span class="row-header">Brewer Address:</span><br>
-			<span class="row-content"  id="address"></span>
+			<div class="row-header">Brewer Address:</div>
+			<div class="row-content"  id="address"></div>
 		</div>
 		
-<!-- Winery panel -->
+<!-- Winemaker panel -->
 		<div id="WineryPanel" class="panel">
 			<div class="panel-header">Winery Manager<br><hr></div>
 			<div style="margin: 8px;">
-				<div>
-					<div class="row-item">
-						<div class="row-header" style="width: 110px;">GRAPE:</div>
-						<div class="row-content" id="grapeprice"></div>
-					</div>
-					<div class="row-item">
-						<div class="row-header" style="width: 110px;">VINTAGE:</div>
-						<div class="row-content" id="vintageprice"></div>
-					</div>					
+				
+<!-- Row Item: Grape Price -->
+				<div class="row-item">
+					<div class="row-header">GRAPE:&nbsp;</div>
+					<div class="row-content" id="grapeprice"></div>
+				</div>
+<!-- Row Item: Vintage Price -->
+				<div class="row-item">
+					<div class="row-header">VINTAGE:&nbsp;</div>
+					<div class="row-content" id="vintageprice"></div>
+				</div>					
 					<!--<div style="margin-top: 8px">
-						<span class="row-header">50 GRAPE = </span><span class="row-content" id="grapetovint"></span><br>
+						<div class="row-header">50 GRAPE = </div><div class="row-content" id="grapetovint"></div><br>
 					</div>-->
-				</div>				
+				
+<!-- Row Item: Vintage Per Minute -->
 				<div style="margin-top: 8px">
 					<!-- begin tooltip section -->
 					<div>							
 						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-vpm')" onmouseover="hoverTip('tooltip-vpm')">&#8505;</div>
 						<div class="infoTip" id="tooltip-vpm">How much $VINTAGE you are earning per minute</div>
 					</div>
-					<!-- end tooltip section -->
-					<span class="row-header">Vintage PM:</span>
-					<span class="row-content" id="vpm"></span>
+					<!-- end tooltip section -->					
+					<div class="row-item">
+						<div class="row-header">Vintage PM:&nbsp;</div><div class="row-content" id="vpm"></div>
+					</div>
+					
 				</div>
 			
 				<div class="groupbox" style="margin-top: 8px">
-					<span class="row-header">Max fatigue on </span><span class="row-content" id="fatiguedate100"></span><br>					
-					<span class="row-header">50% fatigue on </span><span class="row-content" id="fatiguedate50"></span><br>
+<!-- Row Item: Max Fatigue -->
+					<div class="row-item">
+						<div class="row-header">Max fatigue on&nbsp;</div><div class="row-content" id="fatiguedate100"></div><br>
+					</div>
+<!-- Row Item: 50% Fatigue -->
+					<div class="row-item">
+						<div class="row-header">50% fatigue on&nbsp;</div><div class="row-content" id="fatiguedate50"></div><br>
+					</div>
+<!-- Row Item: Current Fatigue -->
 					<!-- begin tooltip section -->
 					<div>							
 						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-fatigue')" onmouseover="hoverTip('tooltip-fatigue')">&#8505;</div>
 						<div class="infoTip" id="tooltip-fatigue">The dates and times you'll reach 50% and 100% fatigue<br>and your current fatigue level</div>
 					</div>
 					<!-- end tooltip section -->
-					<span class="row-header">Current Fatigue: </span><span class="row-content"  id="fatigue"></span>
+					<div class="row-item">
+						<div class="row-header">Current Fatigue:&nbsp;</div><div class="row-content"  id="fatigue"></div>
+					</div>
 				</div>
+				
 				<div style="margin-top: 8px">
+<!-- Row Item: Reset Cost -->
 					<!-- begin tooltip section -->
 					<div>							
 						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-resetcost')" onmouseover="hoverTip('tooltip-resetcost')">&#8505;</div>
 						<div class="infoTip" id="tooltip-resetcost">The GRAPE cost to instantly reset your fatigue to 0%</div>
 					</div>
 					<!-- end tooltip section -->
-					<span class="row-header">Reset Fatigue Cost: </span><span class="row-content" id="resetCost"></span>
+					<div class="row-item">
+						<div class="row-header">Reset Cost:&nbsp;</div><div class="row-content" id="resetCost"></div>
+					</div>
 				</div>
 				
-				<div class="groupbox" id="vintners" style="margin-top: 8px">					
-					<span class="row-header">Normals Staked: </span><span class="row-content" id="wm-normals"></span><br>
-					<span class="row-header">Masters Staked: </span><span class="row-content" id="wm-masters"></span><br>
+				<div class="groupbox" id="vintners" style="margin-top: 8px">
+<!-- Row Item: Normals Staked -->
+					<div class="row-item">
+						<div class="row-header">Normals Staked:&nbsp;</div><div class="row-content" id="wm-normals"></div><br>
+					</div>
+<!-- Row Item: Masters Staked -->
+					<div class="row-item">
+						<div class="row-header">Masters Staked:&nbsp;</div><div class="row-content" id="wm-masters"></div><br>
+					</div>
+<!-- Row Item: Tools Staked -->
 					<!-- begin tooltip section -->
 					<div>							
 						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-stakednum')" onmouseover="hoverTip('tooltip-stakednum')">&#8505;</div>
 						<div class="infoTip" id="tooltip-stakednum">The number of normal vintners, master vintners<br>and tools you have staked</div>
 					</div>
 					<!-- end tooltip section -->
-					<span class="row-header">&nbsp;&nbsp;Tools Staked: </span><span class="row-content" id="wm-tools"></span>
+					<div class="row-item">
+						<div class="row-header">&nbsp;&nbsp;Tools Staked:&nbsp;</div><div class="row-content" id="wm-tools"></div>
+					</div>
 				</div>
 				
 				<div class="groupbox" style="margin-top: 8px">
+<!-- Row Item: Vintage Earned -->
 					<div class="row-item">
-						<div class="row-header" style="width: 150px; text-align: right;">Vintage Earned:&nbsp;</div>
-						<div class="row-content" id="vintage"></div>
+						<div class="row-header" style="width: 150px; text-align: right;">Vintage Earned:&nbsp;</div><div class="row-content" id="vintage"></div>
 					</div>
+<!-- Row Item: Storage Used -->
 					<div class="row-item">
-						<div class="row-header" style="width: 150px; text-align: right;">Storage Used:&nbsp;</div>
-						<div class="row-content" id="storage"></div>
+						<div class="row-header" style="width: 150px; text-align: right;">Storage Used:&nbsp;</div><div class="row-content" id="storage"></div>
 					</div>
+<!-- Row Item: Storage Full Date -->
 					<!-- begin tooltip section -->
 					<div>							
 						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-earnings')" onmouseover="hoverTip('tooltip-earnings')">&#8505;</div>
@@ -132,9 +165,9 @@
 					</div>
 					<!-- end tooltip section -->
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0);">Storage full on </div>
-						<div class="row-content" id="wm-storagefull"></div>
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0);">Storage full on </div><div class="row-content" id="wm-storagefull"></div>
 					</div>
+					
 				</div>
 
 				<div class="groupbox" style="margin-top: 8px">
@@ -144,20 +177,24 @@
 						<div class="infoTip" id="tooltip-toolmintcost">The current cost in USD to mint each tool</div>
 					</div>
 					<!-- end tooltip section -->
-					<span class="row-header">Tool Mint Costs:</span><br>
+					<div class="row-header">Tool Mint Costs:</div>
+<!-- Row Item: Magazine Mint Cost -->
 					<div class="row-item">
 						<div class="row-header" style="width: 130px; text-align: right;">Magazine:&nbsp;</div>
 						<div class="row-content" id="magazine"></div>
 					</div>
+<!-- Row Item: Shear Mint Cost -->
 					<div class="row-item">
 						<div class="row-header" style="width: 130px; text-align: right;">Shears:&nbsp;</div>
 						<div class="row-content" id="shears"></div>
 					</div>
+<!-- Row Item: Hydro Mint cost -->
 					<div class ="row-item">
 						<div class="row-header" style="width: 130px; text-align: right;">Hydrometer:&nbsp;</div>
 						<div class="row-content" id="hydro"></div>
 					</div>
 				</div>
+<!-- Row Item: Buttons -->
 				<div style="margin: 8px; display: flex;">
 					<div class="button" id="resetButton" onClick="resetFatigue();">Reset Fatigue</div>
 					<div class="button" id="claimButton" style="position: absolute; right: 48px;" onClick="claimVintage();">Claim $VINTAGE</div>
@@ -166,23 +203,23 @@
 		</div>
 		
 <!-- Cellar panel -->
-		<div id="CellarPanel" class="panel panel-hidden" style="display: none; opacity: 0;">
+		<div id="CellarPanel" class="panel panel-hidden">
 			<div class="panel-header">Cellar Inventory<br><hr></div>
 			<div style="margin: 16px;">
 				<div style="margin-top: 16px">
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">VINT-SVINT Ratio: </div>
+						<div class="row-header">VINT-SVINT Ratio:&nbsp;</div>
 						<div id="cellarratio" class="row-content"></div>
 					</div>
 				</div>
 				<div class="groupbox">
 					<div class="row-header">Your Wallet -</div>
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">$VINTAGE: </div>
+						<div class="row-header">$VINTAGE:&nbsp;</div>
 						<div id="vintinwallet" class="row-content"></div>
 					</div>
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">$sVINTAGE: </div>
+						<div class="row-header">$sVINTAGE:&nbsp;</div>
 						<div id="svintinwallet" class="row-content"></div>
 					</div>
 					<div style="display: flex;">
@@ -231,11 +268,11 @@
 					<div>
 						<div class="row-header">Vineyard Staking -</div>
 						<div class="row-item">
-							<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Vineyard: </div>
+							<div class="row-header">Vineyard:&nbsp;</div>
 							<div id="svintinvinyard" class="row-content"></div>
 						</div>
 						<div class="row-item">
-							<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Pending: </div>
+							<div class="row-header">Pending:&nbsp;</div>
 							<div id="pendingwine" class="row-content"></div>
 						</div>						
 						<div style="margin-top: 8px">
@@ -247,11 +284,11 @@
 					<div>
 						<div class="row-header">Pending Claims -</div>
 						<div class="row-item">
-							<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Amount: </div>
+							<div class="row-header">Amount:&nbsp;</div>
 							<div id="cel-pendingamounts" class="row-content"></div>
 						</div>
 						<div class="row-item">
-							<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Claimable on </div>
+							<div class="row-header">Claimable on&nbsp;</div>
 							<div id="cel-pendingtimestamps" style="width: 230px;" class="row-content"></div>
 						</div>
 					</div>
@@ -263,11 +300,11 @@
 		</div>
 		
 <!-- Winepress Panel -->
-		<div id="PressPanel" class="panel panel-hidden" style="display: none; opacity: 0;">
+		<div id="PressPanel" class="panel panel-hidden">
 			<div class="panel-header">Winepress Maintenance<br><hr></div>
 			<div style="margin: 16px;">
 				<div class="row-item">
-					<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">1 WINE-MIM-LP = </div>
+					<div class="row-header">1 WINE-MIM-LP =&nbsp;</div>
 					<div id="wp-lpvalue" class="row-content"></div>
 				</div>
 				<div class="groupbox">
@@ -278,7 +315,7 @@
 							<div class="infoTip" id="tooltip-visibleaprroi">Visible APR and ROI<br>The APR and ROI visible to other players<br>(like assassins)</div>
 						</div>
 						<!-- end tooltip section -->
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Visible APR/ROI: </div>
+						<div class="row-header">Visible APR/ROI:&nbsp;</div>
 						<div id="wp-visibleaprroi" class="row-content"></div>
 					</div>
 					<div class="row-item">
@@ -288,7 +325,7 @@
 							<div class="infoTip" id="tooltip-trueaprroi">True APR and ROI<br>Your actual APR and ROI in the Winepress</div>
 						</div>
 						<!-- end tooltip section -->
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">True APR/ROI: </div>
+						<div class="row-header">True APR/ROI:&nbsp;</div>
 						<div id="wp-trueaprroi" class="row-content"></div>
 					</div>
 				</div>
@@ -300,7 +337,7 @@
 							<div class="infoTip" id="tooltip-risk">Your current risk of being assassinated<br>Will reach 100% at 350% Visible ROI</div>
 						</div>
 						<!-- end tooltip section -->
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Assassination Risk: </div>
+						<div class="row-header" style="width: 200px">Assassination Risk:&nbsp;</div>
 						<div id="wp-assassinationrisk" class="row-content"></div>
 					</div>
 					<div class="row-item">
@@ -310,7 +347,7 @@
 							<div class="infoTip" id="tooltip-roiprogress">Your progress in receiving the 90%+Bonus APR<br>you are entitled to claim out of the Winepress</div>
 						</div>
 						<!-- end tooltip section -->
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">ROI Progress: </div>
+						<div class="row-header">ROI Progress:&nbsp;</div>
 						<div id="wp-roiprogress" class="row-content"></div>
 					</div>	
 					<div class="row-item">
@@ -320,31 +357,31 @@
 							<div class="infoTip" id="tooltip-poolshares">The amount of Winepress shares you are<br>entitled to claim out of the Winepress</div>
 						</div>
 						<!-- end tooltip section -->
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Claimable Shares: </div>
+						<div class="row-header">Claimable Shares:&nbsp;</div>
 						<div id="wp-roishares" class="row-content"></div>
 					</div>
 				</div>
 				<div class="groupbox">
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Deposited: </div>
+						<div class="row-header">Deposited:&nbsp;</div>
 						<div id="wp-depositedBalance" class="row-content"></div>
 					</div>
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Compounded: </div>
+						<div class="row-header">Compounded:&nbsp;</div>
 						<div id="wp-compoundedBalance" class="row-content"></div>
 					</div>
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Total: </div>
+						<div class="row-header">Total:&nbsp;</div>
 						<div id="wp-trackedBalance" class="row-content"></div>
 					</div>
 				</div>
 				<div class="groupbox">
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Pending Rewards: </div>
+						<div class="row-header">Pending Rewards:&nbsp;</div>
 						<div id="wp-pendingRewards" class="row-content"></div>
 					</div>
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Daily Rewards: </div>
+						<div class="row-header">Daily Rewards:&nbsp;</div>
 						<div id="wp-dailyRewards" class="row-content"></div>
 					</div>
 				</div>
@@ -361,43 +398,53 @@
 				<div class="groupbox">
 					Grape Node Information -
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">APR | Daily :</div>
+						<div class="row-header">APR | Daily :&nbsp;</div>
 						<div id="node-grape-apr" class="row-content"></div>
 					</div>
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Daily Drip: </div>
+						<div class="row-header">Daily Drip:&nbsp;</div>
 						<div id="node-grape-drip" class="row-content"></div>
 					</div>
-					<div class="row-item">
+					<div class="row-item" style="margin-top: 8px;">
 						<!-- begin tooltip section -->
 						<div>							
 							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-grapenodecompound')" onmouseover="hoverTip('tooltip-grapenodecompound')">&#8505;</div>
 							<div class="infoTip" id="tooltip-grapenodecompound">Your current progress (in GRAPE) toward being able to compound another node<br>Compounding increases your APR!<br>You should claim 1 nodes worth of grape ONLY after compounding 3 new nodes</div>
 						</div>
 						<!-- end tooltip section -->
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Compound Progress: </div>
+						<div class="row-header">Compound Progress:&nbsp;</div>
 						<div id="node-grape-pending" class="row-content"></div>
 					</div>
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Your Nodes: </div>
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-grapenodecompounddate')" onmouseover="hoverTip('tooltip-grapenodecompounddate')">&#8505;</div>
+							<div class="infoTip" id="tooltip-grapenodecompounddate">The date and time you'll be able to do your next compound</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header" style="transform: translate(-16px, 0px);">Compound on&nbsp;</div>
+						<div id="node-grape-compounddate" class="row-content" style="transform: translate(-16px, 0px);"></div>
+					</div>
+					<div class="row-item" style="margin-top: 8px;">
+						<div class="row-header">Your Nodes:&nbsp;</div>
 						<div id="node-grape-nodecount" class="row-content"></div>
 					</div>
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Compounded: </div>
+						<div class="row-header">Compounded:&nbsp;</div>
 						<div id="node-grape-compounds" class="row-content"></div>
 					</div>
 					<div class="row-item">
-						<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Allocation: </div>
+						<div class="row-header">Allocation:&nbsp;</div>
 						<div id="node-grape-allocation" class="row-content"></div>
 					</div>					
 					<hr>
 					<!-- begin tooltip section -->
-					<div>
+					<!--<div>
 						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-nodeautocompound')" onmouseover="hoverTip('tooltip-nodeautocompound')">&#8505;</div>
 						<div class="infoTip" id="tooltip-nodeautocompound">Automagically do a compound when you've accrued 50 GRAPE<br>NOTE: Still need to confirm it in your wallet, sorry</div>
-					</div>
+					</div>-->
 					<!-- end tooltip section -->
-					<div><input id="node-grape-autocompound" type="checkbox"> Autocompound</div>
+					<!--<div><input id="node-grape-autocompound" type="checkbox"> Autocompound</div>-->
 					<div style="display: flex">						
 						<!-- begin tooltip section -->
 						<div>
@@ -440,7 +487,7 @@
 <!-- If you're reading this CSS really sucks but when you get it to work, it's almost (ALMOST) beautiful... -->
 		<div class="cardDisclaimer">
 			DISCLAIMER: This tool provides a basic interface into the winery to keep track of stats, it is NOT intended to be a replacement for any GrapeFinance dApp.<br>			
-			<div style="font-size: 12px; margin-top: 4px; float: left;">Brewmaster v2.7&#127815;</div>
+			<div style="font-size: 12px; margin-top: 4px; float: left;">Brewmaster v2.8&#127815;</div>
 			<div style="font-size: 12px; margin-top: 4px; float: right;">This tool is open-source, you can view the source on the <a href="https://github.com/neoaikon2/WinemakerBrewingStation">GitHub repository</a></div>
 		</div>
 		<div id="timer" onclick="triggerUpdate();" style="font-size: 10pt; font-family: consolas; font-weight: bold; position: absolute; right: 0; top: 0; padding: 4px; cursor: hand;">30</div>

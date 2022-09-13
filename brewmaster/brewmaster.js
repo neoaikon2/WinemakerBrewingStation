@@ -87,6 +87,69 @@ var storage = 0, storageDt = null;
 var ratio = 0;
 var mag = 0; shears = 0, hydro = 0;
 
+
+const updateGlobal = async(account) => {
+	if(usingWeb3) {
+		// Get the price of VINTAGE
+		await mim.methods.balanceOf(VINT_LP).call({from: account}).then(async(mimSupply) => {
+			// Get the balance of VINTAGE in the LP
+			await vint.methods.balanceOf(VINT_LP).call({from: account}).then(async(vintSupply) => {
+				// Calculate the price of the VINTAGE
+				vintPrice = (mimSupply/vintSupply);
+			});
+		});
+		
+		// Get the price of GRAPE
+		await mim.methods.balanceOf(GRAPE_LP).call({from: account}).then(async(mimSupply) => {
+			await grape.methods.balanceOf(GRAPE_LP).call({from: account}).then(function(grapeSupply) {
+				// Calculate the grape price, as well as the price of 50 grape, and the ratio of vint to grape
+				grapePrice = (mimSupply/grapeSupply);
+			});
+		});
+
+		// Get the price of WINE
+		await mim.methods.balanceOf(WINE_MIM_LP).call({from: account}).then(async(mimSupply) => {
+			await wine.methods.balanceOf(WINE_MIM_LP).call({from: account}).then(function(wineSupply) {
+				winePrice = mimSupply / wineSupply;
+			});
+		});
+		
+		await wine_mim_lp.methods.totalSupply().call({from: account}).then(async(totalSupply) => {
+			await mim.methods.balanceOf(WINE_MIM_LP).call({from: account}).then(async(mimLPbal) => {
+				wine_mim_lp_value = ((mimLPbal / totalSupply)*2);
+			});
+		});
+	}
+	
+	if(!usingWeb3) {
+		
+		await callRPC(account, MIM_TOKEN, "balanceOf(address)", [ VINT_LP ]).then(async(mimSupply) => {
+			await callRPC(account, VINT_TOKEN, "balanceOf(address)", [ VINT_LP ]).then(async(vintSupply) => {
+				// Calculate the price of the VINTAGE
+				vintPrice = (mimSupply/vintSupply);
+			});
+		});
+
+		await callRPC(account, MIM_TOKEN, "balanceOf(address)", [ GRAPE_LP ]).then(async(mimSupply2) => {
+			await callRPC(account, GRAPE_TOKEN, "balanceOf(address)", [ GRAPE_LP ]).then(function(grapeSupply) {
+				grapePrice = (mimSupply2/grapeSupply);
+			});
+		});
+		
+		await callRPC(account, MIM_TOKEN, 'balanceOf(address)', [ WINE_MIM_LP ]).then(async(mimLPbal) => {
+			await callRPC(account, WINE_TOKEN, 'balanceOf(address)', [ WINE_MIM_LP ]).then(async(wineLPbal) => {
+				winePrice = mimLPbal / wineLPbal;
+			});
+		});
+		
+		await callRPC(account, WINE_MIM_LP, "totalSupply()", [ ]).then(async(totalSupply) => {
+			await callRPC(account, MIM_TOKEN, "balanceOf(address)", [ WINE_MIM_LP ]).then(function(mimLPbal) {
+				wine_mim_lp_value = ((mimLPbal / totalSupply)*2);				
+			});
+		});
+	}
+}
+
 /*
 	Updates the dataset used for the winery panel and update the ui
 */
@@ -142,35 +205,19 @@ const updateWinery = async(account) => {
 		// Get the amount of VINTAGE accrued in the reward contract
 		await winery.methods.getVintageWineAccrued(account).call({from: account}).then(async(claimable) => {
 			vintEarned = (claimable / 1e18);
-			// Get the balance of mim in the LP
-			await mim.methods.balanceOf(VINT_LP).call({from: account}).then(async(mimSupply) => {
-				// Get the balance of VINTAGE in the LP
-				await vint.methods.balanceOf(VINT_LP).call({from: account}).then(async(vintSupply) => {
-					// Calculate the price of the VINTAGE
-					vintPrice = (mimSupply/vintSupply);
-
-					// Get the maximum storage and show how much is used
-					await wineprog.methods.getVintageWineStorage(account).call( {from: account} ).then(function(result) {
-						storage = window.web3.utils.toBN(result) / 1e18;
-						storageDt = new Date();
-						storageDt.setSeconds(storageDt.getSeconds() + ((storage-vintEarned)/vpm*60));
-					});
-
-					// Get the price of GRAPE
-					await mim.methods.balanceOf(GRAPE_LP).call({from: account}).then(async(mimSupply2) => {
-						await grape.methods.balanceOf(GRAPE_LP).call({from: account}).then(function(grapeSupply) {
-							// Calculate the grape price, as well as the price of 50 grape, and the ratio of vint to grape
-							grapePrice = (mimSupply2/grapeSupply);
-							ratio = (vintPrice / grapePrice) * 100;
-
-							// Calculate tool costs
-							mag = (10*grapePrice) + (900*vintPrice);
-							shears = (20*grapePrice) + (1800*vintPrice);
-							hydro = (40*grapePrice) + (4200*vintPrice);
-						});
-					});
-				});
+			// Get the maximum storage and show how much is used
+			await wineprog.methods.getVintageWineStorage(account).call( {from: account} ).then(function(result) {
+				storage = window.web3.utils.toBN(result) / 1e18;
+				storageDt = new Date();
+				storageDt.setSeconds(storageDt.getSeconds() + ((storage-vintEarned)/vpm*60));
 			});
+
+			ratio = (vintPrice / grapePrice) * 100;
+
+			// Calculate tool costs
+			mag = (10*grapePrice) + (900*vintPrice);
+			shears = (20*grapePrice) + (1800*vintPrice);
+			hydro = (40*grapePrice) + (4200*vintPrice);
 		});
 	}
 	
@@ -213,28 +260,16 @@ const updateWinery = async(account) => {
 
 		await callRPC(account, WINEMAKER_REWARDS, "getVintageWineAccrued(address)", [ account ]).then(async(claimable) => {
 			vintEarned = (claimable / 1e18);
-			await callRPC(account, MIM_TOKEN, "balanceOf(address)", [ VINT_LP ]).then(async(mimSupply) => {
-				await callRPC(account, VINT_TOKEN, "balanceOf(address)", [ VINT_LP ]).then(async(vintSupply) => {
-					// Calculate the price of the VINTAGE
-					vintPrice = (mimSupply/vintSupply);
-
-					await callRPC(account, WINEMAKER_PROGRESSION, "getVintageWineStorage(address)", [ account ]).then(function(result) {
-						storage = window.web3.utils.toBN(result) / 1e18;
-						storageDt = new Date();
-						storageDt.setSeconds(storageDt.getSeconds() + ((storage-vintEarned)/vpm*60));						
-					});
-
-					await callRPC(account, MIM_TOKEN, "balanceOf(address)", [ GRAPE_LP ]).then(async(mimSupply2) => {
-						await callRPC(account, GRAPE_TOKEN, "balanceOf(address)", [ GRAPE_LP ]).then(function(grapeSupply) {
-							grapePrice = (mimSupply2/grapeSupply);
-							ratio = (vintPrice / grapePrice) * 100;
-							 mag = (10*grapePrice) + (900*vintPrice);
-							shears = (20*grapePrice) + (1800*vintPrice);
-							hydro = (40*grapePrice) + (4200*vintPrice);
-						});
-					});
-				});
+			await callRPC(account, WINEMAKER_PROGRESSION, "getVintageWineStorage(address)", [ account ]).then(function(result) {
+				storage = window.web3.utils.toBN(result) / 1e18;
+				storageDt = new Date();
+				storageDt.setSeconds(storageDt.getSeconds() + ((storage-vintEarned)/vpm*60));						
 			});
+			
+			ratio = (vintPrice / grapePrice) * 100;
+			 mag = (10*grapePrice) + (900*vintPrice);
+			shears = (20*grapePrice) + (1800*vintPrice);
+			hydro = (40*grapePrice) + (4200*vintPrice);
 		});
 	}
 	
@@ -242,7 +277,7 @@ const updateWinery = async(account) => {
 	$("#fatigue").html((fatigueAccrued*100).toFixed(3) + "%");
 	$("#fatiguedate50").html(dt50.toLocaleDateString() + ", " + dt50.toLocaleTimeString());
 	$("#fatiguedate100").html(dt100.toLocaleDateString() + ", " + dt100.toLocaleTimeString());
-	$("#resetCost").html(resetCost.toFixed(2) + " GRAPE");
+	$("#resetCost").html(resetCost.toFixed(2) + " GRAPE<br>" + ((parseInt(normalCount) + parseInt(masterCount) + parseInt(toolCount)) * 15) + ".00 VINTAGE");
 	$("#wm-masters").html(masterCount + " vintners");
 	$("#vpm").html(vpm.toFixed(2) + "/" + maxVPM.toFixed(2));
 	$("#wm-normals").html(normalCount + " vintners");
@@ -269,12 +304,6 @@ var cellarDt;
 */
 const updateCellar = async(account) => {
 	if(usingWeb3) {
-		await mim.methods.balanceOf(WINE_MIM_LP).call({from: account}).then(async(mimLPbal) => {
-			await wine.methods.balanceOf(WINE_MIM_LP).call({from: account}).then(function(wineLPbal) {
-				winePrice = mimLPbal / wineLPbal;
-			});
-		});
-
 		// Get the ratio of svint to vint in the cellar
 		await svint.methods.totalSupply().call({from: account}).then(async(svintSupply) => {
 			svint.methods.vintageWineBalance().call({from: account}).then(function(vintageInCellar) {
@@ -325,13 +354,7 @@ const updateCellar = async(account) => {
 		});
 	}
 
-	if(!usingWeb3) {		
-		await callRPC(account, MIM_TOKEN, 'balanceOf(address)', [ WINE_MIM_LP ]).then(async(mimLPbal) => {
-			await callRPC(account, WINE_TOKEN, 'balanceOf(address)', [ WINE_MIM_LP ]).then(async(wineLPbal) => {
-				winePrice = mimLPbal / wineLPbal;
-			});
-		});
-
+	if(!usingWeb3) {
 		await callRPC(account, SVINT_TOKEN, "totalSupply()", []).then(async(svintSupply) => {
 			await callRPC(account, SVINT_TOKEN, "vintageWineBalance()", { }).then(function(vintageInCellar) {
 				svintRatio = window.web3.utils.toBN(vintageInCellar) / window.web3.utils.toBN(svintSupply);				
@@ -400,13 +423,7 @@ var dailyPressWine = 0;
 const updateWinepress = async(account) => {
 	if(usingWeb3) {
 		// Start update winepress ui
-		// Get the value of 1 WINE-MIM-LP		
-		await wine_mim_lp.methods.totalSupply().call({from: account}).then(async(totalSupply) => {
-			await mim.methods.balanceOf(WINE_MIM_LP).call({from: account}).then(async(mimLPbal) => {
-				wine_mim_lp_value = ((mimLPbal / totalSupply)*2);
-			});
-		});
-
+		
 		// Get the tracked balance, compounded balance, and assassination risk
 		await winepress.methods.calculateTrackedProfit(account).call({from: account}).then(async(currentProfit) => {
 			await winepress.methods.userInfo(account).call({from: account}).then(async(userInfo) => {
@@ -450,12 +467,6 @@ const updateWinepress = async(account) => {
 	}
 	
 	if(!usingWeb3) {		
-		await callRPC(account, WINE_MIM_LP, "totalSupply()", [ ]).then(async(totalSupply) => {
-			await callRPC(account, MIM_TOKEN, "balanceOf(address)", [ WINE_MIM_LP ]).then(function(mimLPbal) {
-				wine_mim_lp_value = ((mimLPbal / totalSupply)*2);				
-			});
-		});
-
 		await callRPC(account, WINEPRESS, "calculateTrackedProfit(address)", [ account ]).then(async(currentProfit) => {
 			await callRPC(account, WINEPRESS, "userInfo(address)", [ account ]).then(async(userInfo) => {
 				let balance = window.web3.utils.toBN(userInfo.substring(2, 66));
@@ -496,9 +507,12 @@ const updateWinepress = async(account) => {
 	$("#wp-lpvalue").html("$" + wine_mim_lp_value.toFixed(2) + " USD");
 	$("#wp-visibleaprroi").html(visibleAPR.toFixed(2) + "% / " + (visibleAPR*72).toFixed(2) + "%");
 	$("#wp-trueaprroi").html(trueAPR.toFixed(2) + "% / " + (trueAPR*72).toFixed(2) + "%");
-	$("#wp-trackedBalance").html((trackedTokenBalance/1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((trackedTokenBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
-	$("#wp-depositedBalance").html((totalTokenBalance / 1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((totalTokenBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
-	$("#wp-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((compoundedBalance/1e18)*wine_mim_lp_value).toFixed(2) + " USD</div>");
+	let trackedVal = ((trackedTokenBalance/1e18)*wine_mim_lp_value);
+	let totalVal = ((totalTokenBalance/1e18)*wine_mim_lp_value)
+	let compVal = ((compoundedBalance/1e18)*wine_mim_lp_value)
+	$("#wp-trackedBalance").html((trackedTokenBalance/1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + (trackedVal/2).toFixed(2) + " MIM/" + (trackedVal/2/winePrice).toFixed(2) + " WINE</div>");
+	$("#wp-depositedBalance").html((totalTokenBalance / 1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + (totalVal/2).toFixed(2) + " MIM/" + (totalVal/2/winePrice).toFixed(2) + " WINE</div>");
+	$("#wp-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + (compVal/2).toFixed(2) + " MIM/" + (compVal/2/winePrice).toFixed(2) + " WINE</div>");
 	$("#wp-assassinationrisk").html(roiRisk + "% / 100%");
 	if(roiRisk <= 90) {
 		$("#wp-assassinationrisk").css({"color": "#00FF00"});
@@ -507,68 +521,84 @@ const updateWinepress = async(account) => {
 	} else {
 		$("#wp-assassinationrisk").css({"color": "#FF0000"});
 	}	
-	$("#wp-roishares").html( (roiShares/1e18).toFixed(2) + " Shares<br><div class='usd-display'>&nbsp;&nbsp;~" + (lpToShare * (roiShares/1e18)).toFixed(2) + " WINE-MIM-LP<br>&nbsp;&nbsp;&nbsp;&nbsp;~" + ((lpToShare * (roiShares/1e18)) * wine_mim_lp_value).toFixed(2) + " USD</div>");
+	let claimableVal = ((lpToShare * (roiShares/1e18)) * wine_mim_lp_value)
+	$("#wp-roishares").html( (roiShares/1e18).toFixed(2) + " Shares<br><div class='usd-display'>&nbsp;&nbsp;~" + (lpToShare * (roiShares/1e18)).toFixed(2) + " WINE-MIM-LP<br>~$" + (claimableVal/2).toFixed(2) + " MIM/" + (claimableVal/2/winePrice).toFixed(2) + " WINE</div>");
 	$("#wp-roiprogress").html( roiProgress.toFixed(2) + "% / 100%");
-	$("#wp-pendingRewards").html(pendingPressWine.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + (pendingPressWine * wine_mim_lp_value).toFixed(2) + " USD</div>");
-	$("#wp-dailyRewards").html(dailyPressWine.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + (dailyPressWine * wine_mim_lp_value).toFixed(2) + " USD</div>");
+	pendingVal = (pendingPressWine * wine_mim_lp_value);
+	dailyVal = (dailyPressWine * wine_mim_lp_value);
+	$("#wp-pendingRewards").html(pendingPressWine.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + (pendingVal/2).toFixed(2) + " MIM/" + (pendingVal/2/winePrice).toFixed(2) + " WINE</div>");
+	$("#wp-dailyRewards").html(dailyPressWine.toFixed(2) + " WINE-MIM-LP<br><div class='usd-display'>&nbsp;&nbsp;~$" + (dailyVal/2).toFixed(2) + " MIM/" + (dailyVal/2/winePrice).toFixed(2) + " WINE</div>");
 }
 
-var node_grape_apr;
-var node_grape_drip;
-var node_grape_pending;
-var node_grape_num;
-var node_grape_compounds;
-var node_grape_allocation;
+class GrapeNodes {
+	apr = 0;
+	dripRate = 0;
+	pending = 0;
+	count = 0;
+	compounds = 0;
+	allocation = 0;
+}
 
 const updateNodes = async(account) => {
-	if(usingWeb3) {
+	let gns = new GrapeNodes();
+	
+	if(usingWeb3) {		
 		await grape_nodes.methods.getDistributionRewards(account).call({from: account}).then(async(pending) => {
-			node_grape_pending = pending;
+			gns.pending = pending;
 		});
 		
 		await grape_nodes.methods.users(account).call({from: account}).then(async(userInfo) => {
-			node_grape_num = userInfo['nodes'];
-			node_grape_compounds = userInfo['compounds'];
-			node_grape_allocation = userInfo['alloc_points']/1e18;
+			gns.count = userInfo['nodes'];
+			gns.compounds = userInfo['compounds'];
+			gns.allocation = userInfo['alloc_points']/1e18;
 			await grape_nodes.methods.getDayDripEstimate(account).call({from: account}).then(async(dripEstimate) => {
-					node_grape_drip = dripEstimate;
-					node_grape_apr = (node_grape_drip / userInfo['total_deposits'])*100
+					gns.dripRate = dripEstimate;
+					gns.apr = (gns.dripRate / userInfo['total_deposits'])*100
+					
+					let dt = new Date();
+					dripPerSec = gns.dripRate / 1e18 / 24 / 60 / 60;					
+					grapeToCompound = 50 - (gns.pending/1e18);					
+					secsToCompound = grapeToCompound / dripPerSec;					
+					dt.setSeconds(dt.getSeconds() + secsToCompound);
+					$("#node-grape-compounddate").html(dt.toLocaleDateString() + ", " + dt.toLocaleTimeString());
 			});
-		});
+		});		
 		
+		/*
 		if($("#node-grape-autocompound")[0].checked === true) {
-			if((node_grape_pending / 1e18) >= 50) {
+			if((gns.pending / 1e18) >= 50) {
 				console.log("Autocompound triggered");
 				await compoundGrapeNode();
 			} else {
 				console.log("Autocompound on standby...");
 			}
 		}
+		*/
 	}
 	
 	if(!usingWeb3) {
 		await callRPC(account, GRAPE_NODES, "getDistributionRewards(address)", [ account ]).then(async(pending) => {
-			node_grape_pending = pending;
+			gns.pending = pending;
 		});
 		
 		await callRPC(account, GRAPE_NODES, "users(address)", [ account ]).then(async(userInfo) => {
 			let total_deposits = window.web3.utils.toBN("0x"+userInfo.substring(2, 66));			
-			node_grape_num = window.web3.utils.toBN("0x"+userInfo.substring(322, 386));
-			node_grape_compounds = window.web3.utils.toBN("0x"+userInfo.substring(258, 322));
-			node_grape_allocation = window.web3.utils.toBN("0x"+userInfo.substring(194, 258))/1e18;
+			gns.count = window.web3.utils.toBN("0x"+userInfo.substring(322, 386));
+			gns.compounds = window.web3.utils.toBN("0x"+userInfo.substring(258, 322));
+			gns.allocation = window.web3.utils.toBN("0x"+userInfo.substring(194, 258))/1e18;
 			await callRPC(account, GRAPE_NODES, "getDayDripEstimate(address)", [ account ]).then(async(dripEstimate) => {			
-					node_grape_drip = dripEstimate;
-					node_grape_apr = (node_grape_drip / total_deposits)*100					
+					gns.dripRate = dripEstimate;
+					gns.apr = (gns.dripRate / total_deposits)*100					
 			});
 		});
 	}
 	
-	$("#node-grape-apr").html((node_grape_apr*365).toFixed(0) + "% | " + node_grape_apr.toFixed(2) + "%");	
-	$("#node-grape-drip").html((node_grape_drip/1e18).toFixed(2) + " GRAPE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((node_grape_drip/1e18) * grapePrice).toFixed(2) + " USD</div>");
-	$("#node-grape-pending").html((node_grape_pending/1e18).toFixed(2) + "/50 GRAPE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((node_grape_pending/1e18) * grapePrice).toFixed(2) + " USD</div>");
-	$("#node-grape-nodecount").html(window.web3.utils.toNumber(node_grape_num) + " (" + (node_grape_num * 50) + " GRAPE)<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((node_grape_num * 50) * grapePrice).toFixed(2) + " USD</div>");
-	$("#node-grape-compounds").html(window.web3.utils.toNumber(node_grape_compounds));
-	$("#node-grape-allocation").html(node_grape_allocation.toFixed(2));
+	$("#node-grape-apr").html((gns.apr*365).toFixed(0) + "% | " + gns.apr.toFixed(2) + "%");	
+	$("#node-grape-drip").html((gns.dripRate/1e18).toFixed(2) + " GRAPE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((gns.dripRate/1e18) * grapePrice).toFixed(2) + " USD</div>");
+	$("#node-grape-pending").html((gns.pending/1e18).toFixed(2) + "/50 GRAPE<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((gns.pending/1e18) * grapePrice).toFixed(2) + " USD</div>");
+	$("#node-grape-nodecount").html(window.web3.utils.toNumber(gns.count) + " (" + (gns.count * 50) + " GRAPE)<br><div class='usd-display'>&nbsp;&nbsp;~$" + ((gns.count * 50) * grapePrice).toFixed(2) + " USD</div>");
+	$("#node-grape-compounds").html(window.web3.utils.toNumber(gns.compounds));
+	$("#node-grape-allocation").html(gns.allocation.toFixed(2));
 }
 
 let winery = null;
@@ -585,7 +615,8 @@ let phc = null;
 let grape_nodes = null;
 
 const getDataViaWeb3 = async (account) => {
-	// Refresh the winery UI	
+	// Refresh the winery UI
+	await updateGlobal(account);
 	switch(selectedPanel) {
 		case 0:
 			await updateWinery(account);
@@ -635,7 +666,7 @@ const callRPC = async(fromAddr, toAddr, rpc_method, rpc_data) => {
 // This code is equivilent to code in getDataViaWeb3, please refer to that function for comments until I can
 // copy them and make everything 1:1
 const getDataViaRpc = async(account) => {
-	
+	await updateGlobal(account);
 	switch(selectedPanel) {
 		case 0:
 			await updateWinery(account);

@@ -48,7 +48,7 @@ hr {
 	left: 50%;
 	top: 100%;
     transform: translate(-50%, 8px);  
-	padding: 16px 16px 16px 16px;
+	padding: 8px 8px 8px 8px;
 	filter: drop-shadow(5px 5px 2px #11111160);
 }
 
@@ -97,12 +97,15 @@ img {
 	font-size: 12pt;
 	font-weight: bold;
 	width: 175px;
+	text-align: right;
 }
 
 .row-content {
 	filter: drop-shadow(5px 5px 2px #111111C0);
-	font-weight: bold;
-	grow-flex: 1;
+	font-weight: bold;	
+	width: auto;
+	white-space: nowrap;
+	grow-flex: 1;		
 }
 
 .usd-display {
