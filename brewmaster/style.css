@@ -2,17 +2,22 @@ body {
 	
 	font-family: consolas;
 	font-weight: bold;
+	background: linear-gradient(113deg, rgba(14,0,15,1) 0%, rgba(116,61,116,1) 72%, rgba(14,0,15,1) 100%);
+	color: #FFFFFF
+}
+
+oldbody {
 	background-image: url("http://brewmaster.on.fleek.co/winebg.png");
 	background-attachment: fixed;
 	color: #FEFF35;
 }
 
 hr {
-	border: 1px solid #FEFF35;
+	border: 1px solid #BA70BA;
 }
 
 .groupbox {
-	border: 1px solid #FEFF35;
+	border: 1px solid #BA70BA;
 	background-color: #80008010;
 	margin-top: 8px;
 	padding: 8px;
@@ -114,15 +119,15 @@ img {
 }
 
 a {
-	color: #018e39;
+	color: #BA70BA;
 }
 
 a:hover {
-	color: #006636;
+	color: #FFBAFF;
 }
 
 .button {
-	background-color: #018e39;
+	background: linear-gradient(113deg, rgba(77,10,82,1) 0%, rgba(116,61,116,1) 100%);
 	text-align: center;
 	font-weight: bold;
 	margin-top: 8px;
@@ -133,11 +138,11 @@ a:hover {
 }
 
 .button:hover {
-	background-color: #006636;
+	background: rgba(116,61,116,1);
 }
 
 .evilbutton {
-	background-color: #8e0139;
+	background: linear-gradient(113deg, rgba(130,10,10,1) 0%, rgba(180,61,61,1) 100%);
 	text-align: center;
 	font-weight: bold;
 	margin-top: 8px;
@@ -148,7 +153,7 @@ a:hover {
 }
 
 .evilbutton:hover {
-	background-color: #660036;
+	background: rgba(180,61,61,1);
 }
 
 .sidebuttonL {
@@ -156,7 +161,7 @@ a:hover {
 	background-color: #111111BA;
 	text-align: center;
 	font-weight: bold;
-	width: 100px;
+	width: 128px;
 	height: 32px;
 	padding-top: 8px;
 	margin-top: 8px;	
