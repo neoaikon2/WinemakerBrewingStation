@@ -660,9 +660,9 @@ const updateSodapress = async(account) => {
 	let trackedVal = ((trackedTokenBalance/1e18) * grape_xgrape_lp_value);
 	let totalVal = ((totalTokenBalance/1e18) * grape_xgrape_lp_value);
 	let compVal = ((compoundedBalance/1e18) * grape_xgrape_lp_value);
-	$("#sp-trackedBalance").html((trackedTokenBalance/1e18).toFixed(2) + " XGRAPE-GRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (trackedVal/2).toFixed(2) + " XGRAPE/" + (trackedVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
-	$("#sp-depositedBalance").html((totalTokenBalance / 1e18).toFixed(2) + " XGRAPE-GRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (totalVal/2).toFixed(2) + " XGRAPE/" + (totalVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
-	$("#sp-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " XGRAPE-GRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (compVal/2).toFixed(2) + " XGRAPE/" + (compVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
+	$("#sp-trackedBalance").html((trackedTokenBalance/1e18).toFixed(2) + " GRAPE-XGRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (trackedVal/2).toFixed(2) + " XGRAPE/" + (trackedVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
+	$("#sp-depositedBalance").html((totalTokenBalance / 1e18).toFixed(2) + " GRAPE-XGRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (totalVal/2).toFixed(2) + " XGRAPE/" + (totalVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
+	$("#sp-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " GRAPE-XGRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (compVal/2).toFixed(2) + " XGRAPE/" + (compVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
 	$("#sp-assassinationrisk").html(roiRisk + "% / 100%");
 	if(roiRisk <= 90) {
 		$("#sp-assassinationrisk").css({"color": "#00FF00"});
