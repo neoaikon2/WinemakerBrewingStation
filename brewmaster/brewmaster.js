@@ -120,15 +120,24 @@ const updateGlobal = async(account) => {
 			});
 		});
 		
+		// Get the price of XGRAPE
+		await grape.methods.balanceOf(GRAPE_XGRAPE_LP).call({from: account}).then(async(grapeSupply) => {
+			await xgrape.methods.balanceOf(GRAPE_XGRAPE_LP).call({from: account}).then(async(xgrapeSupply) => {
+				xgrapePrice = (xgrapeSupply / grapeSupply) * grapePrice;
+			});
+		});
+		
+		// Get the price of a WINE-MIM-LP
 		await wine_mim_lp.methods.totalSupply().call({from: account}).then(async(totalSupply) => {
 			await mim.methods.balanceOf(WINE_MIM_LP).call({from: account}).then(async(mimLPbal) => {
 				wine_mim_lp_value = ((mimLPbal / totalSupply)*2);
 			});
 		});
 		
-		await grape.methods.balanceOf(GRAPE_XGRAPE_LP).call({from: account}).then(async(grapeSupply) => {
-			await xgrape.methods.balanceOf(GRAPE_XGRAPE_LP).call({from: account}).then(async(xgrapeSupply) => {
-				xgrapePrice = (xgrapeSupply / grapeSupply)
+		// Get the price of a GRAPE-XGRAPE-LP
+		await grape_xgrape_lp.methods.totalSupply().call({from: account}).then(async(totalSupply) => {
+			await grape.methods.balanceOf(GRAPE_XGRAPE_LP).call({from: account}).then(async(grapeLPbal) => {
+				grape_xgrape_lp_value = ((grapeLPbal / totalSupply)*2) * grapePrice;
 			});
 		});
 	}
@@ -154,9 +163,23 @@ const updateGlobal = async(account) => {
 			});
 		});
 		
+		// Get the price of XGRAPE
+		await callRPC(account, GRAPE_TOKEN, "balanceOf(address)", [ GRAPE_XGRAPE_LP ]).then(async(grapeSupply) => {
+			await callRPC(account, XGRAPE_TOKEN, "balanceOf(address)", [ GRAPE_XGRAPE_LP ]).then(async(xgrapeSupply) => {
+				xgrapePrice = (xgrapeSupply / grapeSupply) * grapePrice;
+			});
+		});
+		
 		await callRPC(account, WINE_MIM_LP, "totalSupply()", [ ]).then(async(totalSupply) => {
 			await callRPC(account, MIM_TOKEN, "balanceOf(address)", [ WINE_MIM_LP ]).then(function(mimLPbal) {
 				wine_mim_lp_value = ((mimLPbal / totalSupply)*2);				
+			});
+		});
+		
+		// Get the price of a GRAPE-XGRAPE-LP
+		await callRPC(account, GRAPE_XGRAPE_LP, "totalSupply()", [ ]).then(async(totalSupply) => {
+			await callRPC(account, GRAPE_TOKEN, "balanceOf(address)", [ GRAPE_XGRAPE_LP ]).then(async(grapeLPbal) => {
+				grape_xgrape_lp_value = ((grapeLPbal / totalSupply)*2) * grapePrice;
 			});
 		});
 	}
@@ -543,6 +566,7 @@ const updateWinepress = async(account) => {
 }
 
 var xgrapePrice = 0;
+var grape_xgrape_lp_value = 0;
 /*
 	Update the dataset used for the sodapress panel and update the ui
 */
@@ -630,15 +654,15 @@ const updateSodapress = async(account) => {
 		});
 	}
 	
-	$("#sp-lpvalue").html(xgrapePrice.toFixed(4) + " XGRAPE");
+	$("#sp-lpvalue").html("$" + grape_xgrape_lp_value.toFixed(2) + " USD");
 	$("#sp-visibleaprroi").html(visibleAPR.toFixed(2) + "% / " + (visibleAPR*90).toFixed(2) + "%");
 	$("#sp-trueaprroi").html(trueAPR.toFixed(2) + "% / " + (trueAPR*90).toFixed(2) + "%");
-	let trackedVal = ((trackedTokenBalance/1e18));
-	let totalVal = ((totalTokenBalance/1e18));
-	let compVal = ((compoundedBalance/1e18));
-	$("#sp-trackedBalance").html((trackedTokenBalance/1e18).toFixed(2) + " XGRAPE-GRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (trackedVal/2/grapePrice).toFixed(2) + " GRAPE/" + (trackedVal/2/grapePrice*xgrapePrice).toFixed(2) + " XGRAPE</div>");
-	$("#sp-depositedBalance").html((totalTokenBalance / 1e18).toFixed(2) + " XGRAPE-GRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (totalVal/2/grapePrice).toFixed(2) + " GRAPE/" + (totalVal/2/grapePrice*xgrapePrice).toFixed(2) + " XGRAPE</div>");
-	$("#sp-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " XGRAPE-GRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (compVal/2/grapePrice).toFixed(2) + " GRAPE/" + (compVal/2/grapePrice*xgrapePrice).toFixed(2) + " XGRAPE</div>");
+	let trackedVal = ((trackedTokenBalance/1e18) * grape_xgrape_lp_value);
+	let totalVal = ((totalTokenBalance/1e18) * grape_xgrape_lp_value);
+	let compVal = ((compoundedBalance/1e18) * grape_xgrape_lp_value);
+	$("#sp-trackedBalance").html((trackedTokenBalance/1e18).toFixed(2) + " XGRAPE-GRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (trackedVal/2).toFixed(2) + " XGRAPE/" + (trackedVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
+	$("#sp-depositedBalance").html((totalTokenBalance / 1e18).toFixed(2) + " XGRAPE-GRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (totalVal/2).toFixed(2) + " XGRAPE/" + (totalVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
+	$("#sp-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " XGRAPE-GRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (compVal/2).toFixed(2) + " XGRAPE/" + (compVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
 	$("#sp-assassinationrisk").html(roiRisk + "% / 100%");
 	if(roiRisk <= 90) {
 		$("#sp-assassinationrisk").css({"color": "#00FF00"});
@@ -647,13 +671,13 @@ const updateSodapress = async(account) => {
 	} else {
 		$("#sp-assassinationrisk").css({"color": "#FF0000"});
 	}	
-	let claimableVal = ((lpToShare * (roiShares/1e18)))
-	$("#sp-roishares").html( (roiShares/1e18).toFixed(2) + " Shares<br><div class='usd-display'>&nbsp;&nbsp;~" + (lpToShare * (roiShares/1e18)).toFixed(2) + " GRAPE-XGRAPE-LP<br>~" + (claimableVal/2/grapePrice).toFixed(2) + " GRAPE/" + (claimableVal/2/grapePrice*xgrapePrice).toFixed(2) + " XGRAPE</div>");
+	let claimableVal = ((lpToShare * (roiShares/1e18)) * grape_xgrape_lp_value)
+	$("#sp-roishares").html( (roiShares/1e18).toFixed(2) + " Shares<br><div class='usd-display'>&nbsp;&nbsp;~" + (lpToShare * (roiShares/1e18)).toFixed(2) + " GRAPE-XGRAPE-LP<br>~" + (claimableVal/2).toFixed(2) + " XGRAPE/" + (claimableVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
 	$("#sp-roiprogress").html( roiProgress.toFixed(2) + "% / 100%");
-	pendingVal = (pendingPressWine * xgrapePrice);
-	dailyVal = (dailyPressWine * xgrapePrice);
-	$("#sp-pendingRewards").html(pendingPressWine.toFixed(2) + " GRAPE-XGRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (pendingVal/2/grapePrice).toFixed(2) + " GRAPE/" + (pendingVal/2/grapePrice*xgrapePrice).toFixed(2) + " XGRAPE</div>");
-	$("#sp-dailyRewards").html(dailyPressWine.toFixed(2) + " GRAPE-XGRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (dailyVal/2/grapePrice).toFixed(2) + " GRAPE/" + (dailyVal/2/grapePrice*xgrapePrice).toFixed(2) + " XGRAPE</div>");
+	pendingVal = (pendingPressWine * xgrapePrice) * grape_xgrape_lp_value;
+	dailyVal = (dailyPressWine * xgrapePrice) * grape_xgrape_lp_value;
+	$("#sp-pendingRewards").html(pendingPressWine.toFixed(2) + " GRAPE-XGRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (pendingVal/2).toFixed(2) + " GRAPE/" + (pendingVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
+	$("#sp-dailyRewards").html(dailyPressWine.toFixed(2) + " GRAPE-XGRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (dailyVal/2).toFixed(2) + " GRAPE/" + (dailyVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
 }
 
 class GrapeNodes {
