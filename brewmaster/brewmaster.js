@@ -672,12 +672,12 @@ const updateSodapress = async(account) => {
 		$("#sp-assassinationrisk").css({"color": "#FF0000"});
 	}	
 	let claimableVal = ((lpToShare * (roiShares/1e18)) * grape_xgrape_lp_value)
-	$("#sp-roishares").html( (roiShares/1e18).toFixed(2) + " Shares<br><div class='usd-display'>&nbsp;&nbsp;~" + (lpToShare * (roiShares/1e18)).toFixed(2) + " GRAPE-XGRAPE-LP<br>~" + (claimableVal/2).toFixed(2) + " XGRAPE/" + (claimableVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
+	$("#sp-roishares").html( (roiShares/1e18).toFixed(2) + " Shares<br><div class='usd-display'>&nbsp;&nbsp;~" + (lpToShare * (roiShares/1e18)).toFixed(2) + " XGRAPE-XGRAPE-LP<br>~" + (claimableVal/2).toFixed(2) + " XGRAPE/" + (claimableVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
 	$("#sp-roiprogress").html( roiProgress.toFixed(2) + "% / 100%");
-	pendingVal = (pendingPressWine * xgrapePrice) * grape_xgrape_lp_value;
-	dailyVal = (dailyPressWine * xgrapePrice) * grape_xgrape_lp_value;
-	$("#sp-pendingRewards").html(pendingPressWine.toFixed(2) + " GRAPE-XGRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (pendingVal/2).toFixed(2) + " GRAPE/" + (pendingVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
-	$("#sp-dailyRewards").html(dailyPressWine.toFixed(2) + " GRAPE-XGRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (dailyVal/2).toFixed(2) + " GRAPE/" + (dailyVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
+	pendingVal = (pendingPressWine) * grape_xgrape_lp_value;
+	dailyVal = (dailyPressWine) * grape_xgrape_lp_value;
+	$("#sp-pendingRewards").html(pendingPressWine.toFixed(2) + " GRAPE-XGRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (pendingVal/2).toFixed(2) + " XGRAPE/" + (pendingVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
+	$("#sp-dailyRewards").html(dailyPressWine.toFixed(2) + " GRAPE-XGRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (dailyVal/2).toFixed(2) + " XGRAPE/" + (dailyVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
 }
 
 class GrapeNodes {
@@ -707,7 +707,8 @@ const updateNodes = async(account) => {
 					
 					let dt = new Date();
 					dripPerSec = gns.dripRate / 1e18 / 24 / 60 / 60;					
-					grapeToCompound = 50 - (gns.pending/1e18);					
+					compoundNum = Math.floor((gns.pending/1e18) / 50);
+					grapeToCompound = 50 - ((gns.pending/1e18) - (50*compoundNum));
 					secsToCompound = grapeToCompound / dripPerSec;					
 					dt.setSeconds(dt.getSeconds() + secsToCompound);
 					$("#node-grape-compounddate").html(dt.toLocaleDateString() + ", " + dt.toLocaleTimeString());
@@ -738,7 +739,15 @@ const updateNodes = async(account) => {
 			gns.allocation = window.web3.utils.toBN("0x"+userInfo.substring(194, 258))/1e18;
 			await callRPC(account, GRAPE_NODES, "getDayDripEstimate(address)", [ account ]).then(async(dripEstimate) => {			
 					gns.dripRate = dripEstimate;
-					gns.apr = (gns.dripRate / total_deposits)*100					
+					gns.apr = (gns.dripRate / total_deposits)*100	
+
+					let dt = new Date();
+					dripPerSec = gns.dripRate / 1e18 / 24 / 60 / 60;
+					compoundNum = Math.floor((gns.pending/1e18) / 50);
+					grapeToCompound = 50 - ((gns.pending/1e18) - (50*compoundNum));
+					secsToCompound = grapeToCompound / dripPerSec;					
+					dt.setSeconds(dt.getSeconds() + secsToCompound);
+					$("#node-grape-compounddate").html(dt.toLocaleDateString() + ", " + dt.toLocaleTimeString());
 			});
 		});
 	}
@@ -1220,7 +1229,7 @@ const claimGrapeNode = async() => {
 const compoundGrapeNode = async() => {
 	window.web3.eth.getAccounts().then(async(accounts) => {
 		let account = accounts[0];
-		grape.balanceOf(account).call({from: account}).then(async(balance) => {
+		grape_nodes.methods.getDistributionRewards(account).call({from: account}).then(async(balance) => {
 			if(balance/1e18 >= 50) {
 				grape_nodes.methods.compound().send({from: account});
 			}
