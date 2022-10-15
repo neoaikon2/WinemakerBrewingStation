@@ -44,15 +44,17 @@
 			<div class="sidebuttonL" style="top: 64px;" onclick="showPressPanel()">Winepress</div>			
 			<!-- <div class="sidebuttonL" style="top: 96px; border-radius: 0 0 0 8px;" onclick="showPegPanel()">Peg Health</div> -->
 			<div class="sidebuttonL" style="top: 96px;" onclick="showNodePanel()">Nodes V2</div>
-			<div class="sidebuttonL" style="top: 128px; border-radius: 0 0 0 8px;" onclick="showSodaPanel()">Soda Press</div>
+			<div class="sidebuttonL" style="top: 128px;" onclick="showSodaPanel()">Soda Press</div>
+			<div class="sidebuttonL" style="top: 160px; border-radius: 0 0 0 8px;" onclick="showSoleraPanel()">Solera Press</div>
 		</div>
 		
 <!-- Grapery Menu Panel -->
 		<div style="position: absolute; overflow: visible; width: 0px; height: 0px; right: -0px; background-color: green;">
 			<div class="sidebuttonR" style="top: 0px; border-radius: 0 8px 0 0;" onclick="window.open('https://grapefinance.app/', '_blank')"><img src="http://brewmaster.on.fleek.co/gflogo.png" style="width: 20px; height: 20px;" /> Grape Finance</div>
 			<div class="sidebuttonR" style="top: 32px;" onclick="window.open('https://winemaker.grapefinance.app/app/Overview', '_blank')"><img src="https://winemaker.grapefinance.app/static/media/image-2.48f392d8.png" style="width: 20px; height: 20px; border-radius: 10px;" /> Winemaker Game</div>
-			<div class="sidebuttonR" style="top: 64px; border-radius: 0 0 8px 0;" onclick="window.open('https://winepress.grapefinance.app/', '_blank')"><img src="https://winepress.grapefinance.app/_next/image?url=%2Fimg%2Fbarrel.png&w=48&q=75" style="width: 20px; height: 20px" /> The Winepress</div>
-			<div class="sidebuttonR" style="top: 96px; border-radius: 0 0 8px 0;" onclick="window.open('https://soda.grapefinance.app/', '_blank')"><img src="https://soda.grapefinance.app/_ipx/w_48,q_75/%2Fimg%2Fsoda.png?url=%2Fimg%2Fsoda.png&w=48&q=75" style="width: 20px; height: 20px" />The Soda Press</div>
+			<div class="sidebuttonR" style="top: 64px;" onclick="window.open('https://winepress.grapefinance.app/', '_blank')"><img src="https://winepress.grapefinance.app/_next/image?url=%2Fimg%2Fbarrel.png&w=48&q=75" style="width: 20px; height: 20px" /> The Winepress</div>
+			<div class="sidebuttonR" style="top: 96px;" onclick="window.open('https://soda.grapefinance.app/', '_blank')"><img src="https://soda.grapefinance.app/_ipx/w_48,q_75/%2Fimg%2Fsoda.png?url=%2Fimg%2Fsoda.png&w=48&q=75" style="width: 20px; height: 20px" />The Soda Press</div>
+			<div class="sidebuttonR" style="top: 96px; border-radius: 0 0 8px 0;" onclick="window.open('https://solera.grapefinance.app/', '_blank')">&#9728; Solera</div>
 		</div>
 
 <!-- Brewing Station Header -->
@@ -554,6 +556,99 @@
 			</div>			
 		</div>
 		
+<!-- Solera Aging Room Panel -->
+		<div id="SoleraPanel" class="panel panel-hidden">
+			<div class="panel-header">Solera Aging Room<br><hr></div>
+			<div style="margin: 16px;">
+				<div class="row-item">
+					<div class="row-header" style="width: 200px">1 SVINTAGE =&nbsp;</div>
+					<div id="sar-lpvalue" class="row-content"></div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-visibleaprroi3')" onmouseover="hoverTip('tooltip-visibleaprroi3')">&#8505;</div>
+							<div class="infoTip" id="tooltip-visibleaprroi3">Visible APR and ROI<br>The APR and ROI visible to other players<br>(like assassins)</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">Visible APR/ROI:&nbsp;</div>
+						<div id="sar-visibleaprroi" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-trueaprroi3')" onmouseover="hoverTip('tooltip-trueaprroi3')">&#8505;</div>
+							<div class="infoTip" id="tooltip-trueaprroi3">True APR and ROI<br>Your actual APR and ROI in the Solera press</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">True APR/ROI:&nbsp;</div>
+						<div id="sar-trueaprroi" class="row-content"></div>
+					</div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-risk3')" onmouseover="hoverTip('tooltip-risk3')">&#8505;</div>
+							<div class="infoTip" id="tooltip-risk3">Your current risk of being assassinated<br>Will reach 100% at 350% Visible ROI</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header" style="width: 200px">Assassination Risk:&nbsp;</div>
+						<div id="sar-assassinationrisk" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-roiprogress3')" onmouseover="hoverTip('tooltip-roiprogress3')">&#8505;</div>
+							<div class="infoTip" id="tooltip-roiprogress3">Your progress in receiving the 90%+Bonus APR<br>you are entitled to claim out of the Winepress</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">ROI Progress:&nbsp;</div>
+						<div id="sar-roiprogress" class="row-content"></div>
+					</div>	
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-poolshares3')" onmouseover="hoverTip('tooltip-poolshares3')">&#8505;</div>
+							<div class="infoTip" id="tooltip-poolshares3">The amount of shares you are<br>entitled to claim out of the Sodapress</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">Shares:&nbsp;</div>
+						<div id="sar-roishares" class="row-content"></div>
+					</div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<div class="row-header">Deposited:&nbsp;</div>
+						<div id="sar-depositedBalance" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Compounded:&nbsp;</div>
+						<div id="sar-compoundedBalance" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Total:&nbsp;</div>
+						<div id="sar-trackedBalance" class="row-content"></div>
+					</div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<div class="row-header">Pending Rewards:&nbsp;</div>
+						<div id="sar-pendingRewards" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Daily Rewards:&nbsp;</div>
+						<div id="sar-dailyRewards" class="row-content"></div>
+					</div>
+				</div>
+				
+				<div class="evilbutton" onclick="claimSolera()">Claim</div>
+				<!--<div class="button" onclick="REMOVED()">Claim + Deposit</div>-->
+				<div class="button" onclick="compoundSolera()">Compound</div>
+			</div>			
+		</div>
+		
 <!-- Peg Health Panel
 		<div id="PegPanel" class="panel panel-hidden" style="display: none; opacity: 0;">
 			<div class="panel-header">Health Monitor<br><hr></div>
@@ -582,7 +677,7 @@
 <!-- If you're reading this CSS really sucks but when you get it to work, it's almost (ALMOST) beautiful... -->
 		<div class="cardDisclaimer">
 			DISCLAIMER: This tool provides a basic interface into the winery to keep track of stats, it is NOT intended to be a replacement for any GrapeFinance dApp.<br>			
-			<div style="font-size: 12px; margin-top: 4px; float: left;">Brewmaster v2.91&#127815;</div>
+			<div style="font-size: 12px; margin-top: 4px; float: left;">Brewmaster v2.92&#127815;</div>
 			<div style="font-size: 12px; margin-top: 4px; float: right;">This tool is open-source, you can view the source on the <a href="https://github.com/neoaikon2/WinemakerBrewingStation">GitHub repository</a></div>
 		</div>
 		<div id="timer" onclick="triggerUpdate();" style="font-size: 10pt; font-family: consolas; font-weight: bold; position: absolute; right: 0; top: 0; padding: 4px; cursor: hand;">30</div>

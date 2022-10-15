@@ -14,6 +14,7 @@ const GRAPE_NODES = "0xd77b0756bE406a6a78d47285EDD59234D781D568";
 const XGRAPE_TOKEN = "0x95CED7c63eA990588F3fd01cdDe25247D04b8D98";
 const SODAPRESS = "0x369E556F0e7A08E781527D161DaC867bb05fA597";
 const GRAPE_XGRAPE_LP = "0xE00b91F35924832D1a7d081d4DCed55f3b80FB5C";
+const SOLERA = "0x23b91cf132f06f8f71d3f36f59b89c29a3c61d5f";
 
 const WINEMAKER_REWARDS_ABI = [{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"previousAdmin","type":"address"},{"indexed":false,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"beacon","type":"address"}],"name":"BeaconUpgraded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint8","name":"version","type":"uint8"}],"name":"Initialized","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"implementation","type":"address"}],"name":"Upgraded","type":"event"},{"inputs":[],"name":"CLAIM_VINTAGEWINE_BURN_PERCENTAGE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"CLAIM_VINTAGEWINE_CONTRIBUTION_PERCENTAGE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DEAD_ADDR","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_FATIGUE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"},{"internalType":"uint256","name":"_offset","type":"uint256"},{"internalType":"uint256","name":"_maxSize","type":"uint256"}],"name":"batchedStakesOfOwner","outputs":[{"components":[{"internalType":"uint256","name":"vintnerId","type":"uint256"},{"internalType":"uint256","name":"vintnerPPM","type":"uint256"},{"internalType":"bool","name":"isResting","type":"bool"},{"internalType":"uint256","name":"endTimestamp","type":"uint256"}],"internalType":"struct Winery.StakedVintnerInfo[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"},{"internalType":"uint256","name":"_offset","type":"uint256"},{"internalType":"uint256","name":"_maxSize","type":"uint256"}],"name":"batchedToolsOfOwner","outputs":[{"components":[{"internalType":"uint256","name":"toolId","type":"uint256"},{"internalType":"uint256","name":"toolPPM","type":"uint256"}],"internalType":"struct Winery.StakedToolInfo[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"cellarAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimVintageWine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"fatiguePerMinute","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_ppm","type":"uint256"}],"name":"fatiguePerMinuteCalculation","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"fatigueTuner","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"gameStarted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getFatigueAccrued","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getFatiguePerMinuteWithModifier","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getMasterVintnerNumber","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tokenId","type":"uint256"},{"internalType":"address","name":"_owner","type":"address"}],"name":"getRestingTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getTimeUntilFatigued","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getTotalPPM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getVintageWineAccrued","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"grape","outputs":[{"internalType":"contract IGrape","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"grapeResetCost","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"contract Vintner","name":"_vintner","type":"address"},{"internalType":"contract Upgrade","name":"_upgrade","type":"address"},{"internalType":"contract VintageWine","name":"_vintageWine","type":"address"},{"internalType":"address","name":"_grape","type":"address"},{"internalType":"address","name":"_cellarAddress","type":"address"},{"internalType":"address","name":"_wineryProgression","type":"address"}],"name":"initialize","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"numberOfStaked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"ownedUpgradeStakes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"ownedUpgradeStakesBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"ownedUpgradeStakesIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"ownedVintnerStakes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"ownedVintnerStakesBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"ownedVintnerStakesIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"proxiableUUID","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"_vintnerIds","type":"uint256[]"}],"name":"reStakeRestedVintners","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"resetFatigue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_vintnerType","type":"uint256"},{"internalType":"uint256","name":"_masterVintnerType","type":"uint256"},{"internalType":"uint256","name":"_fatigue","type":"uint256"}],"name":"restingTimeCalculation","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"restingVintners","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_cellarAddress","type":"address"}],"name":"setCellarAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_fatigueTuner","type":"uint256"}],"name":"setFatigueTuner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_grape","type":"address"}],"name":"setGrape","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_grapeResetCost","type":"uint256"}],"name":"setGrapeResetCost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_startTime","type":"uint256"}],"name":"setStartTime","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_unstakePenalty","type":"uint256"}],"name":"setUnstakePenalty","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"contract VintageWine","name":"_vintageWine","type":"address"}],"name":"setVintageWine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_wineryProgression","type":"address"}],"name":"setWineryProgression","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_yieldPPS","type":"uint256"}],"name":"setYieldPPS","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"_vintnerIds","type":"uint256[]"},{"internalType":"uint256[]","name":"_upgradeIds","type":"uint256[]"}],"name":"stakeMany","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"stakedUpgrades","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"stakedVintners","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"startTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"startTimeStamp","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_startTime","type":"uint256"},{"internalType":"uint256","name":"_fatigue","type":"uint256"},{"internalType":"uint256","name":"_fatiguePerMinute","type":"uint256"}],"name":"timeUntilFatiguedCalculation","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"totalPPM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"unstakePenalty","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"_vintnerIds","type":"uint256[]"},{"internalType":"uint256[]","name":"_upgradeIds","type":"uint256[]"}],"name":"unstakeVintnersAndUpgrades","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"upgrade","outputs":[{"internalType":"contract Upgrade","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newImplementation","type":"address"}],"name":"upgradeTo","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newImplementation","type":"address"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"upgradeToAndCall","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"vintageWine","outputs":[{"internalType":"contract VintageWine","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_initialVintageWine","type":"uint256"},{"internalType":"uint256","name":"_deltaTime","type":"uint256"},{"internalType":"uint256","name":"_ppm","type":"uint256"},{"internalType":"uint256","name":"_modifier","type":"uint256"},{"internalType":"uint256","name":"_fatigue","type":"uint256"},{"internalType":"uint256","name":"_fatiguePerMinute","type":"uint256"},{"internalType":"uint256","name":"_yieldPPS","type":"uint256"}],"name":"vintageWineAccruedCalculation","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"vintner","outputs":[{"internalType":"contract Vintner","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wineryFatigue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"wineryProgression","outputs":[{"internalType":"contract IWineryProgression","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wineryVintageWine","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"_vintnerIds","type":"uint256[]"}],"name":"withdrawVintners","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"yieldPPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
 const WINEMAKER_PROGRESSION_ABI = [{"inputs":[{"internalType":"address","name":"_grape","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"skillPoints","type":"uint256"}],"name":"receivedSkillPoints","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"level","type":"uint256"}],"name":"respec","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"skillGroup","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"skillLevel","type":"uint256"}],"name":"skillLearned","type":"event"},{"inputs":[],"name":"BURN_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"CELLAR_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FATIGUE_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MASTERVINTNER_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"MAX_SKILL_LEVEL","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"STORAGE_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UPGRADES_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"VINTNERS_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseCostRespect","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"burnSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"cellarSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"depositGrape","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"fatigueSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_player","type":"address"}],"name":"fixSkillPoints","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getBurnSkillModifier","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getCellarSkillModifier","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getFatigueSkillModifier","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getGrapeDeposited","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getGrapeToNextLevel","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getLevel","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"},{"internalType":"uint256","name":"_masterVintnerNumber","type":"uint256"}],"name":"getMasterVintnerSkillModifier","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getMaxLevelUpgrade","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getMaxNumberVintners","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getSkillPoints","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getSkillsLearned","outputs":[{"internalType":"uint256","name":"burn","type":"uint256"},{"internalType":"uint256","name":"fatigue","type":"uint256"},{"internalType":"uint256","name":"cellar","type":"uint256"},{"internalType":"uint256","name":"mastervintner","type":"uint256"},{"internalType":"uint256","name":"upgrades","type":"uint256"},{"internalType":"uint256","name":"vintners","type":"uint256"},{"internalType":"uint256","name":"vintageWineStorage","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getVintageWineStorage","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"grape","outputs":[{"internalType":"contract IGrape","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"grapeDeposited","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"grapeLevels","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"levelStarted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"levelTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"masterVintnerSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"maxGrapeAmount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"resetSkills","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_baseCostRespect","type":"uint256"}],"name":"setBaseCostRespect","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_grape","type":"address"}],"name":"setGrape","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_newValue","type":"uint256"}],"name":"setGrapeLevels","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_startTime","type":"uint256"}],"name":"setLevelStartTime","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setburnSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setcellarSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setfatigueSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setmasterVintnerSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setupgradesSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setvintageWineStorageSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"},{"internalType":"uint256","name":"_value","type":"uint256"}],"name":"setvintnersSkillValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"skillPoints","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"skillsLearned","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_skillGroup","type":"uint256"},{"internalType":"uint256","name":"_skillLevel","type":"uint256"}],"name":"spendSkillPoints","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"upgradesSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"vintageWineStorageSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"vintnersSkillValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
@@ -105,6 +106,13 @@ const updateGlobal = async(account) => {
 			});
 		});
 		
+		// Get the ratio of svint to vint in the cellar
+		await svint.methods.totalSupply().call({from: account}).then(async(svintSupply) => {
+			svint.methods.vintageWineBalance().call({from: account}).then(function(vintageInCellar) {
+				svintRatio = window.web3.utils.toBN(vintageInCellar) / window.web3.utils.toBN(svintSupply);
+			});
+		});
+		
 		// Get the price of GRAPE
 		await mim.methods.balanceOf(GRAPE_LP).call({from: account}).then(async(mimSupply) => {
 			await grape.methods.balanceOf(GRAPE_LP).call({from: account}).then(function(grapeSupply) {
@@ -148,6 +156,12 @@ const updateGlobal = async(account) => {
 			await callRPC(account, VINT_TOKEN, "balanceOf(address)", [ VINT_LP ]).then(async(vintSupply) => {
 				// Calculate the price of the VINTAGE
 				vintPrice = (mimSupply/vintSupply);
+			});
+		});
+		
+		await callRPC(account, SVINT_TOKEN, "totalSupply()", []).then(async(svintSupply) => {
+			await callRPC(account, SVINT_TOKEN, "vintageWineBalance()", { }).then(function(vintageInCellar) {
+				svintRatio = window.web3.utils.toBN(vintageInCellar) / window.web3.utils.toBN(svintSupply);				
 			});
 		});
 
@@ -339,13 +353,6 @@ var cellarDt;
 */
 const updateCellar = async(account) => {
 	if(usingWeb3) {
-		// Get the ratio of svint to vint in the cellar
-		await svint.methods.totalSupply().call({from: account}).then(async(svintSupply) => {
-			svint.methods.vintageWineBalance().call({from: account}).then(function(vintageInCellar) {
-				svintRatio = window.web3.utils.toBN(vintageInCellar) / window.web3.utils.toBN(svintSupply);
-			});
-		});
-
 		// Get the vintage balance
 		await vint.methods.balanceOf(account).call({from: account}).then(function(balance) {
 			vintBalance = balance/1e18;
@@ -390,12 +397,6 @@ const updateCellar = async(account) => {
 	}
 
 	if(!usingWeb3) {
-		await callRPC(account, SVINT_TOKEN, "totalSupply()", []).then(async(svintSupply) => {
-			await callRPC(account, SVINT_TOKEN, "vintageWineBalance()", { }).then(function(vintageInCellar) {
-				svintRatio = window.web3.utils.toBN(vintageInCellar) / window.web3.utils.toBN(svintSupply);				
-			});
-		});
-
 		// Wallet VINTAGE balance
 		await callRPC(account, VINT_TOKEN, "balanceOf(address)", [ account ]).then(function(balance) {
 			vintBalance = balance/1e18;			
@@ -680,6 +681,119 @@ const updateSodapress = async(account) => {
 	$("#sp-dailyRewards").html(dailyPressWine.toFixed(2) + " GRAPE-XGRAPE-LP<br><div class='usd-display'>&nbsp;&nbsp;~" + (dailyVal/2).toFixed(2) + " XGRAPE/" + (dailyVal/2/grapePrice).toFixed(2) + " GRAPE</div>");
 }
 
+/*
+	Update the dataset used for the solera panel and update the ui
+*/
+const updateSolera = async(account) => {
+	if(usingWeb3) {
+		// Start update SOLERA ui
+		
+		// Get the tracked balance, compounded balance, and assassination risk
+		await solera.methods.calculateTrackedProfit(account).call({from: account}).then(async(currentProfit) => {
+			await solera.methods.userInfo(account).call({from: account}).then(async(userInfo) => {
+				// These calculations are from the smart contract
+				let balance = window.web3.utils.toBN(userInfo['balance']);
+				let claimPerSecond = window.web3.utils.toBN(userInfo['claimPerSecond']);				
+				let totalShareBalance = window.web3.utils.toBN(userInfo['totalShareBalance']);
+				
+				roiShares = balance;
+				totalTokenBalance = window.web3.utils.toBN(userInfo['totalTokenBalance']);
+				trackedTokenBalance = window.web3.utils.toBN(userInfo['trackedTokenBalance']);
+				compoundedBalance = trackedTokenBalance - totalTokenBalance;
+
+				// Calculate assassination risk, literally same code from contract :)
+				let profitRatio = (currentProfit * 10e18) / trackedTokenBalance;
+				let expectedProfit = (trackedTokenBalance * 3.5);
+				let profitDifference = expectedProfit - currentProfit;
+				roiRisk = ((1.0 - (Math.abs(profitDifference) / expectedProfit)) * 100).toFixed(2);
+				
+				await solera.methods.calculatePrice().call({from: account}).then(function(lpts) {
+					lpToShare = lpts / 1e18;
+					trueAPR = (((claimPerSecond * lpToShare) * 86400) / totalTokenBalance) * 100;
+					visibleAPR = (((claimPerSecond * lpToShare) * 86400) / trackedTokenBalance) * 100;
+
+				});
+				await solera.methods.pendingShares(account).call({from: account}).then(async(pendingShares) => {
+					roiProgress = (1-((balance-pendingShares)/totalShareBalance))*100;
+				});
+			});
+		});
+
+		// Get the pending rewards
+		await solera.methods.pendingRewards(account).call({from: account}).then(function(pendingRewards) {
+			pendingPressWine = (window.web3.utils.toBN(pendingRewards)/1e18);
+		});
+
+		// Get the rewards per day
+		await solera.methods.rewardsPerDay(account).call({from: account}).then(function(dailyRewards) {
+			dailyPressWine = window.web3.utils.toBN(dailyRewards)/1e18;
+		});
+	}
+	
+	if(!usingWeb3) {		
+		await callRPC(account, SOLERA, "calculateTrackedProfit(address)", [ account ]).then(async(currentProfit) => {
+			await callRPC(account, SOLERA, "userInfo(address)", [ account ]).then(async(userInfo) => {
+				let balance = window.web3.utils.toBN(userInfo.substring(2, 66));
+				let claimPerSecond = window.web3.utils.toBN(userInfo.substring(386, 450));
+				let totalShareBalance = window.web3.utils.toBN(userInfo.substring(194, 194+64));								
+				
+				roiShares = balance;
+				totalTokenBalance = window.web3.utils.toBN(userInfo.substring(130, 130+64));
+				trackedTokenBalance = window.web3.utils.toBN(userInfo.substring(258, 258+64));
+				compoundedBalance = trackedTokenBalance - totalTokenBalance;				
+
+				let profitRatio = (currentProfit * 10e18) / trackedTokenBalance;
+				let expectedProfit = (trackedTokenBalance * (3.5 * 10e18)) / 10e18;
+				let profitDifference = expectedProfit - currentProfit;
+				
+				roiRisk = ((1.0 - (Math.abs(profitDifference) / expectedProfit)) * 100).toFixed(2);				
+				await callRPC(account, SOLERA, "calculatePrice()", [ ]).then(function(lpts) {
+					lpToShare = lpts / 1e18;
+					trueAPR = (((claimPerSecond * lpToShare) * 86400) / totalTokenBalance) * 100;
+					visibleAPR = (((claimPerSecond * lpToShare) * 86400) / trackedTokenBalance) * 100;					
+				});
+
+				await callRPC(account, SOLERA, "pendingShares(address)", [ account]).then(async(pendingShares) => {
+					roiProgress = (1-((balance-pendingShares)/totalShareBalance))*100;
+				});
+			});
+		});
+				
+		await callRPC(account, SOLERA, "pendingRewards(address)", [ account ]).then(function(pendingRewards) {
+			pendingPressWine =  pendingBalance = (window.web3.utils.toBN(pendingRewards)/1e18);			
+		});
+
+		await callRPC(account, SOLERA, "rewardsPerDay(address)", [ account ]).then(function(dailyRewards) {
+			dailyPressWine = window.web3.utils.toBN(dailyRewards)/1e18;			
+		});
+	}
+	
+	$("#sar-lpvalue").html("$" + (svintRatio * vintPrice).toFixed(2) + " USD");
+	$("#sar-visibleaprroi").html(visibleAPR.toFixed(2) + "% / " + (visibleAPR*45).toFixed(2) + "%");
+	$("#sar-trueaprroi").html(trueAPR.toFixed(2) + "% / " + (trueAPR*45).toFixed(2) + "%");
+	let trackedVal = ((trackedTokenBalance/1e18)*(svintRatio * vintPrice));
+	let totalVal = ((totalTokenBalance/1e18)*(svintRatio * vintPrice))
+	let compVal = ((compoundedBalance/1e18)*(svintRatio * vintPrice))
+	$("#sar-trackedBalance").html((trackedTokenBalance/1e18).toFixed(2) + " SVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (trackedVal).toFixed(2) + " USD</div>");
+	$("#sar-depositedBalance").html((totalTokenBalance / 1e18).toFixed(2) + " SVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (totalVal).toFixed(2) + " USD</div>");
+	$("#sar-compoundedBalance").html((compoundedBalance / 1e18).toFixed(2) + " SVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (compVal).toFixed(2) + " USD</div>");
+	$("#sar-assassinationrisk").html(roiRisk + "% / 100%");
+	if(roiRisk <= 90) {
+		$("#sar-assassinationrisk").css({"color": "#00FF00"});
+	} else if(roiRisk < 100) {
+		$("#sar-assassinationrisk").css({"color": "#FFBA00"});
+	} else {
+		$("#sar-assassinationrisk").css({"color": "#FF0000"});
+	}	
+	let claimableVal = ((lpToShare * (roiShares/1e18)) * (svintRatio * vintPrice))
+	$("#sar-roishares").html( (roiShares/1e18).toFixed(2) + " Shares<br><div class='usd-display'>&nbsp;&nbsp;~" + (lpToShare * (roiShares/1e18)).toFixed(2) + " SVINTAGE<br>~$" + (claimableVal).toFixed(2) + " USD</div>");
+	$("#sar-roiprogress").html( roiProgress.toFixed(2) + "% / 100%");
+	pendingVal = (pendingPressWine * (svintRatio * vintPrice));
+	dailyVal = (dailyPressWine * (svintRatio * vintPrice));
+	$("#sar-pendingRewards").html(pendingPressWine.toFixed(2) + " SVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (pendingVal).toFixed(2) + " USD</div>");
+	$("#sar-dailyRewards").html(dailyPressWine.toFixed(2) + " SVINTAGE<br><div class='usd-display'>&nbsp;&nbsp;~$" + (dailyVal).toFixed(2) + " USD</div>");
+}
+
 class GrapeNodes {
 	apr = 0;
 	dripRate = 0;
@@ -760,22 +874,6 @@ const updateNodes = async(account) => {
 	$("#node-grape-allocation").html(gns.allocation.toFixed(2));
 }
 
-let winery = null;
-let wineprog = null;
-let winepress = null;
-let vineyard = null;
-let grape = null;
-let vint = null;
-let svint = null;
-let mim = null;
-let wine = null;
-let wine_mim_lp = null;
-let phc = null;
-let grape_nodes = null;
-let xgrape = null;
-let sodapress = null;
-let grape_xgrape_lp = null;
-
 const getDataViaWeb3 = async (account) => {
 	// Refresh the winery UI
 	await updateGlobal(account);
@@ -793,6 +891,8 @@ const getDataViaWeb3 = async (account) => {
 			await updateNodes(account);
 		case 4:
 			await updateSodapress(account);
+		case 5:
+			await updateSolera(account)
 		default:
 			await updateWinery(account);
 			break;
@@ -845,6 +945,8 @@ const getDataViaRpc = async(account) => {
 			await updateNodes(account);
 		case 4:
 			await updateSodapress(account);
+		case 5:
+			await updateSolera(account)
 		default:
 			await updateWinery(account);
 			break;
@@ -997,6 +1099,23 @@ const rpcQuery = async() => {
 	}
 };
 
+let winery = null;
+let wineprog = null;
+let winepress = null;
+let vineyard = null;
+let grape = null;
+let vint = null;
+let svint = null;
+let mim = null;
+let wine = null;
+let wine_mim_lp = null;
+let phc = null;
+let grape_nodes = null;
+let xgrape = null;
+let sodapress = null;
+let grape_xgrape_lp = null;
+let solera = null;
+
 /*
 	Updates the information on the dashboard using direct contract calls
 */
@@ -1026,6 +1145,7 @@ const web3Query = async () => {
 			xgrape = new window.web3.eth.Contract(XGRAPE_TOKEN_ABI, XGRAPE_TOKEN);
 			sodapress = new window.web3.eth.Contract(SODAPRESS_ABI, SODAPRESS);
 			grape_xgrape_lp = new window.web3.eth.Contract(GRAPE_XGRAPE_LP_ABI, GRAPE_XGRAPE_LP);
+			solera = new window.web3.eth.Contract(WINEPRESS_ABI, SOLERA);
 			
 			getDataViaWeb3(accounts[0]);
 			refreshId = setInterval(async() => {
@@ -1260,6 +1380,28 @@ const compoundSodapress = async() => {
 };
 
 /*
+	Claims rewards from the solera without compounding
+	Subject to 5% tax, compounding is not taxed
+*/
+const claimSolera = async() => {	
+	window.web3.eth.getAccounts().then(async(accounts) => {
+		let account = accounts[0];
+		solera.methods.claim().send({from: account});
+	});
+};
+
+/*
+	Compound rewards from the solera to stave off assassination
+	Not taxed
+*/
+const compoundSolera = async() => {	
+	window.web3.eth.getAccounts().then(async(accounts) => {
+		let account = accounts[0];
+		solera.methods.compound().send({from: account});
+	});
+};
+
+/*
 	Claims the rewards from the PEG campaign
 */
 const claimPegCampaignRewards = async() => {
@@ -1283,6 +1425,7 @@ function showWineryPanel() {
 	$("#PegPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PegPanel").css('display', 'none') } );
 	$("#NodePanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#NodePanel").css('display', 'none') } );
 	$("#SodaPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#SodaPanel").css('display', 'none') } );
+	$("#SoleraPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#SoleraPanel").css('display', 'none') } );
 	
 	$("#WineryPanel").css('display', 'block');
 	$("#WineryPanel").animate({ opacity: 1, zindex: 1 });
@@ -1297,6 +1440,7 @@ function showCellarPanel() {
 	$("#PegPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PegPanel").css('display', 'none') } );
 	$("#NodePanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#NodePanel").css('display', 'none') } );
 	$("#SodaPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#SodaPanel").css('display', 'none') } );
+	$("#SoleraPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#SoleraPanel").css('display', 'none') } );
 	
 	$("#CellarPanel").css('display', 'block');
 	$("#CellarPanel").animate({ opacity: 1, zindex: 1 });
@@ -1311,6 +1455,7 @@ function showPressPanel() {
 	$("#PegPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PegPanel").css('display', 'none') } );
 	$("#NodePanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#NodePanel").css('display', 'none') } );
 	$("#SodaPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#SodaPanel").css('display', 'none') } );
+	$("#SoleraPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#SoleraPanel").css('display', 'none') } );
 	
 	$("#PressPanel").css('display', 'block');
 	$("#PressPanel").animate({ opacity: 1, zindex: 1 });
@@ -1325,6 +1470,7 @@ function showNodePanel() {
 	$("#PressPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PressPanel").css('display', 'none') } );
 	$("#PegPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PegPanel").css('display', 'none') } );
 	$("#SodaPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#SodaPanel").css('display', 'none') } );
+	$("#SoleraPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#SoleraPanel").css('display', 'none') } );
 	
 	$("#NodePanel").css('display', 'block');
 	$("#NodePanel").animate({ opacity: 1, zindex: 1 });
@@ -1339,6 +1485,7 @@ function showSodaPanel() {
 	$("#PressPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PressPanel").css('display', 'none') } );
 	$("#PegPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PegPanel").css('display', 'none') } );
 	$("#NodePanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#NodePanel").css('display', 'none') } );
+	$("#SoleraPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#SoleraPanel").css('display', 'none') } );
 	
 	$("#SodaPanel").css('display', 'block');
 	$("#SodaPanel").animate({ opacity: 1, zindex: 1 });
@@ -1350,9 +1497,25 @@ function showPegPanel() {
 	$("#PressPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PressPanel").css('display', 'none') } );
 	$("#NodePanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#NodePanel").css('display', 'none') } );
 	$("#SodaPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#SodaPanel").css('display', 'none') } );
+	$("#SoleraPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#SoleraPanel").css('display', 'none') } );
 	
 	$("#PegPanel").css('display', 'block');
 	$("#PegPanel").animate({ opacity: 1, zindex: 1 });
+}
+
+function showSoleraPanel() {
+	selectedPanel = 5;
+	triggerUpdate();
+	
+	$("#CellarPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#CellarPanel").css('display', 'none') } );
+	$("#WineryPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#WineryPanel").css('display', 'none') } );
+	$("#PressPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PressPanel").css('display', 'none') } );
+	$("#NodePanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#NodePanel").css('display', 'none') } );
+	$("#SodaPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#SodaPanel").css('display', 'none') } );
+	$("#PegPanel").animate({ opacity: 0, zindex: -1 }).after(function() { $("#PegPanel").css('display', 'none') } );
+	
+	$("#SoleraPanel").css('display', 'block');
+	$("#SoleraPanel").animate({ opacity: 1, zindex: 1 });
 }
 
 
