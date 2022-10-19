@@ -337,7 +337,8 @@ const updateWinery = async(account) => {
 	$("#vintageprice").html("$" + (vintPrice).toFixed(4) + " USD (" + ((vintPrice / grapePrice)*100).toFixed(2) + "%)");
 	$("#grapeprice").html("$" + grapePrice.toFixed(4) + " USD");
 	$("#grapetovint").html((fiftyGrape/vintPrice).toFixed(2) + " $VINTAGE");
-	//$("#magazine").html("$" + mag.toFixed(2) + " USD");// + " ($" + (fiftyGrape - mag).toFixed(2) + ")");
+	$("#magazine").html("$" + mag.toFixed(2) + " USD");// + " ($" + (fiftyGrape - mag).toFixed(2) + ")");
+	// Minted out :(
 	//$("#shears").html("$" + shears.toFixed(2) + " USD");// + " ($" + (fiftyGrape*3 - shears).toFixed(2) + ")<br>");
 	//$("#hydro").html("$" + hydro.toFixed(2) + " USD");// + " ($" + (fiftyGrape*5 - hydro).toFixed(2) + ")");
 }

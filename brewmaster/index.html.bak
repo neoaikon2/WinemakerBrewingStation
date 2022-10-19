@@ -174,6 +174,30 @@
 					
 				</div>
 
+				<div class="groupbox" style="margin-top: 8px">
+					<!-- begin tooltip section -->
+					<div>							
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-toolmintcost')" onmouseover="hoverTip('tooltip-toolmintcost')">&#8505;</div>
+						<div class="infoTip" id="tooltip-toolmintcost">The current cost in USD to mint each tool</div>
+					</div>
+					<!-- end tooltip section -->
+					<div class="row-header">Tool Mint Costs:</div>
+<!-- Row Item: Magazine Mint Cost -->
+					<div class="row-item">
+						<div class="row-header" style="width: 130px; text-align: right;">Magazine:&nbsp;</div>
+						<div class="row-content" id="magazine"></div>
+					</div>
+<!-- Row Item: Shear Mint Cost -->
+					<div class="row-item">
+						<div class="row-header" style="width: 130px; text-align: right;">Shears:&nbsp;</div>
+						<div class="row-content" id="shears"></div>
+					</div>
+<!-- Row Item: Hydro Mint cost -->
+					<div class ="row-item">
+						<div class="row-header" style="width: 130px; text-align: right;">Hydrometer:&nbsp;</div>
+						<div class="row-content" id="hydro"></div>
+					</div>
+				</div>
 <!-- Row Item: Buttons -->
 				<div style="margin: 8px; display: flex;">
 					<div class="button" id="resetButton" onClick="resetFatigue();">Reset Fatigue</div>

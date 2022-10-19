@@ -161,7 +161,7 @@ a:hover {
 	background-color: #111111BA;
 	text-align: center;
 	font-weight: bold;
-	width: 168px;
+	width: 160px;
 	height: 32px;
 	padding-top: 8px;
 	margin-top: 8px;	
