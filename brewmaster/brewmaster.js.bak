@@ -1196,7 +1196,7 @@ const resetFatigue = async() => {
 
 					console.log("Allowance: " + (allowance));
 					if(window.web3.utils.toBN(allowance).lt(window.web3.utils.toBN(totalPPM * RESET_MULTI))) {
-						await grape.methods.approve(WINEMAKER_REWARDS, MAX_UINT256).send({from: account}).on("confirmation", function(confirms) {
+						await raisin.methods.approve(WINEMAKER_REWARDS, MAX_UINT256).send({from: account}).on("confirmation", function(confirms) {
 							if(confirms === 5) {
 								winery.methods.resetFatigue().send({from: account});
 							}

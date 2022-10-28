@@ -1224,7 +1224,7 @@ const claimVintage = async() => {
 	Deposits ALL of the VINTAGE available in your wallet into the cellar
 */
 const depositVintage = async() => {
-	let tokenA = new window.web3.eth.Contract(VINT_TOKEN_ABI, VINT_TOKEN);
+	let tokenA = new window.web3.eth.Contract(ERC20_ABI, VINT_TOKEN);
 	let tokenB = new window.web3.eth.Contract(SVINT_TOKEN_ABI, SVINT_TOKEN);
 	window.web3.eth.getAccounts().then(async(accounts) => {
 		let account = accounts[0];
