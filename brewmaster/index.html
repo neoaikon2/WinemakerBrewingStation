@@ -43,9 +43,9 @@
 			<div class="sidebuttonL" style="top: 32px;" onclick="showCellarPanel()">Cellar</div>
 			<div class="sidebuttonL" style="top: 64px;" onclick="showPressPanel()">Winepress</div>			
 			<!-- <div class="sidebuttonL" style="top: 96px; border-radius: 0 0 0 8px;" onclick="showPegPanel()">Peg Health</div> -->
-			<div class="sidebuttonL" style="top: 96px;" onclick="showNodePanel()">Nodes V2</div>
-			<div class="sidebuttonL" style="top: 128px;" onclick="showSodaPanel()">Soda Press</div>
-			<div class="sidebuttonL" style="top: 160px; border-radius: 0 0 0 8px;" onclick="showSoleraPanel()">Solera Aging Room</div>
+			<!--<div class="sidebuttonL" style="top: 96px;" onclick="showNodePanel()">Nodes V2</div>-->
+			<div class="sidebuttonL" style="top: 96px;" onclick="showSodaPanel()">Soda Press</div>
+			<div class="sidebuttonL" style="top: 128px; border-radius: 0 0 0 8px;" onclick="showSoleraPanel()">Solera Aging Room</div>
 		</div>
 		
 <!-- Grapery Menu Panel -->
@@ -374,7 +374,7 @@
 			</div>			
 		</div>
 		
-		<div id="NodePanel" class="panel panel-hidden">
+		<!--<div id="NodePanel" class="panel panel-hidden">
 			<div class="panel-header">Nodes V2<br><hr></div>
 			<div style="margin: 16px">
 				Nodes are being retired and migrated to a press-like mechanic soon!<br>
@@ -393,22 +393,22 @@
 					</div>
 					<div class="row-item" style="margin-top: 8px;">
 						<!-- begin tooltip section -->
-						<div>							
+						<!--<div>							
 							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-grapenodecompound')" onmouseover="hoverTip('tooltip-grapenodecompound')">&#8505;</div>
 							<div class="infoTip" id="tooltip-grapenodecompound">Your current progress (in GRAPE) toward being able to compound another node<br>Compounding increases your APR!<br>You should claim 1 nodes worth of grape ONLY after compounding 3 new nodes</div>
 						</div>
 						<!-- end tooltip section -->
-						<div class="row-header">Compound Progress:&nbsp;</div>
+						<!--<div class="row-header">Compound Progress:&nbsp;</div>
 						<div id="node-grape-pending" class="row-content"></div>
 					</div>
 					<div class="row-item">
 						<!-- begin tooltip section -->
-						<div>							
+						<!--<div>							
 							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-grapenodecompounddate')" onmouseover="hoverTip('tooltip-grapenodecompounddate')">&#8505;</div>
 							<div class="infoTip" id="tooltip-grapenodecompounddate">The date and time you'll be able to do your next compound</div>
 						</div>
 						<!-- end tooltip section -->
-						<div class="row-header" style="transform: translate(-16px, 0px);">Compound on&nbsp;</div>
+						<!--<div class="row-header" style="transform: translate(-16px, 0px);">Compound on&nbsp;</div>
 						<div id="node-grape-compounddate" class="row-content" style="transform: translate(-16px, 0px);"></div>
 					</div>
 					<div class="row-item" style="margin-top: 8px;">
@@ -431,19 +431,19 @@
 					</div>-->
 					<!-- end tooltip section -->
 					<!--<div><input id="node-grape-autocompound" type="checkbox"> Autocompound</div>-->
-					<div style="display: flex">						
+					<!--<div style="display: flex">						
 						<!-- begin tooltip section -->
-						<div>
+						<!--<div>
 							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-nodebuttons')" onmouseover="hoverTip('tooltip-nodebuttons')">&#8505;</div>
 							<div class="infoTip" id="tooltip-nodebuttons">Claiming makes &#127815;GUAPO&#127815; sad...<br>Compounding makes him happy!<br>Do YOU want to be the one responsible for making &#127815;GUAPO&#127815; sad?</div>
 						</div>
 						<!-- end tooltip section -->
-						<div class="evilbutton" onclick="claimGrapeNode()">Claim</div>
+						<!--<div class="evilbutton" onclick="claimGrapeNode()">Claim</div>
 						<div class="button" onclick="compoundGrapeNode()" style="position: absolute; float: right; right: 56px;">Compound</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</div> -->
 		
 <!-- Soda Press Panel -->
 		<div id="SodaPanel" class="panel panel-hidden">
