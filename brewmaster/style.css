@@ -118,12 +118,13 @@ img {
 	filter: drop-shadow(5px 5px 2px #111111C0);	
 }
 
-a {
+a,.linkable {
 	color: #BA70BA;
 }
 
-a:hover {
+a:hover,.linkable:hover {
 	color: #FFBAFF;
+	cursor: hand;
 }
 
 .button {

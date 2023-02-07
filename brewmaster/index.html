@@ -114,7 +114,7 @@
 					</div>
 					<!-- end tooltip section -->
 					<div class="row-item">
-						<div class="row-header">Current Fatigue:&nbsp;</div><div class="row-content"  id="fatigue"></div>
+						<div class="row-header">Current Fatigue:&nbsp;</div><div class="row-content linkable" id="fatigue" onclick="resetFatigue();"></div>
 					</div>
 				</div>
 				
@@ -152,10 +152,25 @@
 					</div>
 				</div>
 				
+				<div class="groupbox" id="vintners" style="margin-top: 8px">
+<!-- Row Item: Enoteca balance -->
+					<div class="row-item">
+						<div class="row-header">Enoteca Balance:&nbsp;</div><div class="row-content" id="wm-enotecabal"></div><br>
+					</div>
+<!-- Row Item: Enoteca pending balance -->
+					<div class="row-item">
+						<div class="row-header">Pending:&nbsp;</div><div class="row-content linkable" id="wm-enotecapending" onclick="claimRaisin();"></div><br>
+					</div>
+<!-- Row Item: Enoteca daily (estimated) -->
+					<div class="row-item">
+						<div class="row-header">Daily:&nbsp;</div><div class="row-content" id="wm-enotecadaily"></div><br>
+					</div>
+				</div>
+				
 				<div class="groupbox" style="margin-top: 8px">
 <!-- Row Item: Vintage Earned -->
 					<div class="row-item">
-						<div class="row-header" style="width: 150px; text-align: right;">Vintage Earned:&nbsp;</div><div class="row-content" id="vintage"></div>
+						<div class="row-header" style="width: 150px; text-align: right;">Vintage Earned:&nbsp;</div><div class="row-content linkable" id="vintage" onclick="claimVintage()"></div>
 					</div>
 <!-- Row Item: Storage Used -->
 					<div class="row-item">
@@ -175,10 +190,10 @@
 				</div>
 
 <!-- Row Item: Buttons -->
-				<div style="margin: 8px; display: flex;">
+				<!--<div style="margin: 8px; display: flex;">
 					<div class="button" id="resetButton" onClick="resetFatigue();">Reset Fatigue</div>
 					<div class="button" id="claimButton" style="position: absolute; right: 48px;" onClick="claimVintage();">Claim $VINTAGE</div>
-				</div>
+				</div>-->
 			</div>
 		</div>
 		
@@ -659,7 +674,7 @@
 <!-- If you're reading this CSS really sucks but when you get it to work, it's almost (ALMOST) beautiful... -->
 		<div class="cardDisclaimer">
 			DISCLAIMER: This tool provides a basic interface into the winery to keep track of stats, it is NOT intended to be a replacement for any GrapeFinance dApp.<br>			
-			<div style="font-size: 12px; margin-top: 4px; float: left;">Brewmaster v2.94&#127815;</div>
+			<div style="font-size: 12px; margin-top: 4px; float: left;">Brewmaster v2.95&#127815;</div>
 			<div style="font-size: 12px; margin-top: 4px; float: right;">This tool is open-source, you can view the source on the <a href="https://github.com/neoaikon2/WinemakerBrewingStation">GitHub repository</a></div>
 		</div>
 		<div id="timer" onclick="triggerUpdate();" style="font-size: 10pt; font-family: consolas; font-weight: bold; position: absolute; right: 0; top: 0; padding: 4px; cursor: hand;">30</div>
