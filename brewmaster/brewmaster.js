@@ -284,7 +284,7 @@ const updateWinery = async(account) => {
 						let updatedAccRewardsPerSecond = parseInt(accRewardsPerShare) + (((86400 * parseInt(rewardsPerSecond))*1e12)/parseInt(lpSupply));
 						let tokenReward = parseInt(rewardsPerSecond) * 86400;
 						let accRewardToken = updatedAccRewardsPerSecond + ((parseInt(rewardsPerSecond)*1e12)/parseInt(lpSupply));
-						enotecaDaily = ((((amount*accRewardToken)/1e12)-debt)-amount)/1e18;
+						enotecaDaily = (((amount*accRewardToken)/1e12)-debt)/1e18;
 						
 						console.log(updatedAccRewardsPerSecond);
 						console.log(tokenReward);
@@ -365,7 +365,7 @@ const updateWinery = async(account) => {
 						let updatedAccRewardsPerSecond = parseInt(accRewardsPerShare) + (((86400 * parseInt(rewardsPerSecond))*1e12)/parseInt(lpSupply));
 						let tokenReward = parseInt(rewardsPerSecond) * 86400;
 						let accRewardToken = updatedAccRewardsPerSecond + ((parseInt(rewardsPerSecond)*1e12)/parseInt(lpSupply));
-						enotecaDaily = ((((amount*accRewardToken)/1e12)-debt)-amount)/1e18;
+						enotecaDaily = (((amount*accRewardToken)/1e12)-debt)/1e18;
 						
 					});
 				});
@@ -397,7 +397,7 @@ const updateWinery = async(account) => {
 	//$("#hydro").html("$" + hydro.toFixed(2) + " USD");// + " ($" + (fiftyGrape*5 - hydro).toFixed(2) + ")");
 	$("#wm-enotecabal").html(enotecaBalance.toFixed(4) + " LP");
 	$("#wm-enotecapending").html(enotecaPending.toFixed(2) + " RAISIN");
-	$("#wm-enotecadaily").html(enotecaDaily.toFixed(2) + " RAISIN");
+	$("#wm-enotecadaily").html((enotecaDaily-enotecaPending).toFixed(2) + " RAISIN");
 }
 
 var svintRatio = 1;
