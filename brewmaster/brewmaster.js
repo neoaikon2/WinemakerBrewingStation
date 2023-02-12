@@ -365,7 +365,7 @@ const updateWinery = async(account) => {
 						let updatedAccRewardsPerSecond = parseInt(accRewardsPerShare) + (((86400 * parseInt(rewardsPerSecond))*1e12)/parseInt(lpSupply));
 						let tokenReward = parseInt(rewardsPerSecond) * 86400;
 						let accRewardToken = updatedAccRewardsPerSecond + ((parseInt(rewardsPerSecond)*1e12)/parseInt(lpSupply));
-						enotecaDaily = (((amount*accRewardToken)/1e12)-debt)/1e18;
+						enotecaDaily = ((((amount*accRewardToken)/1e12)-debt)-amount)/1e18;
 						
 					});
 				});
