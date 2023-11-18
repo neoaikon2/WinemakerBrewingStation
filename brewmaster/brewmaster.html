@@ -1,0 +1,699 @@
+<html>
+<head>
+<meta name='viewport' content='width=750'>
+<title>Winemaker Brewing Station</title>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+<script src="https://brewmaster.on.fleek.co/brewmaster.js"></script>
+<link rel="stylesheet" href="https://brewmaster.on.fleek.co/style.css" />
+<!--<script src="brewmaster.js"></script>
+<link rel="stylesheet" href="style.css" />-->
+
+</head>
+<body>
+
+
+<!-- 
+	Address entry and Metamask reconnect card
+	all other divs descend from this one to keep things organized
+ -->
+<div class="cardAddress" id="cardAddress">
+<!-- Address entry elements -->
+	<div style="position: absolute; width: 0%; left: 50%; top: 50%; transform: translate(-50%, -75%); overflow: visible;">
+<!-- Address text input and buttons -->
+		<input id="addressEntry" placeholder="Connect or enter a wallet address..." style="width: 325px; transform: translate(-50%, -50%);"></input>
+		<div class="button" style="position: absolute; transform: translate(10%, -50%)" onclick="rpcQuery();">Check Address</div>
+		<div class="button" style="position: absolute; transform: translate(-110%, -50%)" onclick="web3Query();">
+			<div style="position: absolute; left: 50%; transform: translate(-50%, 0);">
+				<img src="http://brewmaster.on.fleek.co/rabby.png" style="position: absolute; width: 24px; height: 24px; transform: translate(-32px, 0px);" />
+				Connect				
+				<img src="http://brewmaster.on.fleek.co/metamask.png" style="position: absolute; width: 24px; height: 24px; transform: translate(8px, 0px);" />
+			</div>
+		</div>
+	</div>
+	
+<!-- Brewmaster Main panel -->
+	<div class="cardWinery">
+	
+<!-- Menu Panel -->
+		<div style="position: absolute; overflow: visible; width: 0px; height: 0px; left: -168px; background-color: green;">
+			<div class="sidebuttonL" style="top: 0px; border-radius: 8px 0 0 0;" onclick="showWineryPanel()">Winery</div>
+			<!--<div class="sidebuttonL" style="top: 32px;" onclick="">Nodes</div>-->
+			<div class="sidebuttonL" style="top: 32px;" onclick="showCellarPanel()">Cellar</div>
+			<div class="sidebuttonL" style="top: 64px;" onclick="showPressPanel()">Winepress</div>			
+			<!-- <div class="sidebuttonL" style="top: 96px; border-radius: 0 0 0 8px;" onclick="showPegPanel()">Peg Health</div> -->
+			<!--<div class="sidebuttonL" style="top: 96px;" onclick="showNodePanel()">Nodes V2</div>-->
+			<div class="sidebuttonL" style="top: 96px;" onclick="showSodaPanel()">Soda Press</div>
+			<div class="sidebuttonL" style="top: 128px; border-radius: 0 0 0 8px;" onclick="showSoleraPanel()">Solera Aging Room</div>
+		</div>
+		
+<!-- Grapery Menu Panel -->
+		<div style="position: absolute; overflow: visible; width: 0px; height: 0px; right: -0px; background-color: green;">
+			<div class="sidebuttonR" style="top: 0px; border-radius: 0 8px 0 0;" onclick="window.open('https://grapefinance.app/', '_blank')"><img src="http://brewmaster.on.fleek.co/gflogo.png" style="width: 20px; height: 20px;" /> Grape Finance</div>
+			<div class="sidebuttonR" style="top: 32px;" onclick="window.open('https://winemaker.grapefinance.app/app/Overview', '_blank')"><img src="https://winemaker.grapefinance.app/static/media/image-2.48f392d8.png" style="width: 20px; height: 20px; border-radius: 10px;" /> Winemaker Game</div>
+			<div class="sidebuttonR" style="top: 64px;" onclick="window.open('https://winepress.grapefinance.app/', '_blank')"><img src="https://grapefinance.app/static/media/barrel.7dc7e878.png" style="width: 20px; height: 20px" /> The Winepress</div>
+			<div class="sidebuttonR" style="top: 96px;" onclick="window.open('https://soda.grapefinance.app/', '_blank')"><img src="data:image/png;base64,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" style="width: 20px; height: 20px" />The Soda Press</div>
+			<div class="sidebuttonR" style="top: 128px; border-radius: 0 0 8px 0;" onclick="window.open('https://solera.grapefinance.app/', '_blank')">&#9728; Solera Aging Room</div>
+		</div>
+
+<!-- Brewing Station Header -->
+		<div class="title-header">&#127863; Brewing Station &#127863;</div>
+		<div style="margin-top: 8px">
+			<div class="row-header">Brewer Address:</div>
+			<div class="row-content"  id="address"></div>
+		</div>
+		
+<!-- Winemaker panel -->
+		<div id="WineryPanel" class="panel">
+			<div class="panel-header">Winery Manager<br><hr></div>
+			<div style="margin: 8px;">
+				
+<!-- Row Item: Grape Price -->
+				<div class="row-item">
+					<div class="row-header">GRAPE:&nbsp;</div>
+					<div class="row-content" id="grapeprice"></div>
+				</div>
+<!-- Row Item: Vintage Price -->
+				<div class="row-item">
+					<div class="row-header">VINTAGE:&nbsp;</div>
+					<div class="row-content" id="vintageprice"></div>
+				</div>					
+					<!--<div style="margin-top: 8px">
+						<div class="row-header">50 GRAPE = </div><div class="row-content" id="grapetovint"></div><br>
+					</div>-->
+				
+<!-- Row Item: Vintage Per Minute -->
+				<div style="margin-top: 8px">
+					<!-- begin tooltip section -->
+					<div>							
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-vpm')" onmouseover="hoverTip('tooltip-vpm')">&#8505;</div>
+						<div class="infoTip" id="tooltip-vpm">How much $VINTAGE you are earning per minute</div>
+					</div>
+					<!-- end tooltip section -->					
+					<div class="row-item">
+						<div class="row-header">Vintage PM:&nbsp;</div><div class="row-content" id="vpm"></div>
+					</div>
+					
+				</div>
+			
+				<div class="groupbox" style="margin-top: 8px">
+<!-- Row Item: Max Fatigue -->
+					<div class="row-item">
+						<div class="row-header">Max fatigue on&nbsp;</div><div class="row-content" id="fatiguedate100"></div><br>
+					</div>
+<!-- Row Item: 50% Fatigue -->
+					<div class="row-item">
+						<div class="row-header">50% fatigue on&nbsp;</div><div class="row-content" id="fatiguedate50"></div><br>
+					</div>
+<!-- Row Item: Current Fatigue -->
+					<!-- begin tooltip section -->
+					<div>							
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-fatigue')" onmouseover="hoverTip('tooltip-fatigue')">&#8505;</div>
+						<div class="infoTip" id="tooltip-fatigue">The dates and times you'll reach 50% and 100% fatigue<br>and your current fatigue level</div>
+					</div>
+					<!-- end tooltip section -->
+					<div class="row-item">
+						<div class="row-header">Current Fatigue:&nbsp;</div><div class="row-content linkable" id="fatigue" onclick="resetFatigue();"></div>
+					</div>
+				</div>
+				
+				<div style="margin-top: 8px">
+<!-- Row Item: Reset Cost -->
+					<!-- begin tooltip section -->
+					<div>							
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-resetcost')" onmouseover="hoverTip('tooltip-resetcost')">&#8505;</div>
+						<div class="infoTip" id="tooltip-resetcost">The GRAPE cost to instantly reset your fatigue to 0%</div>
+					</div>
+					<!-- end tooltip section -->
+					<div class="row-item">
+						<div class="row-header">Reset Cost:&nbsp;</div><div class="row-content" id="resetCost"></div>
+					</div>
+				</div>
+				
+				<div class="groupbox" id="vintners" style="margin-top: 8px">
+<!-- Row Item: Normals Staked -->
+					<div class="row-item">
+						<div class="row-header">Normals Staked:&nbsp;</div><div class="row-content" id="wm-normals"></div><br>
+					</div>
+<!-- Row Item: Masters Staked -->
+					<div class="row-item">
+						<div class="row-header">Masters Staked:&nbsp;</div><div class="row-content" id="wm-masters"></div><br>
+					</div>
+<!-- Row Item: Tools Staked -->
+					<!-- begin tooltip section -->
+					<div>							
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-stakednum')" onmouseover="hoverTip('tooltip-stakednum')">&#8505;</div>
+						<div class="infoTip" id="tooltip-stakednum">The number of normal vintners, master vintners<br>and tools you have staked</div>
+					</div>
+					<!-- end tooltip section -->
+					<div class="row-item">
+						<div class="row-header">&nbsp;&nbsp;Tools Staked:&nbsp;</div><div class="row-content" id="wm-tools"></div>
+					</div>
+				</div>
+				
+				<div class="groupbox" id="vintners" style="margin-top: 8px">
+<!-- Row Item: Enoteca balance -->
+					<div class="row-item">
+						<div class="row-header">Enoteca Balance:&nbsp;</div><div class="row-content" id="wm-enotecabal"></div><br>
+					</div>
+<!-- Row Item: Enoteca pending balance -->
+					<div class="row-item">
+						<div class="row-header">Pending:&nbsp;</div><div class="row-content linkable" id="wm-enotecapending" onclick="claimRaisin();"></div><br>
+					</div>
+<!-- Row Item: Enoteca daily (estimated) -->
+					<div class="row-item">
+						<div class="row-header">Daily:&nbsp;</div><div class="row-content" id="wm-enotecadaily"></div><br>
+					</div>
+				</div>
+				
+				<div class="groupbox" style="margin-top: 8px">
+<!-- Row Item: Vintage Earned -->
+					<div class="row-item">
+						<div class="row-header" style="width: 150px; text-align: right;">Vintage Earned:&nbsp;</div><div class="row-content linkable" id="vintage" onclick="claimVintage()"></div>
+					</div>
+<!-- Row Item: Storage Used -->
+					<div class="row-item">
+						<div class="row-header" style="width: 150px; text-align: right;">Storage Used:&nbsp;</div><div class="row-content" id="storage"></div>
+					</div>
+<!-- Row Item: Storage Full Date -->
+					<!-- begin tooltip section -->
+					<div>							
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-earnings')" onmouseover="hoverTip('tooltip-earnings')">&#8505;</div>
+						<div class="infoTip" id="tooltip-earnings">The amount of claimable vintage you have accrued (before tax)<br>and how much of your storage is currently consumed</div>
+					</div>
+					<!-- end tooltip section -->
+					<div class="row-item">
+						<div class="row-header" style="text-align: right; transform: translate(-8px, 0);">Storage full on </div><div class="row-content" id="wm-storagefull"></div>
+					</div>
+					
+				</div>
+
+<!-- Row Item: Buttons -->
+				<!--<div style="margin: 8px; display: flex;">
+					<div class="button" id="resetButton" onClick="resetFatigue();">Reset Fatigue</div>
+					<div class="button" id="claimButton" style="position: absolute; right: 48px;" onClick="claimVintage();">Claim $VINTAGE</div>
+				</div>-->
+			</div>
+		</div>
+		
+<!-- Cellar panel -->
+		<div id="CellarPanel" class="panel panel-hidden">
+			<div class="panel-header">Cellar Inventory<br><hr></div>
+			<div style="margin: 16px;">
+				<div style="margin-top: 16px">
+					<div class="row-item">
+						<div class="row-header">VINT-SVINT Ratio:&nbsp;</div>
+						<div id="cellarratio" class="row-content"></div>
+					</div>
+				</div>
+				<div class="groupbox">
+					<div class="row-header">Your Wallet -</div>
+					<div class="row-item">
+						<div class="row-header">$VINTAGE:&nbsp;</div>
+						<div id="vintinwallet" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">$sVINTAGE:&nbsp;</div>
+						<div id="svintinwallet" class="row-content"></div>
+					</div>
+					<div style="display: flex;">
+						<div style="width: 45%;">
+							<!-- begin tooltip section -->
+							<div>							
+								<div class="btnEmoji" onmouseleave="hoverTip('tooltip-cellardeposit')" onmouseover="hoverTip('tooltip-cellardeposit')">&#8505;</div>
+								<div class="btnTip" id="tooltip-cellardeposit">Deposit ALL of your $VINTAGE into the Cellar<br>$VINTAGE to $SVINTAGE</div>
+							</div>
+							<!-- end tooltip section -->
+							<div class="button" onclick="depositVintage()">1. Deposit</div>
+							<!-- begin tooltip section -->
+							<!--<div>							
+								<div class="btnEmoji" onmouseleave="hoverTip('tooltip-unstakesvintage')" onmouseover="hoverTip('tooltip-unstakesvintage')">&#8505;</div>
+								<div class="btnTip" id="tooltip-unstakesvintage">Unstake ALL of your $SVINTAGE from the Vineyard</div>
+							</div>
+							<!-- end tooltip section -->
+							<!--<div class="evilbutton" onclick="unstakeSVintage()">3. Unstake</div>-->
+						</div>						
+						<div style="width: 45%; grow-flex: 1;">
+							<!-- begin tooltip section -->
+							<!--<div>
+								<div class="btnEmoji" onmouseleave="hoverTip('tooltip-stakevintage')" onmouseover="hoverTip('tooltip-stakevintage')">&#8505;</div>
+								<div class="btnTip" id="tooltip-stakevintage">Stake ALL of your $SVINTAGE in the Vineyard</div>
+							</div>
+							<!-- end tooltip section -->
+							<!--<div class="button" onclick="stakeSVintage()">2. Stake&nbsp;&nbsp;&nbsp;</div>
+							<!-- begin tooltip section -->
+							<div>
+								<div class="btnEmoji" onmouseleave="hoverTip('tooltip-withdrawvintage')" onmouseover="hoverTip('tooltip-withdrawvintage')">&#8505;</div>
+								<div class="btnTip" id="tooltip-withdrawvintage">Withdraw ALL of your $VINTAGE from the Cellar<br>$SVINTAGE to $VINTAGE</div>
+							</div>
+							<!-- end tooltip section -->
+							<!-- begin tooltip section -->
+							<div>
+								<div class="infoEmoji" onmouseleave="hoverTip('tooltip-warning')" onmouseover="hoverTip('tooltip-warning')">&#8505;</div>
+								<div class="infoTip" id="tooltip-warning" style="background-color: #BA5C00; font-size: 16px; text-align: center;">WARNING: These buttons will affect your entire balance in each section.</div>
+							</div>
+							<!-- end tooltip section -->
+							<div class="evilbutton" onclick="withdrawVintage()">2. Withdraw</div>
+						</div>						
+					</div>					
+					<!--<div style="font-size: 10pt; font-family: consolas; font-weight: bold; color: #FF0000; margin-top: 8px;"></div>-->
+				</div>
+				<div class="groupbox">
+					Vineyard WINE emissions have ended!<br>
+					You can <b>STILL</b> ean up to 350% back by staking your SVINTAGE in the <a href="https://solera.grapefinance.app/">Solera Aging Room</a>!<br>
+					<!--<div>
+						<div class="row-header">Vineyard Staking -</div>
+						<div class="row-item">
+							<div class="row-header">Vineyard:&nbsp;</div>
+							<div id="svintinvinyard" class="row-content"></div>
+						</div>
+						<div class="row-item">
+							<div class="row-header">Pending:&nbsp;</div>
+							<div id="pendingwine" class="row-content"></div>
+						</div>						
+						<div style="margin-top: 8px">
+							<div class="button" onclick="claimVineyardRewards()">Claim Rewards</div>												
+						</div>						
+					</div>-->
+				</div>
+				<div class="groupbox">
+					<div>
+						<div class="row-header">Pending Claims -</div>
+						<div class="row-item">
+							<div class="row-header">Amount:&nbsp;</div>
+							<div id="cel-pendingamounts" class="row-content"></div>
+						</div>
+						<div class="row-item">
+							<div class="row-header">Claimable on&nbsp;</div>
+							<div id="cel-pendingtimestamps" style="width: 230px;" class="row-content"></div>
+						</div>
+					</div>
+					<div style="margin-top: 8px">
+						<div class="button" id="cel-claimpending" onclick="claimPendingFromCellar()">Claim Pending</div>					
+					</div>
+				</div>
+			</div>
+		</div>
+		
+<!-- Winepress Panel -->
+		<div id="PressPanel" class="panel panel-hidden">
+			<div class="panel-header">Winepress Maintenance<br><hr></div>
+			<div style="margin: 16px;">
+				<div class="row-item">
+					<div class="row-header">1 WINE-MIM-LP =&nbsp;</div>
+					<div id="wp-lpvalue" class="row-content"></div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-visibleaprroi')" onmouseover="hoverTip('tooltip-visibleaprroi')">&#8505;</div>
+							<div class="infoTip" id="tooltip-visibleaprroi">Visible APR and ROI<br>The APR and ROI visible to other players<br>(like assassins)</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">Visible APR/ROI:&nbsp;</div>
+						<div id="wp-visibleaprroi" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-trueaprroi')" onmouseover="hoverTip('tooltip-trueaprroi')">&#8505;</div>
+							<div class="infoTip" id="tooltip-trueaprroi">True APR and ROI<br>Your actual APR and ROI in the Winepress</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">True APR/ROI:&nbsp;</div>
+						<div id="wp-trueaprroi" class="row-content"></div>
+					</div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-risk')" onmouseover="hoverTip('tooltip-risk')">&#8505;</div>
+							<div class="infoTip" id="tooltip-risk">Your current risk of being assassinated<br>Will reach 100% at 350% Visible ROI</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header" style="width: 200px">Assassination Risk:&nbsp;</div>
+						<div id="wp-assassinationrisk" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-roiprogress')" onmouseover="hoverTip('tooltip-roiprogress')">&#8505;</div>
+							<div class="infoTip" id="tooltip-roiprogress">Your progress in receiving the 90%+Bonus APR<br>you are entitled to claim out of the Winepress</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">ROI Progress:&nbsp;</div>
+						<div id="wp-roiprogress" class="row-content"></div>
+					</div>	
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-poolshares')" onmouseover="hoverTip('tooltip-poolshares')">&#8505;</div>
+							<div class="infoTip" id="tooltip-poolshares">The amount of Winepress shares you are<br>entitled to claim out of the Winepress</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">Shares:&nbsp;</div>
+						<div id="wp-roishares" class="row-content"></div>
+					</div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<div class="row-header">Deposited:&nbsp;</div>
+						<div id="wp-depositedBalance" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Pressed:&nbsp;</div>
+						<div id="wp-compoundedBalance" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Total:&nbsp;</div>
+						<div id="wp-trackedBalance" class="row-content"></div>
+					</div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<div class="row-header">Pending Rewards:&nbsp;</div>
+						<div id="wp-pendingRewards" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Daily Rewards:&nbsp;</div>
+						<div id="wp-dailyRewards" class="row-content"></div>
+					</div>
+				</div>
+				
+				<div class="evilbutton" onclick="claimWinepress()">Claim</div>
+				<!--<div class="button" onclick="REMOVED()">Claim + Deposit</div>-->
+				<div class="button" onclick="compoundWinepress()">Press</div>				
+			</div>			
+		</div>
+		
+		<!--<div id="NodePanel" class="panel panel-hidden">
+			<div class="panel-header">Nodes V2<br><hr></div>
+			<div style="margin: 16px">
+				Nodes are being retired and migrated to a press-like mechanic soon!<br>
+				This section will NOT be updated and instead retired in favor of the official <a href="https://grapefinance.app/dashboard">Grape Finance dashboard</a>
+			</div>
+			<div style="margin: 16px">			
+				<div class="groupbox">
+					Grape Node Information -
+					<div class="row-item">
+						<div class="row-header">APR | Daily :&nbsp;</div>
+						<div id="node-grape-apr" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Daily Drip:&nbsp;</div>
+						<div id="node-grape-drip" class="row-content"></div>
+					</div>
+					<div class="row-item" style="margin-top: 8px;">
+						<!-- begin tooltip section -->
+						<!--<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-grapenodecompound')" onmouseover="hoverTip('tooltip-grapenodecompound')">&#8505;</div>
+							<div class="infoTip" id="tooltip-grapenodecompound">Your current progress (in GRAPE) toward being able to compound another node<br>Pressing increases your APR!<br>You should claim 1 nodes worth of grape ONLY after compounding 3 new nodes</div>
+						</div>
+						<!-- end tooltip section -->
+						<!--<div class="row-header">Press Progress:&nbsp;</div>
+						<div id="node-grape-pending" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<!--<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-grapenodecompounddate')" onmouseover="hoverTip('tooltip-grapenodecompounddate')">&#8505;</div>
+							<div class="infoTip" id="tooltip-grapenodecompounddate">The date and time you'll be able to do your next compound</div>
+						</div>
+						<!-- end tooltip section -->
+						<!--<div class="row-header" style="transform: translate(-16px, 0px);">Press on&nbsp;</div>
+						<div id="node-grape-compounddate" class="row-content" style="transform: translate(-16px, 0px);"></div>
+					</div>
+					<div class="row-item" style="margin-top: 8px;">
+						<div class="row-header">Your Nodes:&nbsp;</div>
+						<div id="node-grape-nodecount" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Pressed:&nbsp;</div>
+						<div id="node-grape-compounds" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Allocation:&nbsp;</div>
+						<div id="node-grape-allocation" class="row-content"></div>
+					</div>					
+					<hr>
+					<!-- begin tooltip section -->
+					<!--<div>
+						<div class="infoEmoji" onmouseleave="hoverTip('tooltip-nodeautocompound')" onmouseover="hoverTip('tooltip-nodeautocompound')">&#8505;</div>
+						<div class="infoTip" id="tooltip-nodeautocompound">Automagically do a compound when you've accrued 50 GRAPE<br>NOTE: Still need to confirm it in your wallet, sorry</div>
+					</div>-->
+					<!-- end tooltip section -->
+					<!--<div><input id="node-grape-autocompound" type="checkbox"> Autocompound</div>-->
+					<!--<div style="display: flex">						
+						<!-- begin tooltip section -->
+						<!--<div>
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-nodebuttons')" onmouseover="hoverTip('tooltip-nodebuttons')">&#8505;</div>
+							<div class="infoTip" id="tooltip-nodebuttons">Claiming makes &#127815;GUAPO&#127815; sad...<br>Pressing makes him happy!<br>Do YOU want to be the one responsible for making &#127815;GUAPO&#127815; sad?</div>
+						</div>
+						<!-- end tooltip section -->
+						<!--<div class="evilbutton" onclick="claimGrapeNode()">Claim</div>
+						<div class="button" onclick="compoundGrapeNode()" style="position: absolute; float: right; right: 56px;">Press</div>
+					</div>
+				</div>
+			</div>
+		</div> -->
+		
+<!-- Soda Press Panel -->
+		<div id="SodaPanel" class="panel panel-hidden">
+			<div class="panel-header">Soda Machine<br><hr></div>
+			<div style="margin: 16px;">
+				<div class="row-item">
+					<div class="row-header" style="width: 200px">1 GRAPE-XGRAPE-LP =&nbsp;</div>
+					<div id="sp-lpvalue" class="row-content"></div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-visibleaprroi2')" onmouseover="hoverTip('tooltip-visibleaprroi2')">&#8505;</div>
+							<div class="infoTip" id="tooltip-visibleaprroi2">Visible APR and ROI<br>The APR and ROI visible to other players<br>(like assassins)</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">Visible APR/ROI:&nbsp;</div>
+						<div id="sp-visibleaprroi" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-trueaprroi2')" onmouseover="hoverTip('tooltip-trueaprroi2')">&#8505;</div>
+							<div class="infoTip" id="tooltip-trueaprroi2">True APR and ROI<br>Your actual APR and ROI in the Winepress</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">True APR/ROI:&nbsp;</div>
+						<div id="sp-trueaprroi" class="row-content"></div>
+					</div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-risk2')" onmouseover="hoverTip('tooltip-risk2')">&#8505;</div>
+							<div class="infoTip" id="tooltip-risk2">Your current risk of being assassinated<br>Will reach 100% at 350% Visible ROI</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header" style="width: 200px">Assassination Risk:&nbsp;</div>
+						<div id="sp-assassinationrisk" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-roiprogress2')" onmouseover="hoverTip('tooltip-roiprogress2')">&#8505;</div>
+							<div class="infoTip" id="tooltip-roiprogress2">Your progress in receiving the 90%+Bonus APR<br>you are entitled to claim out of the Winepress</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">ROI Progress:&nbsp;</div>
+						<div id="sp-roiprogress" class="row-content"></div>
+					</div>	
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-poolshares2')" onmouseover="hoverTip('tooltip-poolshares2')">&#8505;</div>
+							<div class="infoTip" id="tooltip-poolshares2">The amount of shares you are<br>entitled to claim out of the Sodapress</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">Shares:&nbsp;</div>
+						<div id="sp-roishares" class="row-content"></div>
+					</div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<div class="row-header">Deposited:&nbsp;</div>
+						<div id="sp-depositedBalance" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Pressed:&nbsp;</div>
+						<div id="sp-compoundedBalance" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Total:&nbsp;</div>
+						<div id="sp-trackedBalance" class="row-content"></div>
+					</div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<div class="row-header">Pending Rewards:&nbsp;</div>
+						<div id="sp-pendingRewards" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Daily Rewards:&nbsp;</div>
+						<div id="sp-dailyRewards" class="row-content"></div>
+					</div>
+				</div>
+				
+				<div class="evilbutton" onclick="claimSodapress()">Claim</div>
+				<!--<div class="button" onclick="REMOVED()">Claim + Deposit</div>-->
+				<div class="button" onclick="compoundSodapress()">Press</div>				
+			</div>			
+		</div>
+		
+<!-- Solera Aging Room Panel -->
+		<div id="SoleraPanel" class="panel panel-hidden">
+			<div class="panel-header">Solera Aging Room<br><hr></div>
+			<div style="margin: 16px;">
+				<div class="row-item">
+					<div class="row-header" style="width: 200px">1 SVINTAGE =&nbsp;</div>
+					<div id="sar-lpvalue" class="row-content"></div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-visibleaprroi3')" onmouseover="hoverTip('tooltip-visibleaprroi3')">&#8505;</div>
+							<div class="infoTip" id="tooltip-visibleaprroi3">Visible APR and ROI<br>The APR and ROI visible to other players<br>(like assassins)</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">Visible APR/ROI:&nbsp;</div>
+						<div id="sar-visibleaprroi" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-trueaprroi3')" onmouseover="hoverTip('tooltip-trueaprroi3')">&#8505;</div>
+							<div class="infoTip" id="tooltip-trueaprroi3">True APR and ROI<br>Your actual APR and ROI in the Solera press</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">True APR/ROI:&nbsp;</div>
+						<div id="sar-trueaprroi" class="row-content"></div>
+					</div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-risk3')" onmouseover="hoverTip('tooltip-risk3')">&#8505;</div>
+							<div class="infoTip" id="tooltip-risk3">Your current risk of being assassinated<br>Will reach 100% at 350% Visible ROI</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header" style="width: 200px">Assassination Risk:&nbsp;</div>
+						<div id="sar-assassinationrisk" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-roiprogress3')" onmouseover="hoverTip('tooltip-roiprogress3')">&#8505;</div>
+							<div class="infoTip" id="tooltip-roiprogress3">Your progress in receiving the 90%+Bonus APR<br>you are entitled to claim out of the Winepress</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">ROI Progress:&nbsp;</div>
+						<div id="sar-roiprogress" class="row-content"></div>
+					</div>	
+					<div class="row-item">
+						<!-- begin tooltip section -->
+						<div>							
+							<div class="infoEmoji" onmouseleave="hoverTip('tooltip-poolshares3')" onmouseover="hoverTip('tooltip-poolshares3')">&#8505;</div>
+							<div class="infoTip" id="tooltip-poolshares3">The amount of shares you are<br>entitled to claim out of the Sodapress</div>
+						</div>
+						<!-- end tooltip section -->
+						<div class="row-header">Shares:&nbsp;</div>
+						<div id="sar-roishares" class="row-content"></div>
+					</div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<div class="row-header">Deposited:&nbsp;</div>
+						<div id="sar-depositedBalance" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Pressed:&nbsp;</div>
+						<div id="sar-compoundedBalance" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Total:&nbsp;</div>
+						<div id="sar-trackedBalance" class="row-content"></div>
+					</div>
+				</div>
+				<div class="groupbox">
+					<div class="row-item">
+						<div class="row-header">Pending Rewards:&nbsp;</div>
+						<div id="sar-pendingRewards" class="row-content"></div>
+					</div>
+					<div class="row-item">
+						<div class="row-header">Daily Rewards:&nbsp;</div>
+						<div id="sar-dailyRewards" class="row-content"></div>
+					</div>
+				</div>
+				
+				<div class="evilbutton" onclick="claimSolera()">Claim</div>
+				<!--<div class="button" onclick="REMOVED()">Claim + Deposit</div>-->
+				<div class="button" onclick="compoundSolera()">Press</div>
+			</div>			
+		</div>
+		
+<!-- Peg Health Panel
+		<div id="PegPanel" class="panel panel-hidden" style="display: none; opacity: 0;">
+			<div class="panel-header">Health Monitor<br><hr></div>
+			<div style="margin: 16px;">
+				<div class="row-item" style="margin-top: 8px;">					
+					<div class="row-content" style="color: #dc26ac; text-align: center;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkQAAAJECAYAAAD34DtaAAAgAElEQVR4nO3ZebCld13n8d9zlrv17T3pDmQhdBJCIIIsiUERRQaGEgVRGAeVEUsGwbIIA6jjDDI1CFIqKEs5OpqJOOqIg6BsosCwyiIxkUBiIAlZyN6319t97z3r80ydTjJlSchU4jc5p/m+XnLb/z71u+c853neN6cqAMB99vjy+NbusruK2Fretfzvt5+6/Q0RW9H+6PI/OntjtLFv2ud4oHWmfQAAOB4tlsWyXJZDtubL/EIpZUfIWLzWtA/wYEjxSwIA3BtBBACkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApCeIAID0BBEAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgvc60DwA8iF59wVvLfHth2sf4Bl+49WPlI9f/2bSPAffF6vLRl851D317xNa2pS3nbiqbIqbCXXDKBW8aNaONiK3h0vB9w6XhhyK29u3b19x4441NxFYRRJDMs8/6qbLU3TztY3yD/nhDEHG82ZjvP+PI4tpzIrYW52bv75S7nbXzrBdGbW3s2Li5t63311F7kUHkKzMAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApCeIAID0BBEAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgvc60DwDcixOWHlI9+xE/FTXXdFtzUVszq93qVD/5mF+Y9jHu0aW3fbK5/I7PTPsY9+Scc86ppn2Ge7K6ulpuueWWZtrneKCtDTfKbWt7Q7a6rU45YXFHyNZEVarSlJi3oLvR/Z7JXoRd87v+4ZxzzvlgyJgggtlW7Vo6ufWyJ7wuam9cNe2orZnVqbqRr1mk+ncu/eUyo0F07rnnzuQ3BjfddFOTI4jWj/1EWOwshAZRuSuKInQ3uk+b/ERs7d6y+/eXz13+UMRW8ZUZAIAgAgAQRAAAgggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApCeIAID0BBEAkF5n2gcA7sWoGZWDvZWwve3zu0tVqoipqq5KqSOWSindzlKzfWFXyNZ8ZyFk5y7VOOTlOqbV7S7XW5ZCfs+qacbdQb0/YmuiNW6dGLUVqdN0msXOYhO1t9hajJoq3VZ3LmwsUFOaMqpH0z7GPWpVrWM/syjukw7MvPYn/93BstTdHLE1f8d8q3tgLuQeMtwxKP3d/YipY8ZV2POzbPnq5tAoirKwMf76Uz56+56guWrHdTuGQVvhJg/4CEvVYnnx1heFbE287Zb/Xi47+qWwvQweury7nLQppr37W/q/v37C+stCxnxlBgAgiAAABBEAgCACANITRABAeoIIAEhPEAEA6QkiACA9QQQApCeIAID0BBEAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgPUEEAKQniACA9DrTPgCz7SdO/bELz9v+hO+d9jnuWTXtA9yLJmTl6+s3Xfvma9/y8yFjpZSFWxZaZXEu5A+hemHc9E7ZCPlFW4NWtXDzYtgbGvPq3+k1n3py2TTohmxVgdfs+uDIie/76sXvjlmryo7ujpipuzRB78LR4XrZu7YvZGu5vVzK1pCpY56181+XJ2+9IGTri0evKJ86/NmQrVk2ODD406O3H/3ziK3bOrfdcPX81XXEVhFE/P88ess5T/y+E5/6Q9M+xz2JfLhEi3oYXLF65SUhQ3dpH+1U1agT8sL1l8bNaPMo5BftHpgrnSMx54r2pJtPLtt6CyFbkdfs/uGBxXce6D0nbHB32FLY9T8xHA/Lof5qyFbdjkzlUs5YOD1sa//wYNjWLBv3xlcNV4fvjdhaLavNLeWWsDfVV2YAQHqCCABITxABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAep1pH4BYnarT/fmzXvmmqL1ztzz6iVWpoubSiHrNlrvbTvuOk5751pCxUsrVVWe+DtrqHOlUrWEV8ou2eu2ImWM6dav83N8/MWxvadgNez/bJ1xe2jv/MWRre90rP3XyIGRr4vKrm7Ct2HtG3Fav6Zc/3fvnYXvfvfU7yynzDw3ZOnvpzPLju54fsjXRlLj38+1f++3/vDZePxqxtXcw9/n5MhdyGzpcDkfM/D+C6FtMp+p0fvzUF7x82ucgxmJn0+5H7Tw/7P28tjpS6qAbZXu9XbXX40ImSrupyvOuemTYXuTDvb3tutI97aMhW91SyveXqLydBFHY1DFRr1tkWg3qQfnooU+G7T1y6RFhQXTa/CnHfqLUTdy18fqNX7nowODg3rDBGeUrMwAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACC9zrQPQCndVnf+YYunnRmxNdeaW4jYyWajGZS6NNM+xjcYlFFZbM+H7VXlSNhWpKVep2xe74ZszdXtkJ27tTbdVkpVh2xV3dWQnYlxXZUDq5tDtiZXfm/UD9ma2LGplOWgy7Zuj8viWsxtrSlNGYyHIVsT+0cHyy3928L2ShW000z+F3PNTmyZ33J2aVcnRmytD9f39ka9lYitaIJoBpy8cPLpf3HBu66Y9jkeDM0MRsfElwc3l14Td6OM9OjNe8K2WtWByaM0bC/Kt19zQvmBzz4sZKs1eaoE/lmw8MQ3lmpu9kLy6MZi+Z33PzVs76ojHw3besljh+VpjxqFbF11085Sff6skK1RPSqXr1wVsjXxx3f877CtqlSlVUUVUaynnfmvPt5pxeTCJbde8trLbrvsV0PGgvnKDABITxABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6XWmfYDj1c/ueel//TcnP++lEVvtqt2uShUxFe7Xr35z+T8rHwvZesaup5dXnnVhyFa/GZXLBjeEbE18W/fUslB1w/YiNaUJ23r3e04P2yqB5+qOWmVuvh2y1ZS6fK5/bcjWxPeUcZkL2hpe/6wy/PozQrYO9FbKe68NuQUd86wzXhy2ta17ZanKTUFrcddZp9Upjz3xnLC9SM0/+TdC5DOl3Wq3o+5DTWlm82EniO6/Te2l5Z1zO3ZN+xwPtLXxWjkwOBi2FWXy4Rw247C9TtUu3SrmgTzL5nqRH/m4m/cxQbfJurRCr41IzXi+NIMtIVv1YKP0RushW+XYZyAq+yZfPcR9+RD99JxE0ayK/OMnMogiz/UAvKVhfGUGAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApNeZ9gGOZ1Wppn2Ee9SUZia3DtXr5arhrSFb7dIq53QfGrI1MVe1w7bymM3rf3KqyGvj1muGpWr3Q7aWDo/LYtBnavLZbJqYrcm9bM/SySFbE8N9V5UbxzGv2fUrh8v1h28K2WpXrXLqlrhrI/oZMKvPlJtWb63HdR2ydbh3JO6hEkwQ8aDpNcOyMj4SsrVQdcvZ3YeEbPGtZfJQ2dXeHLZ33f66jKtRyFZrVJfFkKVYk7jaMbclbG+83ikHRzGv2cFDvXKgdyhkq9PqlFNLXBBlcah3pBnVMe9nb9Sf2SDylRkAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQXmfaB2DWVWFLc1WnbGsthW3Bg2HT1lapW+2QrfHqqBwarIdsrdYbITvl2Ke8CvtsTmxe6pbF5ZjXbHm4UDZ1todsdap2aeq5kK2JjfFaGTfDsL1ZdaR/+DPDehTyi/bHvRsjdh4InirfgqrAiJksVVXM3s7Wcnns3GkhWyU01UppAreYBXFXx8PPWSjVXMxD7+qvrJV/PHBTyNbB4f6wz+bknvHY+VNCtibmT9teOifHBFbvhpPKnlseH7I1MRqETZVb1m8qq8OVuMEZ9ZV9Vz5/VA/3TvscDzRfmQEA6QkiACA9QQQApCeIAID0BBEAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAIL1q2gc4Xv3ww3/izd938ve/MmJrqZor58+dETEV7ivD28re8WrI1u721nJ296SQLTge7e+8sxzovCdkqzvfKuectxSyVZpSvvSZozFbpZRdw58pW8dPC1prJscLsV73y+/u/VDQWqx/3P+Ft//d7X994bTP8U1EvQUzrTPtA5CH+oY4VWniPlMz/eGssjyPmyy/6KzylRkAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQXjXtAxyvTlw86awd8ztPjdja3N126rNO+bfviNhqV63y3O1Pipg65qvD28od49WQrZPaW8vZ3YeEbEWL/CA0gVt8a7mpvrrcUl8bsjXf7pQn7DwlZGvi6KFx2Nam064s8ztvDtnav//Ucs01F4Rs1U1TbhnuD9ma+MCN73rtdatXfyZia224evPqYP/VEVvcP51pH+B4tbJx+zWTn4itrfM7z/76YCViqnSqdsjO3Tzc77vK68Y3Maq3l/5oT8zYuFvGB4K2SimLYUuldJcuK+0dV4VsjXpNOVQ/JmRrYnNnKWzryGD/l25bu/5jYYNMla/MAID0BBEAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQ60z4ApfRHG/svX/n0GyK2Oq1O9+82PeIXIrYm9tVHy9G6F7K1MNcupRsyFa4ppVSBW/DAm90rbbzv20oz2ByyVR3pl83znwrZ6o/rtfdff+gtIWOllDO3HXnsI7bvODdi69rDvUu+uLL+4Ygt7h9BNAN64/V9l+39+Gsitjqt7uJndj4pLIgiba+Wpn2EezW7j5fZFBWQd8vy+jdV0G9aTf4X/S7EGO19XCmTnwBV+7Nly8JbQ7YO98dr77/xupB77cR/fOJD/vI7du98TsTWB2849DZBNF2+MgMA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApCeIAID0BBEAkJ4gAgDS60z7AMRqmqb0RusrUXuL3cXSbXVDttqt1kIpZXPIGByHBnV/7ehwdT1ia1TNtTc6/R0RW9Gaf/Lvv9TRZtBfbcarIVuj8YEdmzonRmxNjJrSWx2MQ+63G6P6aMQO91817QMw237u/J9rPeVhTwm5Trb1t7zooWu7L4rYKsEXb8ytG+7d277226/5vRsuekPE1nJ362nPf8SFN0ZszbLrDl/xzk/e/J4XRGydsNzZdckvn3trxNbES/7n9T/ykSsPvzdqj+nylRkAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANKrpn0AYlXzncUTP/zCvVF7C1W31a1aIdfJuZc+pPPMd53djdhaqLrlvPk9EVPHXNK/vvSaQcjWKZ0d5eGdE0O2srh1fLB8bRhz2baqVnny/JnjkLFSyudGX2sPm5i5Dzzz2sHffN/1MRfa7Udvbp777seHbM2wpjTjuhmHvGbV5BbZbS1EbE0MRs2gboIuDqauM+0DEK+aby9GbY2bplVKHRJEo1Zd6tJETIXt3K0pcWeLPVkOTeR72tQxO3epmybu2mhXnTLfboeMzbXnx81oI2QriaaUpjesvWbcI1+ZAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApCeIAID0BBEAkJ4gAgDSE0QAQHqCCABITxABAOl1pn0ASql2LO7qvOixvxQy1ml11lpNWOjOHe5WnY12yNYN29fK3/zQ1SFbyxvzZedHl0O2Jh7a3laqqgrZWq4WQnaOD03IytZqsZzR3RWyNTnStcO9YZ+BDz/z2tKbH4ZsXfvww1VT10EXWndn61UXvCVkq5RSv/nzr4jaguNRzAeTf5HqYVvPnn/X866M2htWJaZgSikLty6UzuFuyFZ7y7B0T+qHbG09uFAufP13hWxNnD+/pyxWMb/nnTJ8tGJiKHqtLk35215MeE/8+us+VdaWY4Joo2pKbxYvjaY04/P/h28MSM0HAABITxABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEivM+0DHLd2Lu6uti3sjJiqHrL59Iidu7X6cZ1bVaVUc3XMVqcpTchSKXW7Kft2rwWtlbK22i9NHXU67qvmn/z7LzUuTdl7Uty1MR5VpYn6THXrY5+DKGFLk8/5nu2PiporK+u3NUf6B8P2mKqHbn5oaVWtKmJrtb/arPZXI6bChfyCGbVeecFvtF74mP8QsVU1pbRH44ipY3fI+a9ubseMldI9qVfaW0YhW5Obdx10xU1mFuu48HvpG59Utu1fDNvjvovK5VG3Lr/yax8P2ZoYXruplHHMhTs6sV/GOwchW5NXaxR4B+82JegmVMrwV//2peO//OpFUXtM10XPvqi9ZX5LyNY7r3hn/Z6r3jOTf336ygwASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApCeIAID0BBEAkJ4gAgDSE0QAQHqCCABIrzPtAzyoFjqlVEFbnciWbAK3JpkbuBf1ej0AIl+1/ty49OdHMWNNVaqgw012WsO4N2E8F/eqNdVdB4zYClm507A7Dt2rWk1pot7PyT91zPt5bKUd95sul27Y1qC1uDBuL20OG5zZG1HwvTvo92xKU+rAs3XmWq3OXCvkcK121Sul9CK2ouUKot/7wfaxKIqwY6HdjMbtiKkm7h557PPUPWstaKyUcdjSnR/1qPt3XUq5tRN3utf/4ufCtpb3zZfNdyyEbG25vVW+44+WQrYmPn7hWhkFRdHqSb2ytrMfsjXLtu1ZD3sct/bNlfbVyyFbTbcu5Yy1kA/B5Pe7qfuSkPvZxN5zXvL21cPl7VF71YwGURMcRFG/51rTL5f2bwjZmvjhl58xXtgcc3lc8tvbX1uuKL8aMhbMV2YAQHqCCABITxABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEivM+0D3KuFTik/84SwaFssOy+qhu2FiK1RXT9uXOqIqXD9qgnbGpZSqrC1Uqqgsbjf8E6bbp8v1TjmcHO9dtgJt7WXyrO2nReyNfGp6pNlFHTdzh/ulKoX85oNl8elv3UYshVtrWrCPgPNllFpFoLuG1VT6iruj9oXjz8cdkP70fMeVV1wxikhL9vK9b1y1ScPRUyVdmmVs7q7Q7bKsXtj3N3xQL1W9o5XQ7bmt7XKU1/wkLD38xVvfuPPrvXXQw735Wuu+XLEzgNhtoOo0yrlu04Lu+K6vU3Pq8bVcsRW3fTLuAwipsIFPdfv3Iqbmmndo53SHsQ8W9rH/o0JooXWXHnkwikhW+XYfxKuws7W6bVK1Yt5zZp2U/pbQ6bCDSP/IlgY3/kTJ+x0766vCXuAfvepp1SbHxaztVIPw0KhW7XLWSUuiCJtNIOw33P7/HxzxhN3hf3d+P5f/MRfrBw4sBK1N6t8ZQYApCeIAID0BBEAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACk15n2Ae5Vf1zKn3y5Dtt7zkmldNphczOpKWVuZT5sbvJqVUFbTSllHLRV3XW2KK1x1G9Zyvavt8vu62I+WqcO5kJ27nbGZ+ZLv4r5O+j2M0Zl/ymjkK32ervM7Y25bqOvjfFd1+7MaTdlsHMQNjeu4v5A/sDqjeWmXi9k65RNm5rzn3NiyFswHpTq+o+sxH3YAy2dXpXzH31iyNah/qE7/tNb3/abIWOllLX19bWorVk220E0HJfy3q/E3Yue9bQcQbQ/7iHaaeIeLpMHyyjoVjSZmZvJp1QpW2/rlNO/EPNwP6nbLWVnyNQxD/v7uTJoYp57G0t12X9yzJvQ2miVuX7cZ3M+8NoYVLMZRE23Dg2iOu5vn/KxI7eWTx9aCdl67rbTy08//eyQt2DjyLi59ENfm8mHwKNP2V4e8/QTQrauvPbAvjf98jt+I2QsEV+ZAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApCeIAID0BBEAkJ4gAgDSE0QAQHqCCABITxABAOl1pn2AB1O9cvj6ar67FDK21DqhtdzaGrIVqS6l2bsaONfsLU05ErE1112sti9siZgqpWk6o8HwtJixWJv7c2VbZ1PMVnuxVKUK2ZrY2tlUhs04ZGtzvy5Lh4YhW3VVlVEr7veca8KmSrcqJWquP944MBj3DkZsNfOl2zqtM5OfgXJ4Y6Xeux5yIzqysb+5rro55C3or43b+3sreyK2ot12sHf4upsH+yK2br7jjpsidrKJuwMls/BjT3nz/DMf/8ppn+MbDEZl+DMXxzzxJnP14CdHzehPIraeevpTq5ed97KQ/yq5MRw+7BPXfPVrEVvRzl8+u3zPlm8L22vN6Mf046uXly8cvXraxziuXLb346+5fOXTb4jYau3cfNrm3/rpGyO2om1c/NGXDD5xxe9P+xz/XFWqXYvtxVsDJ1tRz9FRM3rboB5cGLHF/eMrMwAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApNeZ9gGOV/33fuH1gw9/8W0RW1Wp9iy05j8SsdWU0tsYbzw6YuvOvWZf1Nbnbv5cc8XeK8YRW7vmd40vftzFEVPh5qtOaZVq2sd4wD1p+Zzy+E1nTfsYD7g/XPlI2agH0z7GN6gPrt165JUXnx40Vy22Fq4N2ir1kSNN1NaMqwO3srxmM0sQ3U/NWu/g5Cdiq1VaC017GDE10TSluTFqLFJv1Dv2E6Fbd8vW9lLIFvfPQmuuLJS5aR/jAVfNatzW9ajetxr1Wa+a9ihoanK2sPtZJoJoynxlBgCkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApCeIAID0BBEAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgPUEEAKTXmfYB4P7YqPvlrw5dErb3vVseU5Za82F7TM+4qcvfHL40bO9Tt37gwt5440jE1v7ebZdF7DwAmkE9eHHUWFVVZ85VcxdF7UXZsmnT4m/8/KumfYx79JHPf678r7/64LSPkZog4rg0bEbly+s3hO195/I5guhbRFOa0GvjmsOX/2lvtL4SNjijRs3oHVFbc9Xc73aqzoui9qJsWlgqP/6D3z/tY9yjg0cPC6Ip85UZAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApCeIAID0BBEAkF5n2geglKY0G3VTfz5obtiqWhcEbYVqmmZvU5rrIrbGzbi/snFz1GtWbh3s+/b1ur8Qtcf0jJpxvbJx8xei9uqmHkZtZdE0zfV1CbunhambultKeeK0z/FNVNM+QHaCaAY0pfl6r+49OWhucam9dCRoK9SoGb1jUA9eHLG1MTp6+weuu/hJEVsTC+1N126e235G1B7TM25G/chrg/tu2Ax/bfIz7XP8c/26v6uU6o5pn+OeVYJoynxlBgCkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApCeIAID0BBEAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgPUEEAKQniACA9DrTPgClPPyE+Ud88BVnfzFiqzdsypNf/7WIqbtNorkK3JpJH7r+D+pWaY0jtkbN6LeGzfC1EVuzrFt139ipOhdGbI2a0X8bNsNXR2w1ESPMjB95+tOff/HrXveHEVtVFXUri/ezz3hG9dLHPKYdsXXlTTc15/3SL9URW5kIohlQVaVa6LYWY9aOPQ5CHuyZ1M24NCXm/jFqhqNRPdwIGZthVauMoh4v42Y0zPCacd+12+324sJC0P1xdnXa7dKemwvZWgjayWZm/2IHAHiwCCIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApCeIAID0BBEAkJ4gAgDSE0QAQHqCCABITxABAOl1pn2A49WPnrfzp59x7tbnRmwtzbU2Rezcqen36/4PR609Z8/2V5+7c/GpEVtfXFkr77v+QMTUA6EV+AdCFbQD6X360ks/9UMvf/kPTPscD7jh8IZqMKgjpo5sbETMpCOI7qczdy886qmP3PKsaZ/jHtTjZvxXUWOnbe684HEnLoRsHewPQnYeQEIGZsxtKyu3Tn6mfQ6+9fnKDABITx5CmyUAAAN5SURBVBABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEivM+0DHK+OHhqXlZuHMVvD+uDHbl79g4itum6aZ+/Z/sqIrYm9G8Mb3nfdwd+M2LrmcP8LETvHgequnyhN4Nas8poBUyWI7qfV/aNy63WDkK1b1gZ73/CJW14VsTXXrhb/7JlnrkdsTbzli7e/8JO3HPnjqL0kqsD/+tokebhHvmYT48AtIAFfmQEA6QkiACA9QQQApCeIAID0BBEAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpdaZ9gOPVsG76vVF9NGRr3Gxsmm8tR2x1W63FqHNNjJsyitrKoipVt5QS8n5O3oJSStj7OcMiX7OJw4FbQALVtA9AKXtOnD/7o68+5ysRW71hvfGo13xpKWLrONCOGlpsL15dlWpP0FxTSqkjhuqm/vte3bsgYitat9V9U7fqvmra57gHG+vj9SyfASCIr8wAgPQEEQCQniACANITRABAeoIIAEhPEAEA6QkiACA9QQQApCeIAID0BBEAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgPUEEAKQniACA9AQRAJBeZ9oHoJT+RlOu+Ox6yNZgXIfsHCfGgVtN4FZVSmkHbWX5o2Xy+kddvKk+BEAMQTQLmlLGo5jn8TgyEeD4FBm3QBJZ/voEAPimBBEAkJ4gAgDSE0QAQHqCCABITxABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQ60z4A3B9VqbbNted+IXBveymljtoL1ESOzbfn/8vk/0VstUrryTP6mgHcZ4KI41JVVVsjg2g8Hpfo+AgSeqZuu/uKqlSbI7bqui5N08ziawZwn/nKDABITxABAOkJIgAgPUEEAKQniACA9AQRAJCeIAIA0hNEAEB6gggASE8QAQDpCSIAID1BBACkJ4gAgPQEEQCQniACANITRABAeoIIAEivM+0DUMqoaXp3rA8vi9ga1E0/YmfWNaUZ1E39D4F7k39mTlOar4buNc2XmtIshWxN/q+ZwRetlBSfAQAAgFD/FzgcD5qYi6MGAAAAAElFTkSuQmCC" style="width: 100px; height: 100px;" /><br><br><a href="https://grapefinance.app/rebates" target="_blank">Bond your GRAPE, MIM, and GRAPE-MIM-LP<br>Get discount WINE!<br>Click Here!</a></div>
+				</div>
+				<div class="row-item" style="margin-top: 8px;">
+					<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Total Vested: </div>
+					<div id="peg-totalvested" class="row-content"></div>
+				</div>
+				<div class="row-item">
+					<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Claimable: </div>
+					<div id="peg-claimable" class="row-content"></div>
+				</div>
+				<div class="row-item" style="margin-top: 8px;">
+					<div class="row-header" style="text-align: right; transform: translate(-8px, 0px);">Fully Claimable on </div>
+					<div id="peg-fullyclaimablewhen" class="row-content"></div>
+				</div>				
+				<div class="button" onclick="claimPegCampaignRewards()">Claim</div>				
+			</div>			
+		</div>
+ End Peg Health Panel -->
+		
+<!-- Disclaimer card -->
+<!-- If you're reading this CSS really sucks but when you get it to work, it's almost (ALMOST) beautiful... -->
+		<div class="cardDisclaimer">
+			DISCLAIMER: This tool provides a basic interface into the winery to keep track of stats, it is NOT intended to be a replacement for any GrapeFinance dApp.<br>			
+			<div style="font-size: 12px; margin-top: 4px; float: left;">Brewmaster v2.95b&#127815;</div>
+			<div style="font-size: 12px; margin-top: 4px; float: right;">This tool is open-source, you can view the source on the <a href="https://github.com/neoaikon2/WinemakerBrewingStation">GitHub repository</a></div>
+		</div>
+		<div id="timer" onclick="triggerUpdate();" style="font-size: 10pt; font-family: consolas; font-weight: bold; position: absolute; right: 0; top: 0; padding: 4px; cursor: hand;">30</div>
+	</div>	
+</div>
+
+<!-- Fatigued Earnings Calculator -->
+<div id="fatigueCalculator" class="fatigueCalculator">
+<div onclick="toggleFatigueCalculator()" style="display: flex;"><img src="calc.png" style="width: 32px; height: 32px;" /><div class="panel-header" id="fatigueHeader" style="margin-left: 32px; text-align: left;">Fatigued Earnings Calculator</div></div>
+	<div class="panel" style="margin-left: 32px; padding: 8px; width: 336px;">
+		<input id="slider" type="range" min='0' max='100' step='1' value='0' oninput="updateFatigueCalcSlider()" style="margin-left: 8px; width: 320px" />
+		<hr>
+		<div id="fc-fatiguelevel">Fatigue: 0%</div>
+		<div id="fc-timetofatigue">0% fatigue time - 00d:00h:00m:00s</div>
+		<div id="fc-timetofullfatigue">100% fatigue time - 00d:00h:00m:00s</div>
+		<div id="fc-earned">Earned: 0 VINTAGE ( $0.00 )</div>
+		<div id="fc-pending">Pending: 0 VINTAGE ( $0.00 )</div>
+	</div>
+</div>
+
+</body>
+</html>
